@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Brooklyn Streets</title>
 <style>
   :root { --red:#ff3b30; --yellow:#f2b705; }
@@ -51,6 +53,39 @@
   #menu .go { display:inline-block; padding:14px 34px; font-size:22px; background:var(--yellow); color:#111; border-radius:4px; letter-spacing:2px; animation:pulse 1.4s infinite; }
   #menu .stat { font-family:system-ui,sans-serif; font-weight:800; font-size:20px; margin-bottom:20px; }
   @keyframes pulse { 50% { transform:scale(1.05); } }
+
+  /* touch controls */
+  body { touch-action:none; -webkit-touch-callout:none; -webkit-user-select:none; }
+  #touch { position:absolute; inset:0; pointer-events:auto; display:none; }
+  body.touch #touch { display:block; }
+  #stick { position:absolute; left:40px; bottom:50px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.35); }
+  #knob { position:absolute; left:33px; top:33px; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,.55); }
+  .tb { position:absolute; border-radius:50%; background:rgba(0,0,0,.35); border:2px solid rgba(255,255,255,.55); display:flex; align-items:center; justify-content:center; font:800 13px system-ui,sans-serif; color:#fff; }
+  .tb.on { background:rgba(242,183,5,.6); }
+  #bFire { right:36px; bottom:60px; width:100px; height:100px; background:rgba(255,59,48,.45); font-size:17px; }
+  #bAim { right:150px; bottom:36px; width:64px; height:64px; }
+  #bReload { right:156px; bottom:116px; width:56px; height:56px; }
+  #bJump { right:44px; bottom:176px; width:64px; height:64px; }
+  #bPause { left:50%; top:10px; margin-left:-22px; width:44px; height:44px; border-radius:10px; font-size:16px; }
+  body.touch #hp { left:50%; transform:translateX(-50%); bottom:8px; gap:6px; font-size:13px; }
+  body.touch #hp .bar { width:150px; height:12px; }
+  body.touch #hpt { font-size:18px; min-width:34px; }
+  body.touch #ammo { right:auto; left:calc(50% + 34px); top:8px; bottom:auto; text-align:left; }
+  body.touch #mag { font-size:28px; }
+  body.touch #res { font-size:15px; }
+  #rot { display:none; margin-bottom:14px; padding:8px 14px; border-radius:6px; background:rgba(242,183,5,.9); color:#111; font:800 14px system-ui,sans-serif; }
+  @media (orientation: portrait) { body.touch #rot { display:inline-block; } }
+  @media (max-width: 480px) { #menu h1 { font-size:44px; } }
+  @media (max-height: 520px) {
+    #top { left:14px; top:8px; }
+    #wave { font-size:20px; } #score { font-size:15px; } #left { font-size:12px; }
+    #map { width:110px; height:110px; right:10px; top:10px; }
+    #feed { top:128px; right:12px; font-size:12px; }
+    #msg { font-size:34px; }
+    #menu h1 { font-size:40px; } #menu h2 { margin:6px 0 10px; font-size:15px; }
+    #menu ul { font-size:12px; line-height:1.6; margin-bottom:12px; }
+    #menu .go { padding:10px 26px; font-size:18px; }
+  }
 </style>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
 </head>
@@ -65,11 +100,20 @@
   <div id="hp"><div>HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span></div>
   <div id="ammo"><span id="mag">30</span><span id="res">/ 120</span><div id="rl"></div></div>
   <div id="msg"></div>
+  <div id="touch">
+    <div id="stick"><div id="knob"></div></div>
+    <div class="tb" id="bFire" data-b="fire">발사</div>
+    <div class="tb" id="bAim" data-b="aim">조준</div>
+    <div class="tb" id="bReload" data-b="reload">R</div>
+    <div class="tb" id="bJump" data-b="jump">점프</div>
+    <div class="tb" id="bPause" data-b="pause">❚❚</div>
+  </div>
 </div>
 <div id="menu">
   <div class="box">
     <h1>BROOKLYN<br>STREETS</h1>
     <h2 id="sub">브루클린 3D FPS</h2>
+    <div id="rot">📱 휴대폰을 가로로 돌려서 플레이하세요</div>
     <div id="stat" class="stat hidden"></div>
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
@@ -92,10 +136,13 @@ const pick = a => a[Math.floor(rnd() * a.length)];
 const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
+const TOUCH = matchMedia('(pointer: coarse)').matches;
+if (TOUCH) document.body.classList.add('touch');
+
 // ---------- renderer / scene ----------
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.domElement.id = 'game';
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, TOUCH ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -137,7 +184,7 @@ scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x7a5c48, 1.25));
 const sun = new THREE.DirectionalLight(0xffcf9a, 3.0);
 sun.position.copy(sunDir).multiplyScalar(420);
 sun.castShadow = true;
-sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.mapSize.setScalar(TOUCH ? 2048 : 4096);
 Object.assign(sun.shadow.camera, { left: -240, right: 240, top: 240, bottom: -240, near: 10, far: 1000 });
 sun.shadow.bias = -0.0004;
 sun.shadow.normalBias = 0.05;
@@ -844,17 +891,84 @@ $('menu').addEventListener('click', () => {
   if (state === 'dead') { location.reload(); return; }
   state = 'play';
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
+  if (TOUCH) {
+    const fs = document.documentElement.requestFullscreen?.();
+    if (fs && fs.then) fs.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+    return;
+  }
   const r = renderer.domElement.requestPointerLock?.();
   if (r && r.catch) r.catch(() => {});
 });
+function pauseGame() {
+  firing = aiming = false;
+  state = 'pause';
+  $('sub').textContent = '일시정지'; $('go').textContent = TOUCH ? '터치해서 계속' : '클릭해서 계속';
+  $('menu').classList.remove('hidden');
+}
+
+// touch controls: floating joystick on the left, drag anywhere else to look
+const joy = { x: 0, y: 0, id: null, ox: 0, oy: 0 };
+const look = { id: null, x: 0, y: 0 };
+let fireId = null;
+if (TOUCH) {
+  $('keys').innerHTML = `
+    <li>왼쪽 화면 드래그 — 이동 (끝까지 밀면 달리기)</li>
+    <li>오른쪽 화면 드래그 — 시점 돌리기</li>
+    <li><kbd>발사</kbd> 누른 채 드래그하면 쏘면서 조준</li>
+    <li><kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd></li>
+    <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`;
+  $('go').textContent = '터치해서 시작';
+  const layer = $('touch'), stick = $('stick'), knob = $('knob'), R = 55;
+  layer.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (state !== 'play') return;
+    audio();
+    for (const t of e.changedTouches) {
+      const b = t.target.closest?.('[data-b]')?.dataset.b;
+      if (b === 'fire') {
+        firing = true; fireId = t.identifier;
+        if (look.id === null) Object.assign(look, { id: t.identifier, x: t.clientX, y: t.clientY });
+      } else if (b === 'aim') { aiming = !aiming; $('bAim').classList.toggle('on', aiming); }
+      else if (b === 'reload') startReload();
+      else if (b === 'jump') { if (player.onGround) { player.vy = 6.5; player.onGround = false; } }
+      else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
+      else if (t.clientX < innerWidth * 0.4 && joy.id === null) {
+        Object.assign(joy, { id: t.identifier, ox: t.clientX, oy: t.clientY });
+        Object.assign(stick.style, { left: t.clientX - 60 + 'px', top: t.clientY - 60 + 'px', bottom: 'auto' });
+      } else if (look.id === null) Object.assign(look, { id: t.identifier, x: t.clientX, y: t.clientY });
+    }
+  }, { passive: false });
+  layer.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      if (t.identifier === joy.id) {
+        let dx = t.clientX - joy.ox, dy = t.clientY - joy.oy;
+        const d = Math.hypot(dx, dy);
+        if (d > R) { dx *= R / d; dy *= R / d; }
+        joy.x = dx / R; joy.y = dy / R;
+        knob.style.transform = `translate(${dx}px,${dy}px)`;
+      } else if (t.identifier === look.id && state === 'play') {
+        const s = aiming ? 0.0035 : 0.0065;
+        yaw -= (t.clientX - look.x) * s;
+        pitch = clamp(pitch - (t.clientY - look.y) * s, -1.45, 1.45);
+        look.x = t.clientX; look.y = t.clientY;
+      }
+    }
+  }, { passive: false });
+  const end = e => {
+    for (const t of e.changedTouches) {
+      if (t.identifier === joy.id) { joy.id = null; joy.x = joy.y = 0; knob.style.transform = ''; stick.removeAttribute('style'); }
+      if (t.identifier === look.id) look.id = null;
+      if (t.identifier === fireId) { fireId = null; firing = false; }
+    }
+  };
+  layer.addEventListener('touchend', end);
+  layer.addEventListener('touchcancel', end);
+}
 document.addEventListener('pointerlockchange', () => {
   if (document.pointerLockElement) { hadLock = true; return; }
   firing = aiming = false;
-  if (state === 'play' && hadLock) {
-    state = 'pause';
-    $('sub').textContent = '일시정지'; $('go').textContent = '클릭해서 계속';
-    $('menu').classList.remove('hidden');
-  }
+  if (state === 'play' && hadLock) pauseGame();
 });
 
 function msg(text, dur = 2) {
@@ -934,6 +1048,7 @@ class Enemy {
     const moving = Math.hypot(player.vel.x, player.vel.z);
     let acc = 0.62 - dist / 150 + wave * 0.015;
     if (moving > 7) acc *= 0.55; else if (moving > 2) acc *= 0.8;
+    if (TOUCH) acc *= 0.75; // aiming with thumbs is harder
     acc = clamp(acc, 0.1, 0.72);
     const hit = Math.random() < acc;
     const tgt = camera.position.clone(); tgt.y -= 0.35;
@@ -1127,10 +1242,12 @@ function update(dt) {
   t += dt;
   fwd.set(-Math.sin(yaw), 0, -Math.cos(yaw)); right.set(Math.cos(yaw), 0, -Math.sin(yaw));
   wish.set(0, 0, 0)
-    .addScaledVector(fwd, (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0))
-    .addScaledVector(right, (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0));
-  const sprint = (keys.ShiftLeft || keys.ShiftRight) && !aiming && wish.dot(fwd) > 0.3;
-  if (wish.lengthSq() > 0) wish.normalize().multiplyScalar(aiming ? 3.5 : sprint ? 9.5 : 6);
+    .addScaledVector(fwd, (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) - joy.y)
+    .addScaledVector(right, (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + joy.x);
+  const joySprint = Math.hypot(joy.x, joy.y) > 0.95 && -joy.y > 0.7;
+  const sprint = (keys.ShiftLeft || keys.ShiftRight || joySprint) && !aiming && wish.dot(fwd) > 0.3;
+  const wl = wish.length();
+  if (wl > 0) wish.multiplyScalar(Math.min(wl, 1) / wl * (aiming ? 3.5 : sprint ? 9.5 : 6));
   const acc = player.onGround ? 12 : 2.5;
   player.vel.x += (wish.x - player.vel.x) * Math.min(1, acc * dt);
   player.vel.z += (wish.z - player.vel.z) * Math.min(1, acc * dt);
