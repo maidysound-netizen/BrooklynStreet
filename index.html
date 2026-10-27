@@ -484,6 +484,7 @@ const STR = {
   bossBeat: ['{n} 격파 · 평판 +300', '{n} defeated · Rep +300', '{n} 撃破・評判 +300'],
   bossCharge: ['⚠ 보스가 돌진한다! 옆으로 피해!', '⚠ The boss is charging! Dodge sideways!', '⚠ ボスが突進してくる！横に避けろ！'],
   lastFell: ['{c}의 마지막 구역이 무너졌다…', "{c}'s last district has fallen…", '{c}の最後の地区が陥落した…'],
+  bossLater: ['{c}의 구역이 모두 무너졌다 · 내 구역이 {n}곳이 되면 보스가 나타난다', '{c} lost all their turf · their boss shows up once you hold {n} districts', '{c}のナワバリはすべて陥落・自分の地区が{n}つになるとボスが現れる'],
   allNineBoss: ['9구역 점령! 남은 보스를 쓰러뜨리면 브루클린 통일', 'All 9 districts! Beat the remaining bosses to unite Brooklyn', '9地区制圧！残りのボスを倒せばブルックリン統一'],
   bossAppear: ['👑 {n} 등장!', '👑 {n} appears!', '👑 {n} 登場！'],
   bossGo: ['브루클린 브리지 아래 강변으로 가라! (미니맵 B)', 'Head to the waterfront under the Brooklyn Bridge! (B on the minimap)', 'ブルックリン橋の下の川沿いへ向かえ！（ミニマップのB）'],
@@ -2281,8 +2282,15 @@ class Boss extends Enemy {
   }
 }
 
+// a crew's boss only shows up once your crew is big enough (checked again after every capture)
+const BOSS_MIN_OWNED = 5;
+const bossHinted = {};
 function checkBossTrigger() {
   for (const c of RIVALS) if (!bossDone[c] && !bossQueue.includes(c) && !(boss && boss.crew === c) && DISTRICTS.every(d => d.owner !== c)) {
+    if (ownedCount() < BOSS_MIN_OWNED) {
+      if (!bossHinted[c]) { bossHinted[c] = true; feed(L('bossLater', { c: CREWS[c].name, n: BOSS_MIN_OWNED }), CREWS[c].css); }
+      continue;
+    }
     bossQueue.push(c);
     feed(L('lastFell', { c: CREWS[c].name }), CREWS[c].css);
   }
