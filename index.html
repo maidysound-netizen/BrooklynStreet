@@ -75,6 +75,9 @@
   #bTurn { right:150px; bottom:186px; width:54px; height:54px; font-size:22px; }
   #opts { display:none; margin:0 auto 14px; gap:18px; justify-content:center; align-items:center; font:700 14px system-ui,sans-serif; cursor:default; }
   body.touch #opts { display:flex; }
+  #langs { display:inline-flex; gap:2px; margin-bottom:14px; padding:3px; border-radius:20px; background:rgba(255,255,255,.1); font:800 13px system-ui,sans-serif; cursor:default; }
+  #langs span { padding:5px 12px; border-radius:16px; cursor:pointer; opacity:.7; }
+  #langs span.on { background:var(--yellow); color:#111; opacity:1; }
   #sndHint { display:inline-block; margin:0 auto 12px; padding:7px 16px; border-radius:20px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35); font:800 13px system-ui,sans-serif; cursor:pointer; animation:pulse 1.4s infinite; }
   #vol { display:flex; margin:0 auto 12px; gap:18px; justify-content:center; align-items:center; flex-wrap:wrap; font:700 14px system-ui,sans-serif; cursor:default; }
   #vol input { width:110px; vertical-align:middle; accent-color:#f2b705; }
@@ -116,8 +119,10 @@
   #bLight { left:50%; top:10px; margin-left:-134px; width:44px; height:44px; border-radius:10px; font-size:18px; }
 
   /* character select, interact prompt, shop, NPC talk */
-  #chars { display:flex; gap:10px; justify-content:center; margin:0 auto 18px; flex-wrap:wrap; cursor:default; }
-  .ch { width:150px; padding:10px 8px; border-radius:10px; background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.18); cursor:pointer; font-family:system-ui,sans-serif; }
+  #stage { width:min(520px,92vw); height:210px; margin:0 auto 4px; cursor:pointer; position:relative; }
+  #stage canvas { width:100% !important; height:100% !important; display:block; }
+  #chars { display:flex; gap:8px; justify-content:center; margin:0 auto 18px; cursor:default; width:min(520px,92vw); }
+  .ch { flex:1; min-width:0; padding:8px 6px; border-radius:10px; background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.18); cursor:pointer; font-family:system-ui,sans-serif; }
   .ch .ic { font-size:26px; } .ch b { display:block; font-size:16px; margin:2px 0; } .ch small { display:block; font-size:11.5px; font-weight:600; opacity:.85; line-height:1.4; }
   .ch.on { border-color:var(--yellow); background:rgba(242,183,5,.18); }
   #prompt { position:absolute; left:50%; bottom:90px; transform:translateX(-50%); padding:8px 16px; border-radius:20px; background:rgba(0,0,0,.65); font:800 15px system-ui,sans-serif; white-space:nowrap; }
@@ -179,8 +184,9 @@
     #menu h1 { font-size:40px; } #menu h2 { margin:6px 0 10px; font-size:15px; }
     #menu ul { font-size:12px; line-height:1.6; margin-bottom:12px; }
     #menu .go { padding:10px 26px; font-size:18px; }
+    #stage { height:130px; }
     #chars { margin-bottom:10px; gap:6px; }
-    .ch { width:118px; padding:5px 6px; } .ch .ic { font-size:18px; } .ch b { font-size:14px; margin:0; } .ch small { font-size:10.5px; }
+    .ch { padding:5px 6px; } .ch .ic { font-size:18px; } .ch b { font-size:14px; margin:0; } .ch small { font-size:10.5px; }
   }
   /* phone held upright: info on top, controls along the bottom */
   @media (orientation: portrait) {
@@ -220,7 +226,7 @@
   <div id="dir"><div></div></div>
   <div id="cross"></div><div id="hitm"></div>
   <div id="strobe"></div>
-  <div id="top"><div id="wave">WAVE 1</div><div id="score">점수 0</div><div id="left">남은 적 0</div><div id="clock"></div><div id="wanted"></div></div>
+  <div id="top"><div id="wave">WAVE 1</div><div id="score"></div><div id="left"></div><div id="clock"></div><div id="wanted"></div></div>
   <canvas id="map" width="180" height="180"></canvas>
   <div id="feed"></div>
   <div id="hp"><div id="hpl">HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span><span id="armor"></span></div>
@@ -232,62 +238,63 @@
   <div id="msg"></div>
   <div id="touch">
     <div id="stick"><div id="knob"></div></div>
-    <div class="tb" id="bFire" data-b="fire">발사</div>
-    <div class="tb" id="bAim" data-b="aim">조준</div>
+    <div class="tb" id="bFire" data-b="fire" data-i18n="fire">발사</div>
+    <div class="tb" id="bAim" data-b="aim" data-i18n="aim">조준</div>
     <div class="tb" id="bReload" data-b="reload">R</div>
-    <div class="tb" id="bJump" data-b="jump">점프</div>
+    <div class="tb" id="bJump" data-b="jump" data-i18n="jump">점프</div>
     <div class="tb" id="bTurn" data-b="turn">↻</div>
     <div class="tb" id="bPause" data-b="pause">❚❚</div>
-    <div class="tb" id="bCrew" data-b="crew">크루</div>
+    <div class="tb" id="bCrew" data-b="crew" data-i18n="crewBtn">크루</div>
     <div class="tb" id="bLight" data-b="light">🔦</div>
   </div>
 </div>
 <div id="portal" class="hidden">
   <img src="takako-logo.webp" alt="Takako World">
   <div class="soon">COMING SOON</div>
-  <div class="tag">마법 · 칼 · 도끼 · 스팀펑크의 세계</div>
-  <div class="back" id="portalBack">브루클린으로 돌아가기</div>
+  <div class="tag" data-i18n="portalTag">마법 · 칼 · 도끼 · 스팀펑크의 세계</div>
+  <div class="back" id="portalBack" data-i18n="portalBack">브루클린으로 돌아가기</div>
 </div>
 <div id="crew" class="hidden">
   <div class="cbox">
-    <h3>내 크루</h3>
-    <div class="row"><input id="crewName" maxlength="14" placeholder="크루 이름"><div class="row" id="swatches" style="margin:0"></div></div>
-    <div class="rep">평판 <span id="repv">0</span> <span style="opacity:.6;font-weight:600;font-size:12px">· 처치 +10 · 헤드샷 +15 · 점령 +100 · 방어 +50</span></div>
+    <h3 data-i18n="myCrew">내 크루</h3>
+    <div class="row"><input id="crewName" maxlength="14" placeholder="크루 이름" data-i18n-ph="crewNamePh"><div class="row" id="swatches" style="margin:0"></div></div>
+    <div class="rep"><span data-i18n="rep">평판</span> <span id="repv">0</span> <span style="opacity:.6;font-weight:600;font-size:12px" data-i18n="repRules"></span></div>
     <div id="cards"></div>
     <div id="terr"></div>
-    <div class="close" id="crewClose">닫기</div>
+    <div class="close" id="crewClose" data-i18n="close">닫기</div>
   </div>
 </div>
 <div id="shop" class="hidden">
   <div class="cbox">
     <h3>BODEGA 24H</h3>
-    <div class="say" id="shopSay">사장님: 어서 와! 필요한 거 있어?</div>
+    <div class="say" id="shopSay"></div>
     <div id="items"></div>
-    <div class="close" id="shopClose">닫기</div>
+    <div class="close" id="shopClose" data-i18n="close">닫기</div>
   </div>
 </div>
 <div id="metro" class="hidden">
   <div class="cbox">
-    <h3><span class="lb">L</span> 노선도</h3>
-    <div class="say">내 크루 구역의 역으로만 갈 수 있어요. 라이벌 구역 역은 셔터가 내려져 있어요.</div>
+    <h3><span class="lb">L</span> <span data-i18n="metroTitle">노선도</span></h3>
+    <div class="say" data-i18n="metroSay"></div>
     <div id="stations"></div>
-    <div class="close" id="metroClose">닫기</div>
+    <div class="close" id="metroClose" data-i18n="close">닫기</div>
   </div>
 </div>
 <div id="fade"></div>
 <div id="menu">
   <div class="box">
+    <div id="langs"><span data-lang="ko">한국어</span><span data-lang="en">English</span><span data-lang="ja">日本語</span></div>
     <h1>BROOKLYN<br>STREETS</h1>
     <h2 id="sub">브루클린 3D FPS</h2>
     <div id="stat" class="stat hidden"></div>
-    <div id="sndHint" class="hidden">🔈 화면을 터치하면 음악이 나와요</div>
+    <div id="sndHint" class="hidden" data-i18n="sndHint"></div>
     <div id="vol">
-      <label>🎵 음악 <input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5"></label>
-      <label>🔊 효과음 <input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4"></label>
+      <label><span data-i18n="music">🎵 음악</span> <input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5"></label>
+      <label><span data-i18n="sfx">🔊 효과음</span> <input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4"></label>
     </div>
     <div id="opts">
-      <label>시점 감도 <input type="range" id="sens" min="0.5" max="2.5" step="0.1" value="1"></label>
-      <label><input type="checkbox" id="autoF" checked> 자동 사격</label>
+      <label><span data-i18n="sens">시점 감도</span> <input type="range" id="sens" min="0.5" max="2.5" step="0.1" value="1"></label>
+      <label><input type="checkbox" id="autoF" checked> <span data-i18n="autoFire">자동 사격</span></label>
     </div>
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
@@ -296,6 +303,7 @@
       <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
+    <div id="stage"></div>
     <div id="chars"></div>
     <div><span class="go" id="go">클릭해서 시작</span></div>
     <div class="credit">🎵 BGM “8-Bit Drop” · Music © 2026 -MAID¥$AMA- · All rights reserved</div>
@@ -314,6 +322,194 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const TOUCH = matchMedia('(pointer: coarse)').matches;
+
+// ---------- languages: Korean / English / Japanese ----------
+const LANGS = ['ko', 'en', 'ja'];
+let lang = (() => {
+  try { const s = localStorage.getItem('bk-lang'); if (LANGS.includes(s)) return s; } catch {}
+  const n = (navigator.language || 'en').toLowerCase();
+  return n.startsWith('ko') ? 'ko' : n.startsWith('ja') ? 'ja' : 'en';
+})();
+// every piece of on-screen text: [Korean, English, Japanese]; {name} marks a value filled in at runtime
+const STR = {
+  fire: ['발사', 'FIRE', '発射'],
+  aim: ['조준', 'AIM', 'エイム'],
+  jump: ['점프', 'JUMP', 'ジャンプ'],
+  crewBtn: ['크루', 'CREW', 'クルー'],
+  portalTag: ['마법 · 칼 · 도끼 · 스팀펑크의 세계', 'Magic · Swords · Axes · A Steampunk World', '魔法・剣・斧・スチームパンクの世界'],
+  portalBack: ['브루클린으로 돌아가기', 'Back to Brooklyn', 'ブルックリンに戻る'],
+  myCrew: ['내 크루', 'My Crew', 'マイクルー'],
+  crewNamePh: ['크루 이름', 'Crew name', 'クルー名'],
+  rep: ['평판', 'Rep', '評判'],
+  repRules: ['· 처치 +10 · 헤드샷 +15 · 점령 +100 · 방어 +50', '· Kill +10 · Headshot +15 · Capture +100 · Defend +50', '· 撃破 +10 · ヘッドショット +15 · 制圧 +100 · 防衛 +50'],
+  close: ['닫기', 'Close', '閉じる'],
+  shopHello: ['사장님: 어서 와! 필요한 거 있어?', 'Owner: Welcome! Need anything?', '店主：いらっしゃい！何か要る？'],
+  metroTitle: ['노선도', 'Subway Map', '路線図'],
+  metroSay: ['내 크루 구역의 역으로만 갈 수 있어요. 라이벌 구역 역은 셔터가 내려져 있어요.', "You can only ride to stations in your crew's districts. Rival stations have their shutters down.", '自分のクルーの地区の駅にだけ行けます。ライバル地区の駅はシャッターが下りています。'],
+  subtitle: ['브루클린 3D FPS', 'BROOKLYN 3D FPS', 'ブルックリン 3D FPS'],
+  sndHint: ['🔈 화면을 터치하면 음악이 나와요', '🔈 Tap the screen to start the music', '🔈 画面をタップすると音楽が流れます'],
+  music: ['🎵 음악', '🎵 Music', '🎵 音楽'],
+  sfx: ['🔊 효과음', '🔊 Effects', '🔊 効果音'],
+  sens: ['시점 감도', 'Look speed', '視点感度'],
+  autoFire: ['자동 사격', 'Auto-fire', 'オート射撃'],
+  keysDesktop: [
+    `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
+     <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
+     <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+     <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
+     <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
+    `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move · <kbd>Shift</kbd> Sprint · <kbd>Space</kbd> Jump</li>
+     <li><kbd>Mouse</kbd> Look · <kbd>Left click</kbd> Shoot · <kbd>Right click</kbd> Aim</li>
+     <li><kbd>R</kbd> Reload · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
+     <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Brooklyn</b></li>
+     <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
+    `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移動 · <kbd>Shift</kbd> ダッシュ · <kbd>Space</kbd> ジャンプ</li>
+     <li><kbd>マウス</kbd> 視点 · <kbd>左クリック</kbd> 射撃 · <kbd>右クリック</kbd> エイム</li>
+     <li><kbd>R</kbd> リロード · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
+     <li>🎯 目標：ライバルクルーを追い出し、<b>ブルックリンの9地区</b>をすべて制圧しよう</li>
+     <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
+  ],
+  keysTouch: [
+    `<li>왼쪽 화면 드래그 — 이동 (끝까지 밀면 달리기)</li>
+     <li>오른쪽 화면 드래그 — 시점 돌리기 (빠르게 쓸면 크게 돈다)</li>
+     <li>조준점이 적 근처에 가면 <span style="color:#f2b705">자동으로 따라붙고</span>, 닿으면 자동 사격</li>
+     <li><kbd>↻</kbd> 뒤돌기 · <kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd> · <kbd>크루</kbd> 동료 영입</li>
+     <li>🎯 목표: 브루클린 9개 구역을 모두 점령하세요</li>
+     <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
+    `<li>Drag on the left side — move (push all the way to sprint)</li>
+     <li>Drag on the right side — look around (swipe fast for big turns)</li>
+     <li>Near an enemy the crosshair <span style="color:#f2b705">locks on</span>, and fires by itself when it touches them</li>
+     <li><kbd>↻</kbd> Turn around · <kbd>AIM</kbd> Aim · <kbd>R</kbd> Reload · <kbd>JUMP</kbd> · <kbd>CREW</kbd> Recruit allies</li>
+     <li>🎯 Goal: take all 9 districts of Brooklyn</li>
+     <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
+    `<li>画面の左側をドラッグ — 移動（端まで倒すとダッシュ）</li>
+     <li>画面の右側をドラッグ — 視点を回す（素早くスワイプで大きく回転）</li>
+     <li>照準が敵に近づくと<span style="color:#f2b705">自動で追従</span>し、重なると自動で射撃</li>
+     <li><kbd>↻</kbd> 振り向き · <kbd>エイム</kbd> エイム · <kbd>R</kbd> リロード · <kbd>ジャンプ</kbd> · <kbd>クルー</kbd> 仲間の勧誘</li>
+     <li>🎯 目標：ブルックリンの9地区をすべて制圧しよう</li>
+     <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
+  ],
+  clickStart: ['클릭해서 시작', 'Click to start', 'クリックでスタート'],
+  tapStart: ['터치해서 시작', 'Tap to start', 'タップでスタート'],
+  resumeClick: ['클릭해서 계속', 'Click to continue', 'クリックで再開'],
+  resumeTap: ['터치해서 계속', 'Tap to continue', 'タップで再開'],
+  paused: ['일시정지', 'Paused', '一時停止'],
+  restart: ['다시 시작', 'Play again', 'もう一度'],
+  died: ['사망했습니다', 'You died', 'やられた…'],
+  won: ['🏆 브루클린 통일! — {c}', '🏆 Brooklyn united! — {c}', '🏆 ブルックリン統一！ — {c}'],
+  endStat: ['내 구역 {o}/9 · 처치 {k} · 평판 {r} · 점수 {s}', 'Districts {o}/9 · Kills {k} · Rep {r} · Score {s}', '地区 {o}/9 · 撃破 {k} · 評判 {r} · スコア {s}'],
+  night: ['🌙 밤이 됐다', '🌙 Night falls', '🌙 夜になった'],
+  nightTip: ['적의 시야가 짧아졌다 · 손전등은 들키기 쉽다 (F)', "Enemies can't see as far · your flashlight gives you away (F)", '敵の視界が狭くなった・懐中電灯は見つかりやすい (F)'],
+  morning: ['☀️ 아침이 밝았다', '☀️ Morning has come', '☀️ 朝になった'],
+  cls_runner: ['러너', 'Runner', 'ランナー'],
+  cls_runner_d: ['이동 속도 +25%<br>체력 80', 'Move speed +25%<br>HP 80', '移動速度 +25%<br>体力 80'],
+  cls_tank: ['탱크', 'Tank', 'タンク'],
+  cls_tank_d: ['체력 160<br>이동 속도 -15%', 'HP 160<br>Move speed -15%', '体力 160<br>移動速度 -15%'],
+  cls_sniper: ['스나이퍼', 'Sniper', 'スナイパー'],
+  cls_sniper_d: ['정조준 확대 · 피해 +45%<br>연사 느림', 'Scope zoom · Damage +45%<br>Slow fire rate', 'スコープ拡大・ダメージ +45%<br>連射が遅い'],
+  startMsg: ['구역을 점령하라', 'Take the districts', '地区を制圧せよ'],
+  startTip: ['주변 라이벌 구역에 들어가면 영역 전쟁이 시작돼요', 'Step into a rival district to start a turf war', 'ライバル地区に入るとナワバリ戦争が始まります'],
+  startTipTouch: ['크루 버튼: 크루 이름·색 · 동료 영입', 'CREW button: crew name, color & recruits', 'クルーボタン：名前・色・仲間の勧誘'],
+  startTipKey: ['C 키: 크루 이름·색 · 동료 영입', 'C key: crew name, color & recruits', 'Cキー：クルーの名前・色・仲間の勧誘'],
+  reloading: ['재장전 중…', 'Reloading…', 'リロード中…'],
+  crew_red: ['레드 후드', 'Red Hoods', 'レッドフッズ'],
+  crew_iron: ['아이언 재킷', 'Iron Jackets', 'アイアンジャケッツ'],
+  crew_teal: ['틸 킹스', 'Teal Kings', 'ティールキングス'],
+  crew_police: ['경찰', 'Police', '警察'],
+  crew_me: ['옐로 캡스', 'Yellow Caps', 'イエローキャップス'],
+  copDown: ['경찰을 쓰러뜨렸다 · 수배 상승!', 'Officer down · wanted level up!', '警官を倒した・手配度アップ！'],
+  headshot: ['헤드샷! 평판 +{r}', 'Headshot! Rep +{r}', 'ヘッドショット！評判 +{r}'],
+  kill: ['처치 · 평판 +{r}', 'Kill · Rep +{r}', '撃破・評判 +{r}'],
+  ally_artist: ['그래피티 아티스트', 'Graffiti Artist', 'グラフィティアーティスト'],
+  ally_artist_d: ['균형 잡힌 사수', 'Well-rounded shooter', 'バランス型シューター'],
+  ally_boxer: ['전직 복서', 'Ex-Boxer', '元ボクサー'],
+  ally_boxer_d: ['체력 2배 · 앞에서 버텨 줌', 'Double HP · holds the front line', '体力2倍・前線で耐える'],
+  ally_hacker: ['해커', 'Hacker', 'ハッカー'],
+  ally_hacker_d: ['미니맵 레이더 범위 무제한', 'Unlimited minimap radar range', 'ミニマップのレーダー範囲が無制限'],
+  allyDown: ['{n} 쓰러짐 · 25초 뒤 복귀', '{n} is down · back in 25s', '{n}がダウン・25秒後に復帰'],
+  allyBack: ['{n} 복귀!', '{n} is back!', '{n} 復帰！'],
+  bodegaShop: ['보데가 사장님 · 가게 열기', 'Bodega owner · Open shop', 'ボデガの店主・お店を開く'],
+  bodegaTalk: ['보데가 사장님 · 말 걸기', 'Bodega owner · Talk', 'ボデガの店主・話しかける'],
+  bodegaWho: ['보데가 사장님', 'Bodega owner', 'ボデガの店主'],
+  bodegaClosed: ['여긴 지금 {c} 구역이라 장사를 못 해… 구역을 되찾아 주면 문 열게!', "This is {c} turf now, so I can't open up… Take the district back and I'll open the shop!", 'ここは今{c}のナワバリだから店を開けられない…地区を取り戻してくれたら開けるよ！'],
+  pizzaWho: ['피자집 사장님', 'Pizza shop owner', 'ピザ屋の店主'],
+  pizzaBusy: ['피자집 사장님 · 배달 중!', 'Pizza owner · Delivering!', 'ピザ屋の店主・配達中！'],
+  pizzaTake: ['피자집 사장님 · 🍕 배달 받기', 'Pizza owner · 🍕 Take a delivery', 'ピザ屋の店主・🍕 配達を受ける'],
+  pizzaHurry: ['뭐 해! 피자 식는다, 얼른 가!', "What are you doing? The pizza's getting cold, go!", '何してるの！ピザが冷めるよ、早く！'],
+  pizzaOven: ['오븐에서 굽는 중이야! 잠깐만 기다려.', "It's still in the oven! Hang on a sec.", 'まだオーブンで焼いてるよ！ちょっと待って。'],
+  pizzaJob: ['{a} ({d})로 라지 피자 하나! {s}초 안에 가면 팁 두둑이 준대!', 'One large pie to {a} ({d})! Get there in {s}s for a fat tip!', '{a}（{d}）にLサイズを一枚！{s}秒以内に届ければチップがたっぷりだって！'],
+  deliverStart: ['🍕 배달 시작!', '🍕 Delivery started!', '🍕 配達スタート！'],
+  deliverDone: ['🍕 배달 완료!', '🍕 Delivered!', '🍕 配達完了！'],
+  deliverReward: ['배달 완료 · 평판 +{r} (팁 {tip})', 'Delivered · Rep +{r} (tip {tip})', '配達完了・評判 +{r}（チップ {tip}）'],
+  pizzaCold: ['피자가 식었다…', 'The pizza went cold…', 'ピザが冷めてしまった…'],
+  deliverFail: ['배달 실패 · 다시 받으러 가자', 'Delivery failed · go grab another one', '配達失敗・もう一度受けに行こう'],
+  ambush: ['🍕 {c}가 피자를 노린다!', '🍕 {c} are after your pizza!', '🍕 {c}がピザを狙っている！'],
+  navSubway: ['🍕 지하철 밖으로! · {s}초', '🍕 Get out of the subway! · {s}s', '🍕 地下鉄から出て！・{s}秒'],
+  secs: ['{s}초', '{s}s', '{s}秒'],
+  bossName: ['{c} 보스', '{c} Boss', '{c}のボス'],
+  bossCall: ['부하를 불렀다!', 'Backup called!', '手下を呼んだ！'],
+  bossShout: ['{n}: "얘들아, 나와!"', '{n}: "Boys, get out here!"', '{n}：「野郎ども、出てこい！」'],
+  crewDisband: ['👑 {c} 해체!', '👑 {c} disbanded!', '👑 {c} 解散！'],
+  bossBeat: ['{n} 격파 · 평판 +300', '{n} defeated · Rep +300', '{n} 撃破・評判 +300'],
+  bossCharge: ['⚠ 보스가 돌진한다! 옆으로 피해!', '⚠ The boss is charging! Dodge sideways!', '⚠ ボスが突進してくる！横に避けろ！'],
+  lastFell: ['{c}의 마지막 구역이 무너졌다…', "{c}'s last district has fallen…", '{c}の最後の地区が陥落した…'],
+  allNineBoss: ['9구역 점령! 남은 보스를 쓰러뜨리면 브루클린 통일', 'All 9 districts! Beat the remaining bosses to unite Brooklyn', '9地区制圧！残りのボスを倒せばブルックリン統一'],
+  bossAppear: ['👑 {n} 등장!', '👑 {n} appears!', '👑 {n} 登場！'],
+  bossGo: ['브루클린 브리지 아래 강변으로 가라! (미니맵 B)', 'Head to the waterfront under the Brooklyn Bridge! (B on the minimap)', 'ブルックリン橋の下の川沿いへ向かえ！（ミニマップのB）'],
+  curStation: ['현재 역', 'You are here', '現在の駅'],
+  goStation: ['이동', 'Go', '移動'],
+  nextStop: ['🚇 다음 역: {s}', '🚇 Next stop: {s}', '🚇 次は {s}'],
+  arrived: ['{s} 도착 · {d}', 'Arrived at {s} · {d}', '{s} に到着・{d}'],
+  mapLabel: ['🗺️ 노선도 · 열차 타기', '🗺️ Subway map · Ride the train', '🗺️ 路線図・電車に乗る'],
+  item_hp: ['샌드위치 (체력 +50)', 'Sandwich (HP +50)', 'サンドイッチ（体力 +50）'],
+  item_ammo: ['탄약 상자 (+60발)', 'Ammo box (+60 rounds)', '弾薬ボックス（+60発）'],
+  item_armor: ['방탄조끼 (피해 60% 흡수, 50)', 'Body armor (absorbs 60% of damage, 50)', '防弾ベスト（ダメージ60%吸収・50）'],
+  repCost: ['평판 {c}', 'Rep {c}', '評判 {c}'],
+  full: ['가득 참', 'Full', '満タン'],
+  noRep: ['평판 부족', 'Not enough rep', '評判不足'],
+  buy: ['구매', 'Buy', '購入'],
+  myRep: ['내 평판', 'My rep', '自分の評判'],
+  shopThanks: ['사장님: {d} 지켜 줘서 고마워! 뭐 필요해?', 'Owner: Thanks for protecting {d}! What do you need?', '店主：{d}を守ってくれてありがとう！何が要る？'],
+  bought: ['{i} 구매 · 평판 -{c}', '{i} bought · Rep -{c}', '{i} 購入・評判 -{c}'],
+  warStart: ['영역 전쟁!', 'Turf war!', 'ナワバリ戦争！'],
+  warTurf: ['{d} · {c}의 구역', '{d} · {c} turf', '{d}・{c}のナワバリ'],
+  defend: ['방어전!', 'Defend!', '防衛戦！'],
+  defendMsg: ['{c}가 {d}을(를) 되찾으러 왔다! 60초', '{c} are coming to take back {d}! 60s', '{c}が{d}を取り返しに来た！60秒'],
+  captured: ['{d} 점령!', '{d} captured!', '{d} 制圧！'],
+  captureRep: ['구역 점령 · 평판 +100', 'District captured · Rep +100', '地区制圧・評判 +100'],
+  doorHint: ['공원 지하철역에서 이상한 빛이 새어 나온다…', 'A strange light is leaking from the park subway station…', '公園の地下鉄駅から不思議な光が漏れている…'],
+  defendOk: ['방어 성공!', 'Defended!', '防衛成功！'],
+  defendOkRep: ['{d} 지켜냄 · 평판 +50', '{d} held · Rep +50', '{d}を守った・評判 +50'],
+  lost: ['{d}을(를) 빼앗겼다', '{d} was taken', '{d}を奪われた'],
+  lostTo: ['{c}에게 구역을 잃었다', 'Lost the district to {c}', '{c}に地区を奪われた'],
+  policeArrive: ['🚓 경찰 도착!', '🚓 Police have arrived!', '🚓 警察が到着！'],
+  wanted: [' 수배!', ' WANTED!', ' 手配！'],
+  wantedClear: ['수배 해제 · 경찰이 철수했다', 'Heat is off · the police pulled back', '手配解除・警察が撤収した'],
+  subwayEscape: ['지하철로 경찰을 따돌렸다!', 'Lost the cops in the subway!', '地下鉄で警察をまいた！'],
+  mapTip: ['🗺️ 벽의 노선도에서 열차를 탈 수 있어요', '🗺️ Use the map on the wall to ride the train', '🗺️ 壁の路線図から電車に乗れます'],
+  safeRumor: ['지하철역은 안전해요 · 구역 {n}곳을 점령하면 무언가 열린다는 소문이…', 'Subway stations are safe · rumor says something opens once you hold {n} districts…', '地下鉄の駅は安全・{n}地区を制圧すると何かが開くという噂が…'],
+  locked: ['단단히 잠겨 있다… 구역 {n}곳 점령 필요', 'Locked tight… capture {n} districts', '固く閉ざされている…{n}地区の制圧が必要'],
+  withYou: ['함께하는 중', 'With you', '同行中'],
+  healing: ['회복 중 {s}초', 'Recovering {s}s', '回復中 {s}秒'],
+  recruit: ['영입 · 평판 {c}', 'Recruit · Rep {c}', '勧誘・評判 {c}'],
+  needRep: ['평판 {c} 필요', 'Need {c} rep', '評判 {c} 必要'],
+  hpLabel: ['체력 {h}', 'HP {h}', '体力 {h}'],
+  recruited: ['{n} 영입!', '{n} recruited!', '{n}を勧誘！'],
+  pickAmmo: ['+45 탄약', '+45 ammo', '+45 弾薬'],
+  pickHp: ['+35 체력', '+35 HP', '+35 体力'],
+  scoreHud: ['평판 {r} · 점수 {s}', 'Rep {r} · Score {s}', '評判 {r}・スコア {s}'],
+  warHud: ['⚔ 영역 전쟁 · 남은 적 {n}', '⚔ Turf war · {n} left', '⚔ ナワバリ戦争・残り {n}'],
+  defendHud: ['🛡 {d} 방어 {s}초 · 남은 적 {n}', '🛡 Defend {d} {s}s · {n} left', '🛡 {d} 防衛 {s}秒・残り {n}'],
+  turfHud: ['{c} 구역 · ', '{c} turf · ', '{c}のナワバリ・'],
+  ownedHud: ['내 구역 {o}/9', 'My districts {o}/9', '自分の地区 {o}/9'],
+};
+function L(key, vars = {}) {
+  const e = STR[key];
+  let s = e ? (e[LANGS.indexOf(lang)] ?? e[0]) : key;
+  for (const n in vars) s = s.split('{' + n + '}').join(vars[n]);
+  return s;
+}
+
 if (TOUCH) document.body.classList.add('touch');
 
 // ---------- renderer / scene ----------
@@ -1032,7 +1228,7 @@ let curStation = ENTRANCE;   // the entrance you came down (and will go back up)
   // exit stairs at the west end
   for (let k = 0; k < 8; k++) box(0.5, (k + 1) * 0.5, 4, -26.25 - k * 0.5, SY + (k + 1) * 0.25, ZC - 1.5, concrete, 4);
   const exC = mkCanvas(256, 96), eg = exC.getContext('2d');
-  eg.fillStyle = '#111'; eg.fillRect(0, 0, 256, 96); eg.fillStyle = '#3ddc84'; eg.font = 'bold 40px Arial'; eg.textAlign = 'center'; eg.textBaseline = 'middle'; eg.fillText('↑ EXIT 출구', 128, 50);
+  eg.fillStyle = '#111'; eg.fillRect(0, 0, 256, 96); eg.fillStyle = '#3ddc84'; eg.font = 'bold 40px Arial'; eg.textAlign = 'center'; eg.textBaseline = 'middle'; eg.fillText('↑ EXIT', 128, 50);
   const ex = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.68), new THREE.MeshBasicMaterial({ map: texOf(exC, false) }));
   ex.position.set(-25.9, SY + 5, ZC - 1.5); ex.rotation.y = Math.PI / 2; scene.add(ex);
 
@@ -1146,8 +1342,8 @@ function updateTime(dt) {
   flashlight.target.position.copy(camera.position).add(new THREE.Vector3(0, 0, -10).applyQuaternion(camera.quaternion));
   const phase = night > 0.85 ? 'night' : night < 0.05 ? 'day' : 'dusk';
   if (phase !== lastPhase && lastPhase) {
-    if (phase === 'night') { msg('🌙 밤이 됐다', 2.2); feed('적의 시야가 짧아졌다 · 손전등은 들키기 쉽다 (F)', '#9ab6ff'); }
-    if (phase === 'day' && tod < 12) { msg('☀️ 아침이 밝았다', 2.2); }
+    if (phase === 'night') { msg(L('night'), 2.2); feed(L('nightTip'), '#9ab6ff'); }
+    if (phase === 'day' && tod < 12) { msg(L('morning'), 2.2); }
   }
   lastPhase = phase;
   const hh = Math.floor(tod), mm = Math.floor((tod - hh) * 60 / 10) * 10;
@@ -1289,9 +1485,9 @@ const player = { pos: new THREE.Vector3(25, 0, 25), vel: new THREE.Vector3(), y:
 
 // ---------- playable characters ----------
 const CLASSES = {
-  runner: { name: '러너', icon: '🏃', hp: 80, speed: 1.25, dmg: 1, rate: 0.085, fov: 52, desc: '이동 속도 +25%<br>체력 80' },
-  tank: { name: '탱크', icon: '🛡️', hp: 160, speed: 0.85, dmg: 1, rate: 0.095, fov: 52, desc: '체력 160<br>이동 속도 -15%' },
-  sniper: { name: '스나이퍼', icon: '🎯', hp: 100, speed: 1, dmg: 1.45, rate: 0.16, fov: 28, desc: '정조준 확대 · 피해 +45%<br>연사 느림' },
+  runner: { get name() { return L('cls_runner'); }, icon: '🏃', hp: 80, speed: 1.25, dmg: 1, rate: 0.085, fov: 52, get desc() { return L('cls_runner_d'); } },
+  tank: { get name() { return L('cls_tank'); }, icon: '🛡️', hp: 160, speed: 0.85, dmg: 1, rate: 0.095, fov: 52, get desc() { return L('cls_tank_d'); } },
+  sniper: { get name() { return L('cls_sniper'); }, icon: '🎯', hp: 100, speed: 1, dmg: 1.45, rate: 0.16, fov: 28, get desc() { return L('cls_sniper_d'); } },
 };
 let clsKey = 'runner';
 try { if (CLASSES[localStorage.getItem('bk-class')]) clsKey = localStorage.getItem('bk-class'); } catch {}
@@ -1304,14 +1500,20 @@ renderChars();
 document.getElementById('chars').addEventListener('click', e => {
   e.stopPropagation();
   const k = e.target.closest('[data-ch]')?.dataset.ch; if (!k) return;
+  pickClass(k);
+});
+function pickClass(k) {
+  if (k === clsKey) return;
   clsKey = k; cls = CLASSES[k];
   try { localStorage.setItem('bk-class', k); } catch {}
   renderChars();
-});
+  beep(660, 0.06, 0.06, 'triangle'); setTimeout(() => beep(990, 0.08, 0.06, 'triangle'), 70);
+}
 function applyClass() {
   player.maxHp = player.hp = cls.hp;
   document.getElementById('hpl').textContent = cls.icon;
   document.getElementById('chars').classList.add('hidden');
+  document.getElementById('stage').classList.add('hidden');
 }
 let yaw = Math.PI * 0.75, pitch = 0, recoil = 0;
 let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing = false, aiming = false, kick = 0;
@@ -1352,9 +1554,9 @@ $('menu').addEventListener('click', () => {
   playBgm();
   if (state === 'menu') applyClass();
   if (state === 'menu') setTimeout(() => {
-    msg('구역을 점령하라', 2.5);
-    feed('주변 라이벌 구역에 들어가면 영역 전쟁이 시작돼요', '#fff');
-    feed(TOUCH ? '크루 버튼: 크루 이름·색 · 동료 영입' : 'C 키: 크루 이름·색 · 동료 영입', myCrew.color);
+    msg(L('startMsg'), 2.5);
+    feed(L('startTip'), '#fff');
+    feed(L(TOUCH ? 'startTipTouch' : 'startTipKey'), myCrew.color);
   }, 700);
   state = 'play';
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
@@ -1369,7 +1571,7 @@ $('menu').addEventListener('click', () => {
 function pauseGame() {
   firing = aiming = false;
   state = 'pause';
-  $('sub').textContent = '일시정지'; $('go').textContent = TOUCH ? '터치해서 계속' : '클릭해서 계속';
+  $('sub').textContent = L('paused'); $('go').textContent = L(TOUCH ? 'resumeTap' : 'resumeClick');
   $('menu').classList.remove('hidden');
 }
 
@@ -1421,14 +1623,6 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.p
 $('sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); });
 $('autoF').addEventListener('change', e => { settings.autoFire = e.target.checked; saveSettings(); });
 if (TOUCH) {
-  $('keys').innerHTML = `
-    <li>왼쪽 화면 드래그 — 이동 (끝까지 밀면 달리기)</li>
-    <li>오른쪽 화면 드래그 — 시점 돌리기 (빠르게 쓸면 크게 돈다)</li>
-    <li>조준점이 적 근처에 가면 <span style="color:#f2b705">자동으로 따라붙고</span>, 닿으면 자동 사격</li>
-    <li><kbd>↻</kbd> 뒤돌기 · <kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd> · <kbd>크루</kbd> 동료 영입</li>
-    <li>🎯 목표: 브루클린 9개 구역을 모두 점령하세요</li>
-    <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`;
-  $('go').textContent = '터치해서 시작';
   const layer = $('touch'), stick = $('stick'), knob = $('knob'), R = 55;
   layer.addEventListener('touchstart', e => {
     e.preventDefault();
@@ -1498,7 +1692,7 @@ function feed(text, color = '#fff') {
 }
 function startReload() {
   if (state !== 'play' || reloading || ammo === 30 || reserve === 0) return;
-  reloading = true; reloadT = 1.6; $('rl').textContent = '재장전 중…';
+  reloading = true; reloadT = 1.6; $('rl').textContent = L('reloading');
   beep(320, 0.06, 0.08); setTimeout(() => beep(520, 0.06, 0.08), 900);
 }
 
@@ -1508,13 +1702,13 @@ const SKINS = [0xc68b59, 0x8d5524, 0xe0ac69, 0x5c3a21, 0xf1c27d];
 
 // ---------- crews & districts ----------
 const CREWS = {
-  red:  { name: '레드 후드', css: '#e0453a', hood: 0xb3221b, cap: 0x8e1414, jeans: 0x2c3b57, hp: 90,  speed: [4.2, 5.2], acc: 0,    rate: 0.85 },
-  iron: { name: '아이언 재킷', css: '#9aa0a6', hood: 0x1c1c1c, cap: 0x111111, jeans: 0x3a3a3a, hp: 135, speed: [3.0, 3.8], acc: 0,    rate: 1 },
-  teal: { name: '틸 킹스', css: '#2ec4b6', hood: 0x1f8a8a, cap: 0xeeeeee, jeans: 0x1f2f3a, hp: 100, speed: [3.4, 4.4], acc: 0.08, rate: 1.1 },
-  police: { name: '경찰', css: '#3b82f6', hood: 0x1b2a4a, cap: 0x14213d, jeans: 0x1b2a4a, hp: 110, speed: [4.0, 4.8], acc: 0.05, rate: 1 },
+  red:  { get name() { return L('crew_red'); }, css: '#e0453a', hood: 0xb3221b, cap: 0x8e1414, jeans: 0x2c3b57, hp: 90,  speed: [4.2, 5.2], acc: 0,    rate: 0.85 },
+  iron: { get name() { return L('crew_iron'); }, css: '#9aa0a6', hood: 0x1c1c1c, cap: 0x111111, jeans: 0x3a3a3a, hp: 135, speed: [3.0, 3.8], acc: 0,    rate: 1 },
+  teal: { get name() { return L('crew_teal'); }, css: '#2ec4b6', hood: 0x1f8a8a, cap: 0xeeeeee, jeans: 0x1f2f3a, hp: 100, speed: [3.4, 4.4], acc: 0.08, rate: 1.1 },
+  police: { get name() { return L('crew_police'); }, css: '#3b82f6', hood: 0x1b2a4a, cap: 0x14213d, jeans: 0x1b2a4a, hp: 110, speed: [4.0, 4.8], acc: 0.05, rate: 1 },
 };
 const MY_COLORS = ['#f2b705', '#a855f7', '#ff7a1a', '#e5e5e5', '#3b82f6'];
-const myCrew = { name: '옐로 캡스', color: '#f2b705' };
+const myCrew = { name: L('crew_me'), color: '#f2b705' };
 try { Object.assign(myCrew, JSON.parse(localStorage.getItem('bk-crew') || '{}')); } catch {}
 const saveCrew = () => { try { localStorage.setItem('bk-crew', JSON.stringify(myCrew)); } catch {} };
 const ownerCss = o => o === 'me' ? myCrew.color : CREWS[o].css;
@@ -1656,12 +1850,12 @@ class Enemy {
     this.dead = true;
     if (byUs && this.crew === 'police') {
       kills++; score += 50; heat += 25;
-      feed('경찰을 쓰러뜨렸다 · 수배 상승!', CREWS.police.css);
+      feed(L('copDown'), CREWS.police.css);
     } else if (byUs) {
       kills++; heat += 6;
       const pts = head ? 150 : 100, r = head ? 15 : 10;
       score += pts; rep += r;
-      feed(head ? `헤드샷! 평판 +${r}` : `처치 · 평판 +${r}`, head ? '#ff6b5a' : '#fff');
+      feed(L(head ? 'headshot' : 'kill', { r }), head ? '#ff6b5a' : '#fff');
     }
     this.muzzle.visible = false;
     const k = Math.random();
@@ -1735,9 +1929,9 @@ class Enemy {
 
 // ---------- allies (your crew) ----------
 const ALLY_TYPES = {
-  artist: { name: '그래피티 아티스트', desc: '균형 잡힌 사수', cost: 150, hp: 110, dmg: [20, 28], acc: 0.55, rate: [0.55, 0.9], cap: 0x2b2b2b },
-  boxer:  { name: '전직 복서', desc: '체력 2배 · 앞에서 버텨 줌', cost: 200, hp: 220, dmg: [26, 34], acc: 0.45, rate: [0.7, 1.1], cap: 0x8a1e1e },
-  hacker: { name: '해커', desc: '미니맵 레이더 범위 무제한', cost: 250, hp: 90, dmg: [16, 22], acc: 0.6, rate: [0.6, 0.9], cap: 0x14532d },
+  artist: { get name() { return L('ally_artist'); }, get desc() { return L('ally_artist_d'); }, cost: 150, hp: 110, dmg: [20, 28], acc: 0.55, rate: [0.55, 0.9], cap: 0x2b2b2b },
+  boxer:  { get name() { return L('ally_boxer'); }, get desc() { return L('ally_boxer_d'); }, cost: 200, hp: 220, dmg: [26, 34], acc: 0.45, rate: [0.7, 1.1], cap: 0x8a1e1e },
+  hacker: { get name() { return L('ally_hacker'); }, get desc() { return L('ally_hacker_d'); }, cost: 250, hp: 90, dmg: [16, 22], acc: 0.6, rate: [0.6, 0.9], cap: 0x14532d },
 };
 const hexOf = css => parseInt(css.slice(1), 16);
 class Ally {
@@ -1762,13 +1956,13 @@ class Ally {
     this.hp -= d; this.flashT = 0.1;
     if (this.hp <= 0) {
       this.up = false; this.g.visible = false; this.downT = 25;
-      feed(`${this.T.name} 쓰러짐 · 25초 뒤 복귀`, '#ff9f7a');
+      feed(L('allyDown', { n: this.T.name }), '#ff9f7a');
     }
   }
   update(dt) {
     if (this.mT > 0 && (this.mT -= dt) <= 0) this.muzzle.visible = false;
     if (this.flashT > 0) { this.flashT -= dt; this.hood.emissive.setHex(this.flashT > 0 ? 0x880000 : 0x000000); }
-    if (!this.up) { if ((this.downT -= dt) <= 0 && zone === 'street') { this.spawnNear(); feed(`${this.T.name} 복귀!`, myCrew.color); } return; }
+    if (!this.up) { if ((this.downT -= dt) <= 0 && zone === 'street') { this.spawnNear(); feed(L('allyBack', { n: this.T.name }), myCrew.color); } return; }
     if (zone !== 'street') { this.g.visible = false; return; }
     if (!this.g.visible) this.spawnNear();
     const p = this.g.position;
@@ -1854,8 +2048,8 @@ for (const d of DISTRICTS) {
   for (let k = 0; k < 4; k++) prop(fruitGeo, [0xff8c1a, 0xe63b2e, 0xf2d03b][k % 3], x + 1.05 + k * 0.17, 1.05, z - 0.1 + (k % 2) * 0.13);
   signBoard('BODEGA 24H', '#1e8449', '#fff', x, 4.3, z - 1.2, 0);
   addNPC(x, z, { hood: 0xf2f2f2, cap: 0x1e8449, jeans: 0x333333, apron: 0x1e8449 },
-    () => d.owner === 'me' ? '보데가 사장님 · 가게 열기' : '보데가 사장님 · 말 걸기',
-    () => d.owner === 'me' ? openShop(d) : talk('보데가 사장님', `여긴 지금 ${CREWS[d.owner].name} 구역이라 장사를 못 해… 구역을 되찾아 주면 문 열게!`));
+    () => L(d.owner === 'me' ? 'bodegaShop' : 'bodegaTalk'),
+    () => d.owner === 'me' ? openShop(d) : talk(L('bodegaWho'), L('bodegaClosed', { c: CREWS[d.owner].name })));
 }
 // pizza shop in the home district
 {
@@ -1864,8 +2058,8 @@ for (const d of DISTRICTS) {
   prop(box1, 0xe9d4b0, x + 1.4, 1.29, z - 0.2, 0.5, 0.08, 0.5);
   signBoard('🍕 BROOKLYN SLICE', '#b3221b', '#fff', x, 4.3, z - 1.2, 0, 3.8);
   addNPC(x, z, { hood: 0xffffff, cap: 0xffffff, jeans: 0x2b2b2b, apron: 0xb3221b },
-    () => delivery ? '피자집 사장님 · 배달 중!' : '피자집 사장님 · 🍕 배달 받기',
-    () => delivery ? talk('피자집 사장님', '뭐 해! 피자 식는다, 얼른 가!') : startDelivery());
+    () => L(delivery ? 'pizzaBusy' : 'pizzaTake'),
+    () => delivery ? talk(L('pizzaWho'), L('pizzaHurry')) : startDelivery());
 }
 
 // ---------- pizza delivery ----------
@@ -1887,7 +2081,7 @@ const heldPizza = new THREE.Group();
 }
 const nearestIdx = v => NODES.reduce((b, n, i) => Math.abs(n - v) < Math.abs(NODES[b] - v) ? i : b, 0);
 function startDelivery() {
-  if (nextJobT > t) { talk('피자집 사장님', '오븐에서 굽는 중이야! 잠깐만 기다려.'); return; }
+  if (nextJobT > t) { talk(L('pizzaWho'), L('pizzaOven')); return; }
   const blocks = blockInfo.filter(b => !['park', 'court', 'ring'].includes(b.dist));
   let pick = null;
   for (let k = 0; k < 60 && !pick; k++) {
@@ -1903,17 +2097,17 @@ function startDelivery() {
   delivery = { x: pick.x, z: pick.z, start: pick.d, timer: total, addr, district: districtAt(pick.x, pick.z).name, ambushed: false };
   beam.position.set(pick.x, 30, pick.z); ring.position.set(pick.x, 0.3, pick.z);
   beam.visible = ring.visible = true; heldPizza.visible = true;
-  talk('피자집 사장님', `${addr} (${delivery.district})로 라지 피자 하나! ${total}초 안에 가면 팁 두둑이 준대!`);
-  msg('🍕 배달 시작!', 1.8);
+  talk(L('pizzaWho'), L('pizzaJob', { a: addr, d: delivery.district, s: total }));
+  msg(L('deliverStart'), 1.8);
 }
 function endDelivery(ok) {
   if (ok) {
     const tip = Math.floor(delivery.timer), r = 40 + tip;
     rep += r; score += 200; deliveries++;
-    msg('🍕 배달 완료!', 2); feed(`배달 완료 · 평판 +${r} (팁 ${tip})`, '#ffa630');
+    msg(L('deliverDone'), 2); feed(L('deliverReward', { r, tip }), '#ffa630');
     beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(990, 0.2, 0.1, 'triangle'), 120);
   } else {
-    msg('피자가 식었다…', 2); feed('배달 실패 · 다시 받으러 가자', '#ff9f7a');
+    msg(L('pizzaCold'), 2); feed(L('deliverFail'), '#ff9f7a');
   }
   delivery = null; nextJobT = t + 5;
   beam.visible = ring.visible = false; heldPizza.visible = false;
@@ -1938,15 +2132,15 @@ function updateDelivery(dt) {
         const n = near.splice(Math.floor(Math.random() * near.length), 1)[0];
         const e = new Enemy(n.x + rand(-2, 2), n.z + rand(-2, 2), crew, districtAt(n.x, n.z)); e.hunter = true; enemies.push(e);
       }
-      rebuildParts(); feed(`🍕 ${CREWS[crew].name}가 피자를 노린다!`, CREWS[crew].css);
+      rebuildParts(); feed(L('ambush', { c: CREWS[crew].name }), CREWS[crew].css);
     }
   }
   nav.classList.remove('hidden');
-  if (zone !== 'street') { nav.innerHTML = `🍕 지하철 밖으로! · ${Math.ceil(delivery.timer)}초`; return; }
+  if (zone !== 'street') { nav.innerHTML = L('navSubway', { s: Math.ceil(delivery.timer) }); return; }
   const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw)), r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
   const v = new THREE.Vector3(delivery.x - player.pos.x, 0, delivery.z - player.pos.z);
   const ang = Math.atan2(v.dot(r), v.dot(f));
-  nav.innerHTML = `<span class="arw" style="transform:rotate(${ang}rad)">▲</span> 🍕 ${delivery.addr} · ${Math.round(d)}m · <b style="color:${delivery.timer < 10 ? '#ff5a4a' : '#fff'}">${Math.ceil(delivery.timer)}초</b>`;
+  nav.innerHTML = `<span class="arw" style="transform:rotate(${ang}rad)">▲</span> 🍕 ${delivery.addr} · ${Math.round(d)}m · <b style="color:${delivery.timer < 10 ? '#ff5a4a' : '#fff'}">${L('secs', { s: Math.ceil(delivery.timer) })}</b>`;
 }
 
 // ---------- bosses: "Bridge Showdown" ----------
@@ -1962,13 +2156,13 @@ bossBeam.visible = false; scene.add(bossBeam);
 const gold = std(0xd4af37, { metalness: 0.9, roughness: 0.3 });
 
 class Boss extends Enemy {
+  get name() { return L('bossName', { c: CREWS[this.crew].name }); }
   constructor(x, z, crew) {
     super(x, z, crew, districtAt(x, z));
     this.boss = true; this.hunter = true;
     this.g.scale.setScalar(1.55);
     this.maxHp = this.hp = BOSS_HP[crew];
     this.speed = 3.8; this.pref = 16;
-    this.name = `${CREWS[crew].name} 보스`;
     const chain = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 6, 18), gold); chain.position.set(0, 1.4, 0.17); this.g.add(chain);
     const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.19, 0.12, 6), gold); crown.position.set(0, 2.0, 0); this.g.add(crown);
     this.mode = 'normal'; this.chargeT = rand(5, 7); this.windT = 0; this.dashT = 0; this.dir = new THREE.Vector2();
@@ -1986,7 +2180,7 @@ class Boss extends Enemy {
     if (!this.dead && this.summoned < 2 && frac < [0.66, 0.33][this.summoned]) { this.summoned++; this.summon(); }
   }
   summon() {
-    msg('부하를 불렀다!', 1.6); feed(`${this.name}: "얘들아, 나와!"`, this.C.css);
+    msg(L('bossCall'), 1.6); feed(L('bossShout', { n: this.name }), this.C.css);
     for (let k = 0; k < 3; k++) {
       const a = Math.random() * Math.PI * 2, x = this.g.position.x + Math.cos(a) * 8, z = Math.max(-193, this.g.position.z + Math.sin(a) * 8);
       const m = new Enemy(x, z, this.crew, this.home); m.hunter = true; m.bossMinion = true; enemies.push(m);
@@ -1997,8 +2191,8 @@ class Boss extends Enemy {
     super.die(head, byUs);
     bossDone[this.crew] = true;
     rep += 300; score += 2000;
-    msg(`👑 ${CREWS[this.crew].name} 해체!`, 3);
-    feed(`${this.name} 격파 · 평판 +300`, '#d4af37');
+    msg(L('crewDisband', { c: CREWS[this.crew].name }), 3);
+    feed(L('bossBeat', { n: this.name }), '#d4af37');
     for (let k = 0; k < 4; k++) spawnPickup({ x: this.g.position.x + rand(-2, 2), z: this.g.position.z + rand(-2, 2) }, k % 2 ? 'hp' : 'ammo');
     beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(659, 0.15, 0.1, 'triangle'), 150); setTimeout(() => beep(784, 0.4, 0.1, 'triangle'), 300);
   }
@@ -2026,7 +2220,7 @@ class Boss extends Enemy {
     }
     if ((this.chargeT -= dt) <= 0 && this.los && this.foe && !this.foe.ally && !this.foe.enemy && dist > 6 && dist < 45) {
       this.mode = 'wind'; this.windT = 0.8;
-      feed('⚠ 보스가 돌진한다! 옆으로 피해!', '#ff6b5a'); beep(220, 0.5, 0.15, 'sawtooth');
+      feed(L('bossCharge'), '#ff6b5a'); beep(220, 0.5, 0.15, 'sawtooth');
       return false;
     }
     if (this.burst > 0 && this.los && this.foe && (this.burstT -= dt) <= 0) {
@@ -2039,13 +2233,13 @@ class Boss extends Enemy {
 function checkBossTrigger() {
   for (const c of RIVALS) if (!bossDone[c] && !bossQueue.includes(c) && !(boss && boss.crew === c) && DISTRICTS.every(d => d.owner !== c)) {
     bossQueue.push(c);
-    feed(`${CREWS[c].name}의 마지막 구역이 무너졌다…`, CREWS[c].css);
+    feed(L('lastFell', { c: CREWS[c].name }), CREWS[c].css);
   }
 }
 function checkVictory() {
   if (ownedCount() !== 9) return;
   if (RIVALS.every(c => bossDone[c])) setTimeout(() => gameOver(true), 1800);
-  else { if (!boss && !bossQueue.length) checkBossTrigger(); feed('9구역 점령! 남은 보스를 쓰러뜨리면 브루클린 통일', '#d4af37'); }
+  else { if (!boss && !bossQueue.length) checkBossTrigger(); feed(L('allNineBoss'), '#d4af37'); }
 }
 function updateBoss(dt) {
   const bar = document.getElementById('bossbar');
@@ -2053,8 +2247,8 @@ function updateBoss(dt) {
     const c = bossQueue.shift();
     boss = new Boss(BOSS_SPOT.x + rand(-6, 6), BOSS_SPOT.z, c);
     enemies.push(boss); rebuildParts();
-    msg(`👑 ${boss.name} 등장!`, 2.6);
-    feed('브루클린 브리지 아래 강변으로 가라! (미니맵 B)', '#d4af37');
+    msg(L('bossAppear', { n: boss.name }), 2.6);
+    feed(L('bossGo'), '#d4af37');
     beep(196, 0.4, 0.12, 'sawtooth'); setTimeout(() => beep(147, 0.6, 0.12, 'sawtooth'), 300);
   }
   if (boss && (boss.dead || !enemies.includes(boss))) {
@@ -2077,8 +2271,8 @@ function updateBoss(dt) {
 function renderMetro() {
   document.getElementById('stations').innerHTML = ENTRANCES.map(e => {
     const d = DISTRICTS[e.i], here = e === curStation, mine = d.owner === 'me';
-    const btn = here ? '<div class="btn off">현재 역</div>'
-      : mine ? `<div class="btn" data-go="${e.i}">이동</div>`
+    const btn = here ? `<div class="btn off">${L('curStation')}</div>`
+      : mine ? `<div class="btn" data-go="${e.i}">${L('goStation')}</div>`
       : `<div class="btn off">🔒 ${CREWS[d.owner].name}</div>`;
     return `<div class="stn" style="border-color:${ownerCss(d.owner)}"><b>${e.station}</b><span>${d.name}</span>${btn}</div>`;
   }).join('');
@@ -2108,11 +2302,11 @@ document.getElementById('stations').addEventListener('click', e => {
   const i = e.target.dataset?.go; if (i === undefined) return;
   const dest = ENTRANCES[+i];
   closeMetro();
-  rumble(); msg(`🚇 다음 역: ${dest.station}`, 1.6);
+  rumble(); msg(L('nextStop', { s: dest.station }), 1.6);
   fadeThen(() => {
     curStation = dest; setStationName(dest.station);
     placePlayer(-24.6, SY, ZC, -Math.PI / 2);
-    feed(`${dest.station} 도착 · ${DISTRICTS[dest.i].name}`, '#cfd2d6');
+    feed(L('arrived', { s: dest.station, d: DISTRICTS[dest.i].name }), '#cfd2d6');
   });
 });
 document.getElementById('metroClose').addEventListener('click', () => closeMetro());
@@ -2126,7 +2320,7 @@ function talk(who, line) {
 }
 let nearNPC = null;
 // the subway map board on the platform works like an NPC you can use
-npcs.push({ zone: 'subway', pos: { x: -20.5, z: ZC - 3.6 }, label: () => '🗺️ 노선도 · 열차 타기', use: () => openMetro() });
+npcs.push({ zone: 'subway', pos: { x: -20.5, z: ZC - 3.6 }, label: () => L('mapLabel'), use: () => openMetro() });
 function updateNPCs(dt) {
   nearNPC = null; let bd = 2.6;
   for (const n of npcs) {
@@ -2146,15 +2340,15 @@ function useNPC() { if (state === 'play' && nearNPC) nearNPC.use(); }
 
 // ---------- bodega shop ----------
 const SHOP = [
-  { k: 'hp', icon: '🥪', name: '샌드위치 (체력 +50)', cost: 40, ok: () => player.hp < player.maxHp, buy: () => { player.hp = Math.min(player.maxHp, player.hp + 50); } },
-  { k: 'ammo', icon: '📦', name: '탄약 상자 (+60발)', cost: 30, ok: () => true, buy: () => { reserve += 60; } },
-  { k: 'armor', icon: '🦺', name: '방탄조끼 (피해 60% 흡수, 50)', cost: 80, ok: () => player.armor < 50, buy: () => { player.armor = 50; } },
+  { k: 'hp', icon: '🥪', get name() { return L('item_hp'); }, cost: 40, ok: () => player.hp < player.maxHp, buy: () => { player.hp = Math.min(player.maxHp, player.hp + 50); } },
+  { k: 'ammo', icon: '📦', get name() { return L('item_ammo'); }, cost: 30, ok: () => true, buy: () => { reserve += 60; } },
+  { k: 'armor', icon: '🦺', get name() { return L('item_armor'); }, cost: 80, ok: () => player.armor < 50, buy: () => { player.armor = 50; } },
 ];
 function renderShop() {
   document.getElementById('items').innerHTML = SHOP.map(it => {
     const can = rep >= it.cost && it.ok();
-    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>평판 ${it.cost}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${!it.ok() ? '가득 참' : rep < it.cost ? '평판 부족' : '구매'}</div></div>`;
-  }).join('') + `<div style="text-align:right;font-weight:800;margin:4px 2px 8px">내 평판 <span style="color:var(--yellow)">${rep}</span></div>`;
+    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>${L('repCost', { c: it.cost })}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${L(!it.ok() ? 'full' : rep < it.cost ? 'noRep' : 'buy')}</div></div>`;
+  }).join('') + `<div style="text-align:right;font-weight:800;margin:4px 2px 8px">${L('myRep')} <span style="color:var(--yellow)">${rep}</span></div>`;
 }
 function openShop(d) {
   if (state !== 'play') return;
@@ -2162,7 +2356,7 @@ function openShop(d) {
   for (const k in keys) keys[k] = false;
   joy.x = joy.y = 0; joy.id = look.id = fireId = null;
   document.exitPointerLock?.();
-  document.getElementById('shopSay').textContent = `사장님: ${d.name} 지켜 줘서 고마워! 뭐 필요해?`;
+  document.getElementById('shopSay').textContent = L('shopThanks', { d: d.name });
   renderShop(); document.getElementById('shop').classList.remove('hidden');
 }
 function closeShop() {
@@ -2175,7 +2369,7 @@ document.getElementById('items').addEventListener('click', e => {
   const it = SHOP.find(s => s.k === e.target.dataset?.buy);
   if (!it || rep < it.cost || !it.ok()) return;
   rep -= it.cost; it.buy();
-  beep(880, 0.08, 0.1, 'triangle'); feed(`${it.icon} 구매 · 평판 -${it.cost}`, '#3ddc84');
+  beep(880, 0.08, 0.1, 'triangle'); feed(L('bought', { i: it.icon, c: it.cost }), '#3ddc84');
   renderShop();
 });
 document.getElementById('prompt').addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useNPC(); }, { passive: false });
@@ -2203,22 +2397,22 @@ function clearEnemies() {
 function startWar(d, kind, crew) {
   war = { d, kind, crew, timer: kind === 'defend' ? 60 : 0 };
   toSpawn = Math.min(12, 4 + captured * 2) - (kind === 'defend' ? 1 : 0); spawnT = 0;
-  if (kind === 'attack') { msg('영역 전쟁!', 2.2); feed(`${d.name} · ${CREWS[crew].name}의 구역`, CREWS[crew].css); }
-  else { msg('방어전!', 2.2); feed(`${CREWS[crew].name}가 ${d.name}을(를) 되찾으러 왔다! 60초`, CREWS[crew].css); }
+  if (kind === 'attack') { msg(L('warStart'), 2.2); feed(L('warTurf', { d: d.name, c: CREWS[crew].name }), CREWS[crew].css); }
+  else { msg(L('defend'), 2.2); feed(L('defendMsg', { c: CREWS[crew].name, d: d.name }), CREWS[crew].css); }
   beep(440, 0.15, 0.1, 'sawtooth'); setTimeout(() => beep(660, 0.25, 0.1, 'sawtooth'), 160);
 }
 function endWar(won) {
   const { d, kind, crew } = war;
   if (kind === 'attack' && won) {
     d.owner = 'me'; captured++; wave = 1 + captured; rep += 100;
-    msg(`${d.name} 점령!`, 2.5); feed('구역 점령 · 평판 +100', myCrew.color);
+    msg(L('captured', { d: d.name }), 2.5); feed(L('captureRep'), myCrew.color);
     beep(660, 0.15, 0.1, 'triangle'); setTimeout(() => beep(990, 0.3, 0.1, 'triangle'), 150);
-    if (captured === DOOR_CAPS) { feed('공원 지하철역에서 이상한 빛이 새어 나온다…', '#ff7ad9'); beep(1320, 0.5, 0.08, 'sine'); }
+    if (captured === DOOR_CAPS) { feed(L('doorHint'), '#ff7ad9'); beep(1320, 0.5, 0.08, 'sine'); }
   } else if (kind === 'defend' && won) {
-    rep += 50; msg('방어 성공!', 2); feed(`${d.name} 지켜냄 · 평판 +50`, myCrew.color);
+    rep += 50; msg(L('defendOk'), 2); feed(L('defendOkRep', { d: d.name }), myCrew.color);
   } else if (kind === 'defend') {
     d.owner = crew; captured = Math.max(0, captured - 1); wave = 1 + captured;
-    msg(`${d.name}을(를) 빼앗겼다`, 2.5); feed(`${CREWS[crew].name}에게 구역을 잃었다`, CREWS[crew].css);
+    msg(L('lost', { d: d.name }), 2.5); feed(L('lostTo', { c: CREWS[crew].name }), CREWS[crew].css);
     clearEnemies();
   }
   war = null; counterT = rand(70, 100);
@@ -2287,7 +2481,7 @@ class PoliceCar {
       const x = p.x + Math.cos(a) * 2.4 * s, z = p.z - Math.sin(a) * 2.4 * s;
       enemies.push(new Enemy(x, z, 'police', districtAt(x, z)));
     }
-    rebuildParts(); feed('🚓 경찰 도착!', CREWS.police.css);
+    rebuildParts(); feed(L('policeArrive'), CREWS.police.css);
   }
   update(dt) {
     const on = Math.sin(t * 14) > 0;
@@ -2341,8 +2535,8 @@ function updatePolice(dt) {
   // heat cools off once you stop shooting and no officer can see you
   if (t - lastShotT > 3 && !seen) heat = Math.max(0, heat - 5 * dt);
   const stars = starsOf(heat);
-  if (stars > lastStars) { msg('★'.repeat(stars) + ' 수배!', 1.8); beep(1200, 0.12, 0.08, 'square'); setTimeout(() => beep(900, 0.12, 0.08, 'square'), 140); }
-  else if (stars === 0 && lastStars > 0) { feed('수배 해제 · 경찰이 철수했다', '#9ae6ff'); clearPolice(); }
+  if (stars > lastStars) { msg('★'.repeat(stars) + L('wanted'), 1.8); beep(1200, 0.12, 0.08, 'square'); setTimeout(() => beep(900, 0.12, 0.08, 'square'), 140); }
+  else if (stars === 0 && lastStars > 0) { feed(L('wantedClear'), '#9ae6ff'); clearPolice(); }
   lastStars = stars;
   if (stars > 0 && (policeT -= dt) <= 0 && cops.length + policeCars.filter(c => !c.parked).length * 2 < stars * 2) { spawnPoliceCar(); policeT = 9; }
   for (let i = policeCars.length - 1; i >= 0; i--) {
@@ -2383,10 +2577,10 @@ function gameOver(won = false) {
   if (!won) player.hp = 0;
   state = 'dead'; firing = false;
   document.exitPointerLock?.();
-  $('sub').textContent = won ? `🏆 브루클린 통일! — ${myCrew.name}` : '사망했습니다';
+  $('sub').textContent = won ? L('won', { c: myCrew.name }) : L('died');
   const st = $('stat'); st.classList.remove('hidden');
-  st.innerHTML = `내 구역 ${ownedCount()}/9 · 처치 ${kills} · 평판 ${rep} · 점수 ${score}`;
-  $('keys').classList.add('hidden'); $('go').textContent = '다시 시작';
+  st.innerHTML = L('endStat', { o: ownedCount(), k: kills, r: rep, s: score });
+  $('keys').classList.add('hidden'); $('go').textContent = L('restart');
   setTimeout(() => $('menu').classList.remove('hidden'), 900);
 }
 
@@ -2534,17 +2728,17 @@ function updateSubway(dt) {
     fadeThen(() => {
       zone = 'subway'; curStation = down; setStationName(down.station);
       placePlayer(-25.4, SY, ZC, -Math.PI / 2);
-      if (heat >= STAR_AT[0]) feed('지하철로 경찰을 따돌렸다!', '#9ae6ff');
+      if (heat >= STAR_AT[0]) feed(L('subwayEscape'), '#9ae6ff');
       heat = 0; lastStars = 0; clearPolice();
       msg(down.station.toUpperCase(), 2);
-      feed('🗺️ 벽의 노선도에서 열차를 탈 수 있어요', '#cfd2d6');
-      if (!open) feed(`지하철역은 안전해요 · 구역 ${DOOR_CAPS}곳을 점령하면 무언가 열린다는 소문이…`, '#c08bff');
+      feed(L('mapTip'), '#cfd2d6');
+      if (!open) feed(L('safeRumor', { n: DOOR_CAPS }), '#c08bff');
     });
   } else if (zone === 'subway' && p.x < -26.2) {
     fadeThen(() => { zone = 'street'; placePlayer(curStation.x, 0.25, curStation.z - 3.4, 0); });
   } else if (zone === 'subway' && p.x > 28.4 && Math.abs(p.z - ZC) < 1.3) {
     if (open) enterPortal();
-    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(`단단히 잠겨 있다… 구역 ${DOOR_CAPS}곳 점령 필요`, '#ff7ad9'); }
+    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(L('locked', { n: DOOR_CAPS }), '#ff7ad9'); }
   }
 }
 function enterPortal() {
@@ -2561,10 +2755,10 @@ function renderCrew() {
   $('swatches').innerHTML = MY_COLORS.map(c => `<div class="sw${c === myCrew.color ? ' on' : ''}" data-c="${c}" style="background:${c}"></div>`).join('');
   $('cards').innerHTML = Object.entries(ALLY_TYPES).map(([k, T]) => {
     const a = allies.find(x => x.key === k);
-    const btn = a ? `<div class="btn off">${a.up ? '함께하는 중' : `회복 중 ${Math.ceil(a.downT)}초`}</div>`
-      : rep >= T.cost ? `<div class="btn" data-recruit="${k}">영입 · 평판 ${T.cost}</div>`
-      : `<div class="btn off">평판 ${T.cost} 필요</div>`;
-    return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">체력 ${T.hp}</span>${btn}</div>`;
+    const btn = a ? `<div class="btn off">${a.up ? L('withYou') : L('healing', { s: Math.ceil(a.downT) })}</div>`
+      : rep >= T.cost ? `<div class="btn" data-recruit="${k}">${L('recruit', { c: T.cost })}</div>`
+      : `<div class="btn off">${L('needRep', { c: T.cost })}</div>`;
+    return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">${L('hpLabel', { h: T.hp })}</span>${btn}</div>`;
   }).join('');
   $('terr').innerHTML = DISTRICTS.map(d => `<div style="background:${ownerCss(d.owner)}">${d.name}<br><span style="font-weight:600">${ownerName(d.owner)}</span></div>`).join('');
 }
@@ -2593,7 +2787,7 @@ $('cards').addEventListener('click', e => {
   const k = e.target.dataset?.recruit; if (!k || allies.some(a => a.key === k)) return;
   const T = ALLY_TYPES[k]; if (rep < T.cost) return;
   rep -= T.cost; allies.push(new Ally(k));
-  feed(`${T.name} 영입!`, myCrew.color); beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(880, 0.15, 0.1, 'triangle'), 120);
+  feed(L('recruited', { n: T.name }), myCrew.color); beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(880, 0.15, 0.1, 'triangle'), 120);
   renderCrew();
 });
 
@@ -2670,7 +2864,7 @@ function update(dt) {
     const pk = pickups[i]; pk.t += dt;
     pk.m.rotation.y += dt * 2; pk.m.position.y = groundAt(pk.m.position.x, pk.m.position.z) + 0.5 + Math.sin(pk.t * 3) * 0.1;
     if (Math.hypot(pk.m.position.x - player.pos.x, pk.m.position.z - player.pos.z) < 1.6) {
-      if (pk.type === 'ammo') { reserve += 45; feed('+45 탄약', '#f2b705'); } else { player.hp = Math.min(player.maxHp, player.hp + 35); feed('+35 체력', '#3ddc84'); }
+      if (pk.type === 'ammo') { reserve += 45; feed(L('pickAmmo'), '#f2b705'); } else { player.hp = Math.min(player.maxHp, player.hp + 35); feed(L('pickHp'), '#3ddc84'); }
       beep(880, 0.08, 0.1, 'triangle'); scene.remove(pk.m); pickups.splice(i, 1);
     } else if (pk.t > 40) { scene.remove(pk.m); pickups.splice(i, 1); }
   }
@@ -2704,10 +2898,10 @@ function update(dt) {
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
   $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
-  $('score').textContent = `평판 ${rep} · 점수 ${score}`;
+  $('score').textContent = L('scoreHud', { r: rep, s: score });
   $('left').textContent = war
-    ? (war.kind === 'attack' ? `⚔ 영역 전쟁 · 남은 적 ${alive + toSpawn}` : `🛡 ${war.d.name} 방어 ${Math.ceil(war.timer)}초 · 남은 적 ${alive + toSpawn}`)
-    : `${here ? ownerName(here.owner) + ' 구역 · ' : ''}내 구역 ${ownedCount()}/9`;
+    ? (war.kind === 'attack' ? L('warHud', { n: alive + toSpawn }) : L('defendHud', { d: war.d.name, s: Math.ceil(war.timer), n: alive + toSpawn }))
+    : `${here ? L('turfHud', { c: ownerName(here.owner) }) : ''}${L('ownedHud', { o: ownedCount() })}`;
   $('cross').classList.toggle('ads', aiming);
   const stars = starsOf(heat);
   $('wanted').innerHTML = stars ? '★'.repeat(stars) + `<span class="off">${'★'.repeat(3 - stars)}</span>` : '';
@@ -2716,13 +2910,126 @@ function update(dt) {
   drawMap();
 }
 
+// ---------- switching language ----------
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = L(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = L(el.dataset.i18nPh); });
+  document.querySelectorAll('#langs [data-lang]').forEach(el => el.classList.toggle('on', el.dataset.lang === lang));
+  $('keys').innerHTML = L(TOUCH ? 'keysTouch' : 'keysDesktop');
+  if (state === 'menu') { $('sub').textContent = L('subtitle'); $('go').textContent = L(TOUCH ? 'tapStart' : 'clickStart'); }
+  else if (state === 'pause') { $('sub').textContent = L('paused'); $('go').textContent = L(TOUCH ? 'resumeTap' : 'resumeClick'); }
+  // the default crew name follows the language until you pick your own
+  if (STR.crew_me.includes(myCrew.name)) myCrew.name = L('crew_me');
+  renderChars();
+  if (state === 'crew') renderCrew();
+  if (state === 'shop') renderShop();
+  if (state === 'metro') renderMetro();
+}
+$('langs').addEventListener('click', e => {
+  e.stopPropagation();
+  const l = e.target.dataset?.lang; if (!l || l === lang) return;
+  lang = l;
+  try { localStorage.setItem('bk-lang', l); } catch {}
+  applyLang();
+});
+applyLang();
+
+// ---------- 3D character select (intro screen) ----------
+const stage = (() => {
+  const wrap = document.getElementById('stage');
+  const r = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping;
+  wrap.appendChild(r.domElement);
+  const sc = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(30, 2, 0.1, 60);
+  sc.add(new THREE.HemisphereLight(0xffffff, 0x443322, 1.5));
+  const keyL = new THREE.DirectionalLight(0xffe0c0, 2.6); keyL.position.set(2, 4, 6); sc.add(keyL);
+  const rimL = new THREE.DirectionalLight(0x88aaff, 1.8); rimL.position.set(-3, 3, -4); sc.add(rimL);
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(3.6, 40).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1a1612, transparent: true, opacity: 0.55 }));
+  sc.add(floor);
+  const LOOK = {
+    runner: { hood: 0xff7a1a, cap: 0xffffff, jeans: 0x3a3f47 },
+    tank: { hood: 0x4b5a3a, cap: 0x2f3a28, jeans: 0x2b2b2b },
+    sniper: { hood: 0x1c1f26, cap: 0x111111, jeans: 0x1c1f26 },
+  };
+  const X = { runner: -1.6, tank: 0, sniper: 1.6 };
+  const figs = {}, hits = [];
+  const extra = (o, geo, color, x, y, z, opts = {}) => {
+    const m = new THREE.Mesh(geo, std(color, opts)); m.position.set(x, y, z); o.g.add(m); o.parts.push(m); return m;
+  };
+  for (const k of Object.keys(CLASSES)) {
+    const o = {};
+    buildHuman(o, 0, 0, LOOK[k], false);
+    sc.add(o.g); o.g.position.set(X[k], 0, 0);
+    if (k === 'runner') {   // headband and sneakers
+      extra(o, new THREE.BoxGeometry(0.32, 0.06, 0.32), 0xe63b2e, 0, 1.8, 0);
+      for (const s of [-1, 1]) extra(o, new THREE.BoxGeometry(0.24, 0.1, 0.32), 0xffffff, s * 0.14, 0.05, 0.03);
+    }
+    if (k === 'tank') {     // bulkier, plate vest and helmet
+      o.g.scale.set(1.18, 1.06, 1.18);
+      extra(o, new THREE.BoxGeometry(0.62, 0.55, 0.38), 0x5d6168, 0, 1.24, 0, { metalness: 0.4, roughness: 0.6 });
+      extra(o, new THREE.BoxGeometry(0.38, 0.16, 0.4), 0x3c4433, 0, 1.95, 0);
+    }
+    if (k === 'sniper') {   // long rifle with a scope
+      extra(o, new THREE.BoxGeometry(0.06, 0.09, 0.75), 0x151515, 0.2, 1.46, 0.95, { metalness: 0.5 });
+      extra(o, new THREE.CylinderGeometry(0.035, 0.035, 0.3, 10).rotateX(Math.PI / 2), 0x222222, 0.2, 1.56, 0.55, { metalness: 0.7 });
+    }
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.66, 40).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: 0xf2b705, transparent: true, opacity: 0.25 }));
+    ring.position.set(X[k], 0.02, 0); sc.add(ring);
+    o.parts.forEach(m => { m.userData.ch = k; hits.push(m); });
+    figs[k] = { o, ring };
+  }
+  const rc = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  r.domElement.addEventListener('click', e => {
+    e.stopPropagation();
+    const b = r.domElement.getBoundingClientRect();
+    ndc.set((e.clientX - b.left) / b.width * 2 - 1, -((e.clientY - b.top) / b.height) * 2 + 1);
+    rc.setFromCamera(ndc, cam);
+    const h = rc.intersectObjects(hits, false)[0];
+    if (h) pickClass(h.object.userData.ch);
+    else {   // tapped beside a figure: pick the closest one horizontally
+      const k = Object.keys(X).reduce((a, c) => Math.abs(ndc.x * 2.4 - X[c]) < Math.abs(ndc.x * 2.4 - X[a]) ? c : a);
+      pickClass(k);
+    }
+  });
+  function fit() {
+    const w = wrap.clientWidth || 1, h = wrap.clientHeight || 1;
+    r.setSize(w, h, false);
+    cam.aspect = w / h;
+    const dist = Math.max(4.4, 2.45 / (Math.tan(THREE.MathUtils.degToRad(15)) * cam.aspect));   // keep all three in frame
+    cam.position.set(0, 1.25, dist); cam.lookAt(0, 0.98, 0); cam.updateProjectionMatrix();
+  }
+  let tt = 0;
+  function render(dt) {
+    if (wrap.classList.contains('hidden') || !wrap.clientWidth) return;
+    tt += dt;
+    for (const [k, f] of Object.entries(figs)) {
+      const on = k === clsKey, g = f.o.g;
+      if (on) g.rotation.y += dt * 1.1;
+      else g.rotation.y += Math.atan2(Math.sin(-g.rotation.y), Math.cos(-g.rotation.y)) * Math.min(1, dt * 5);
+      g.position.y = on ? 0.06 + Math.sin(tt * 3) * 0.04 : 0;
+      f.ring.material.opacity = on ? 0.85 + Math.sin(tt * 4) * 0.15 : 0.18;
+      f.ring.scale.setScalar(on ? 1.1 : 1);
+      const sw = on ? Math.sin(tt * 6) * 0.25 : 0;   // a little step-in-place on the chosen one
+      f.o.lL.rotation.x = sw; f.o.lR.rotation.x = -sw;
+    }
+    r.render(sc, cam);
+  }
+  addEventListener('resize', fit);
+  fit();
+  return { render, fit };
+})();
+
 let last = performance.now();
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (state !== 'play') setSiren(0);
   if (state === 'play') update(dt);
-  else if (state === 'menu') { t += dt; yaw += dt * 0.05; camera.position.set(player.pos.x, 1.7, player.pos.z); camera.rotation.set(0.05, yaw, 0); }
+  else if (state === 'menu') { t += dt; yaw += dt * 0.05; camera.position.set(player.pos.x, 1.7, player.pos.z); camera.rotation.set(0.05, yaw, 0); stage.render(dt); }
   updateFx(dt);
   sky.position.copy(camera.position);
   renderer.clear();
