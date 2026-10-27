@@ -127,6 +127,11 @@
   #nav { position:absolute; left:50%; top:16px; transform:translateX(-50%); padding:7px 14px; border-radius:18px; background:rgba(0,0,0,.6); font:800 14px system-ui,sans-serif; white-space:nowrap; border:2px solid #ffa630; }
   #nav .arw { display:inline-block; color:#ffa630; font-size:16px; }
   body.touch #nav { top:62px; font-size:12px; }
+  #bossbar { position:absolute; left:50%; top:58px; transform:translateX(-50%); width:min(440px,64vw); text-align:center; text-shadow:0 2px 4px #000; }
+  #bossname { font-size:16px; letter-spacing:2px; margin-bottom:4px; }
+  #bossbar .bb { height:12px; background:rgba(0,0,0,.6); border:2px solid #d4af37; border-radius:4px; overflow:hidden; }
+  #bossfill { height:100%; width:100%; background:linear-gradient(90deg,#b3221b,#ff6b3d); transition:width .15s; }
+  body.touch #bossbar { top:96px; }
   #shop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
   #shop .cbox { width:min(460px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
   #shop h3 { margin:0 0 4px; font:900 22px "Arial Black",Impact,sans-serif; color:#3ddc84; }
@@ -179,6 +184,7 @@
   <div id="prompt" class="hidden"></div>
   <div id="talk"></div>
   <div id="nav" class="hidden"></div>
+  <div id="bossbar" class="hidden"><div id="bossname"></div><div class="bb"><div id="bossfill"></div></div></div>
   <div id="ammo"><span id="mag">30</span><span id="res">/ 120</span><div id="rl"></div></div>
   <div id="msg"></div>
   <div id="touch">
@@ -1812,6 +1818,130 @@ function updateDelivery(dt) {
   nav.innerHTML = `<span class="arw" style="transform:rotate(${ang}rad)">▲</span> 🍕 ${delivery.addr} · ${Math.round(d)}m · <b style="color:${delivery.timer < 10 ? '#ff5a4a' : '#fff'}">${Math.ceil(delivery.timer)}초</b>`;
 }
 
+// ---------- bosses: "Bridge Showdown" ----------
+// when a rival crew loses its last district, its boss waits under the Brooklyn Bridge
+const RIVALS = ['red', 'iron', 'teal'];
+const BOSS_HP = { red: 1100, iron: 1500, teal: 1250 };
+const BOSS_SPOT = { x: -90, z: -188 };
+const bossDone = {}, bossQueue = [];
+let boss = null;
+const bossBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 70, 16, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0xff3b30, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+bossBeam.visible = false; scene.add(bossBeam);
+const gold = std(0xd4af37, { metalness: 0.9, roughness: 0.3 });
+
+class Boss extends Enemy {
+  constructor(x, z, crew) {
+    super(x, z, crew, districtAt(x, z));
+    this.boss = true; this.hunter = true;
+    this.g.scale.setScalar(1.55);
+    this.maxHp = this.hp = BOSS_HP[crew];
+    this.speed = 3.8; this.pref = 16;
+    this.name = `${CREWS[crew].name} 보스`;
+    const chain = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 6, 18), gold); chain.position.set(0, 1.4, 0.17); this.g.add(chain);
+    const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.19, 0.12, 6), gold); crown.position.set(0, 2.0, 0); this.g.add(crown);
+    this.mode = 'normal'; this.chargeT = rand(5, 7); this.windT = 0; this.dashT = 0; this.dir = new THREE.Vector2();
+    this.burst = 0; this.burstT = 0; this.summoned = 0;
+  }
+  shoot(dist) {
+    super.shoot(dist);
+    if (this.burst === 0) { this.burst = 2; this.burstT = 0.13; }   // three-round bursts
+  }
+  damage(dmg, head, byUs = true) {
+    if (this.dead) return;
+    if (head) dmg = Math.min(dmg, 90);
+    super.damage(dmg, head, byUs);
+    const frac = this.hp / this.maxHp;
+    if (!this.dead && this.summoned < 2 && frac < [0.66, 0.33][this.summoned]) { this.summoned++; this.summon(); }
+  }
+  summon() {
+    msg('부하를 불렀다!', 1.6); feed(`${this.name}: "얘들아, 나와!"`, this.C.css);
+    for (let k = 0; k < 3; k++) {
+      const a = Math.random() * Math.PI * 2, x = this.g.position.x + Math.cos(a) * 8, z = Math.max(-193, this.g.position.z + Math.sin(a) * 8);
+      const m = new Enemy(x, z, this.crew, this.home); m.hunter = true; m.bossMinion = true; enemies.push(m);
+    }
+    rebuildParts();
+  }
+  die(head, byUs = true) {
+    super.die(head, byUs);
+    bossDone[this.crew] = true;
+    rep += 300; score += 2000;
+    msg(`👑 ${CREWS[this.crew].name} 해체!`, 3);
+    feed(`${this.name} 격파 · 평판 +300`, '#d4af37');
+    for (let k = 0; k < 4; k++) spawnPickup({ x: this.g.position.x + rand(-2, 2), z: this.g.position.z + rand(-2, 2) }, k % 2 ? 'hp' : 'ammo');
+    beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(659, 0.15, 0.1, 'triangle'), 150); setTimeout(() => beep(784, 0.4, 0.1, 'triangle'), 300);
+  }
+  update(dt) {
+    if (this.dead) return super.update(dt);
+    const p = this.g.position, dx = player.pos.x - p.x, dz = player.pos.z - p.z, dist = Math.hypot(dx, dz);
+    if (this.mode === 'wind') {   // telegraph: flashes white and glares at you
+      this.windT -= dt;
+      this.hood.emissive.setHex(Math.sin(t * 40) > 0 ? 0xffffff : 0x000000);
+      this.g.rotation.y = Math.atan2(dx, dz);
+      if (this.windT <= 0) { this.mode = 'dash'; this.dashT = 1.1; this.dir.set(dx, dz).normalize(); this.hood.emissive.setHex(0); }
+      return false;
+    }
+    if (this.mode === 'dash') {
+      this.dashT -= dt;
+      p.x += this.dir.x * 20 * dt; p.z += this.dir.y * 20 * dt;
+      collide(p, 0.6);
+      animateHuman(this, dt, Math.atan2(this.dir.x, this.dir.y));
+      if (zone === 'street' && Math.hypot(player.pos.x - p.x, player.pos.z - p.z) < 3) {   // big body, wide hit
+        hurtPlayer(28, p); player.vel.x += this.dir.x * 14; player.vel.z += this.dir.y * 14; player.vy = 4; player.onGround = false;
+        this.dashT = 0;
+      }
+      if (this.dashT <= 0) { this.mode = 'normal'; this.chargeT = rand(7, 10); }
+      return false;
+    }
+    if ((this.chargeT -= dt) <= 0 && this.los && this.foe && !this.foe.ally && !this.foe.enemy && dist > 6 && dist < 45) {
+      this.mode = 'wind'; this.windT = 0.8;
+      feed('⚠ 보스가 돌진한다! 옆으로 피해!', '#ff6b5a'); beep(220, 0.5, 0.15, 'sawtooth');
+      return false;
+    }
+    if (this.burst > 0 && this.los && this.foe && (this.burstT -= dt) <= 0) {
+      super.shoot(Math.hypot(this.foe.pos.x - p.x, this.foe.pos.z - p.z)); this.burst--; this.burstT = 0.13;
+    }
+    return super.update(dt);
+  }
+}
+
+function checkBossTrigger() {
+  for (const c of RIVALS) if (!bossDone[c] && !bossQueue.includes(c) && !(boss && boss.crew === c) && DISTRICTS.every(d => d.owner !== c)) {
+    bossQueue.push(c);
+    feed(`${CREWS[c].name}의 마지막 구역이 무너졌다…`, CREWS[c].css);
+  }
+}
+function checkVictory() {
+  if (ownedCount() !== 9) return;
+  if (RIVALS.every(c => bossDone[c])) setTimeout(() => gameOver(true), 1800);
+  else { if (!boss && !bossQueue.length) checkBossTrigger(); feed('9구역 점령! 남은 보스를 쓰러뜨리면 브루클린 통일', '#d4af37'); }
+}
+function updateBoss(dt) {
+  const bar = document.getElementById('bossbar');
+  if (!boss && bossQueue.length && zone === 'street' && !busy) {
+    const c = bossQueue.shift();
+    boss = new Boss(BOSS_SPOT.x + rand(-6, 6), BOSS_SPOT.z, c);
+    enemies.push(boss); rebuildParts();
+    msg(`👑 ${boss.name} 등장!`, 2.6);
+    feed('브루클린 브리지 아래 강변으로 가라! (미니맵 B)', '#d4af37');
+    beep(196, 0.4, 0.12, 'sawtooth'); setTimeout(() => beep(147, 0.6, 0.12, 'sawtooth'), 300);
+  }
+  if (boss && (boss.dead || !enemies.includes(boss))) {
+    if (!boss.dead) bossQueue.unshift(boss.crew);   // removed without a fight: bring it back later
+    boss = null; checkVictory();
+  }
+  bossBeam.visible = !!boss && zone === 'street';
+  if (!boss) { bar.classList.add('hidden'); return; }
+  const p = boss.g.position;
+  bossBeam.position.set(p.x, 35, p.z); bossBeam.material.opacity = 0.22 + Math.sin(t * 5) * 0.1;
+  const near = zone === 'street' && Math.hypot(p.x - player.pos.x, p.z - player.pos.z) < 70;
+  bar.classList.toggle('hidden', !near);
+  if (near) {
+    document.getElementById('bossname').innerHTML = `👑 <span style="color:${boss.C.css}">${boss.name}</span>`;
+    document.getElementById('bossfill').style.width = Math.max(0, boss.hp / boss.maxHp * 100) + '%';
+  }
+}
+
 let talkTimer = 0;
 function talk(who, line) {
   const el = document.getElementById('talk');
@@ -1913,13 +2043,16 @@ function endWar(won) {
     clearEnemies();
   }
   war = null; counterT = rand(70, 100);
-  if (ownedCount() === 9) setTimeout(() => gameOver(true), 1500);
+  checkBossTrigger();
+  checkVictory();
 }
 function updateWar(dt, alive) {
   if (zone !== 'street') return;
   const here = districtAt(player.pos.x, player.pos.z);
-  if (!war && here.owner !== 'me') startWar(here, 'attack', here.owner);
-  if (!war && captured > 0 && (counterT -= dt) <= 0) {
+  // no district war while you're fighting a boss at the bridge
+  const atBoss = boss && Math.hypot(boss.g.position.x - player.pos.x, boss.g.position.z - player.pos.z) < 70;
+  if (!war && !atBoss && here.owner !== 'me') startWar(here, 'attack', here.owner);
+  if (!war && !boss && captured > 0 && (counterT -= dt) <= 0) {
     const targets = DISTRICTS.filter(d => d.owner === 'me' && !d.home && d !== here && neighbours(d).some(n => n.owner !== 'me'));
     if (targets.length) {
       const d = targets[Math.floor(Math.random() * targets.length)];
@@ -2168,6 +2301,13 @@ function drawMap() {
   for (const e of enemies) if (!e.dead && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < radar) {
     mctx.fillStyle = e.C.css; mctx.beginPath(); mctx.arc(mx(e.g.position.x), mz(e.g.position.z), 3, 0, 7); mctx.fill(); mctx.stroke();
   }
+  if (boss && !boss.dead) {
+    const bx = mx(boss.g.position.x), bz = mz(boss.g.position.z);
+    mctx.fillStyle = '#d4af37'; mctx.beginPath(); mctx.arc(bx, bz, 5.5, 0, 7); mctx.fill();
+    mctx.strokeStyle = boss.C.css; mctx.lineWidth = 2.5; mctx.stroke();
+    mctx.fillStyle = '#111'; mctx.font = 'bold 8px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle'; mctx.fillText('B', bx, bz + 0.5);
+    mctx.strokeStyle = '#000'; mctx.lineWidth = 1;
+  }
   if (delivery) {
     mctx.strokeStyle = '#ffa630'; mctx.lineWidth = 2;
     mctx.beginPath(); mctx.arc(mx(delivery.x), mz(delivery.z), 4 + Math.sin(t * 6) * 1.5, 0, 7); mctx.stroke();
@@ -2330,7 +2470,7 @@ function update(dt) {
   if ((firing || autoFire) && fireT <= 0 && !reloading && !sprint) { if (ammo > 0) fire(); else { startReload(); fireT = 0.3; if (!reserve) beep(200, 0.05, 0.08); } }
 
   // the street is frozen while you're underground: the station is a safe room
-  const alive = enemies.filter(e => !e.dead && e.crew !== 'police').length;   // police don't count toward wars
+  const alive = enemies.filter(e => !e.dead && e.crew !== 'police' && !e.boss && !e.bossMinion).length;   // police and boss fights don't count toward wars
   if (zone === 'street') {
     for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].update(dt)) { scene.remove(enemies[i].g); enemies.splice(i, 1); }
     updateWar(dt, alive);
@@ -2338,6 +2478,7 @@ function update(dt) {
   for (const a of allies) a.update(dt);
   updatePolice(dt);
   updateDelivery(dt);
+  updateBoss(dt);
   updateNPCs(dt);
   updateSubway(dt);
 
@@ -2414,7 +2555,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
