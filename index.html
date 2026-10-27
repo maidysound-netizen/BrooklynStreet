@@ -27,6 +27,9 @@
   #wave { font-size:28px; letter-spacing:2px; color:var(--yellow); }
   #score { font-size:20px; }
   #left { font-size:14px; font-family:system-ui,sans-serif; font-weight:700; opacity:.85; }
+  #wanted { margin-top:4px; font-size:22px; letter-spacing:3px; color:#ffd23f; text-shadow:0 0 6px rgba(0,0,0,.8); }
+  #wanted .off { color:rgba(255,255,255,.25); }
+  #strobe { position:absolute; left:0; right:0; top:0; height:6px; opacity:0; }
   #map { position:absolute; right:16px; top:16px; width:180px; height:180px; border:2px solid rgba(255,255,255,.5); border-radius:6px; background:rgba(0,0,0,.4); }
   #feed { position:absolute; right:18px; top:206px; text-align:right; font-size:14px; font-family:system-ui,sans-serif; font-weight:800; text-shadow:0 1px 3px #000; }
   #feed div { animation:fade 2.4s forwards; }
@@ -163,7 +166,8 @@
   <div id="dmg"></div>
   <div id="dir"><div></div></div>
   <div id="cross"></div><div id="hitm"></div>
-  <div id="top"><div id="wave">WAVE 1</div><div id="score">점수 0</div><div id="left">남은 적 0</div></div>
+  <div id="strobe"></div>
+  <div id="top"><div id="wave">WAVE 1</div><div id="score">점수 0</div><div id="left">남은 적 0</div><div id="wanted"></div></div>
   <canvas id="map" width="180" height="180"></canvas>
   <div id="feed"></div>
   <div id="hp"><div id="hpl">HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span><span id="armor"></span></div>
@@ -1276,6 +1280,7 @@ const CREWS = {
   red:  { name: '레드 후드', css: '#e0453a', hood: 0xb3221b, cap: 0x8e1414, jeans: 0x2c3b57, hp: 90,  speed: [4.2, 5.2], acc: 0,    rate: 0.85 },
   iron: { name: '아이언 재킷', css: '#9aa0a6', hood: 0x1c1c1c, cap: 0x111111, jeans: 0x3a3a3a, hp: 135, speed: [3.0, 3.8], acc: 0,    rate: 1 },
   teal: { name: '틸 킹스', css: '#2ec4b6', hood: 0x1f8a8a, cap: 0xeeeeee, jeans: 0x1f2f3a, hp: 100, speed: [3.4, 4.4], acc: 0.08, rate: 1.1 },
+  police: { name: '경찰', css: '#3b82f6', hood: 0x1b2a4a, cap: 0x14213d, jeans: 0x1b2a4a, hp: 110, speed: [4.0, 4.8], acc: 0.05, rate: 1 },
 };
 const MY_COLORS = ['#f2b705', '#a855f7', '#ff7a1a', '#e5e5e5', '#3b82f6'];
 const myCrew = { name: '옐로 캡스', color: '#f2b705' };
@@ -1392,33 +1397,41 @@ class Enemy {
   }
   shoot(dist) {
     const tip = this.tip.getWorldPosition(new THREE.Vector3());
-    const ally = this.foe.ally;
+    const ally = this.foe.ally, foeE = this.foe.enemy;
     let acc = 0.62 - dist / 150 + wave * 0.015 + this.C.acc;
-    if (!ally) {
+    if (!ally && !foeE) {
       const moving = Math.hypot(player.vel.x, player.vel.z);
       if (moving > 7) acc *= 0.55; else if (moving > 2) acc *= 0.8;
       if (TOUCH) acc *= 0.75; // aiming with thumbs is harder
     }
     acc = clamp(acc, 0.1, 0.75);
     const hit = Math.random() < acc;
-    const tgt = ally ? ally.g.position.clone().setY(ally.g.position.y + 1.3) : camera.position.clone().setY(camera.position.y - 0.35);
+    const body = ally || foeE;
+    const tgt = body ? body.g.position.clone().setY(body.g.position.y + 1.3) : camera.position.clone().setY(camera.position.y - 0.35);
     if (!hit) tgt.add(new THREE.Vector3(rand(-1.5, 1.5), rand(-0.8, 1.5), rand(-1.5, 1.5)));
     tracer(tip, tgt);
     this.muzzle.visible = true; this.mT = 0.06;
     bang(clamp(0.5 - Math.hypot(tip.x - player.pos.x, tip.z - player.pos.z) / 200, 0.03, 0.4), 1800, 0.25);
     const dmg = rand(7, 12) * (1 + wave * 0.04);
-    if (hit) { if (ally) ally.hurt(dmg); else hurtPlayer(dmg, this.g.position); }
+    if (hit) { if (foeE) foeE.damage(rand(18, 28), false, false); else if (ally) ally.hurt(dmg); else hurtPlayer(dmg, this.g.position); }
   }
-  damage(dmg, head) {
+  // byUs: shot by you or your crew (police vs crew kills give you nothing)
+  damage(dmg, head, byUs = true) {
     if (this.dead) return;
     this.hp -= dmg; this.flashT = 0.1; this.losT = 0;
-    if (this.hp <= 0) this.die(head);
+    if (this.hp <= 0) this.die(head, byUs);
   }
-  die(head) {
-    this.dead = true; kills++;
-    const pts = head ? 150 : 100, r = head ? 15 : 10;
-    score += pts; rep += r;
-    feed(head ? `헤드샷! 평판 +${r}` : `처치 · 평판 +${r}`, head ? '#ff6b5a' : '#fff');
+  die(head, byUs = true) {
+    this.dead = true;
+    if (byUs && this.crew === 'police') {
+      kills++; score += 50; heat += 25;
+      feed('경찰을 쓰러뜨렸다 · 수배 상승!', CREWS.police.css);
+    } else if (byUs) {
+      kills++; heat += 6;
+      const pts = head ? 150 : 100, r = head ? 15 : 10;
+      score += pts; rep += r;
+      feed(head ? `헤드샷! 평판 +${r}` : `처치 · 평판 +${r}`, head ? '#ff6b5a' : '#fff');
+    }
     this.muzzle.visible = false;
     const k = Math.random();
     if (k < 0.5) spawnPickup(this.g.position, 'ammo'); else if (k < 0.78) spawnPickup(this.g.position, 'hp');
@@ -1434,15 +1447,18 @@ class Enemy {
       if (this.deadT > 4) p.y -= dt * 0.4;
       return this.deadT > 6;
     }
-    if (this.foe && this.foe.ally && !this.foe.ally.up) { this.los = false; this.foe = null; }
+    if (this.foe && ((this.foe.ally && !this.foe.ally.up) || (this.foe.enemy && this.foe.enemy.dead))) { this.los = false; this.foe = null; }
     if ((this.losT -= dt) <= 0) {
       this.losT = 0.2 + Math.random() * 0.1;
       const was = this.los;
       let best = null, bd = 120;
-      for (const c of foes()) {
+      const consider = c => {
         const d = Math.hypot(c.pos.x - p.x, c.pos.z - p.z);
         if (d < bd && losClear(p.x, p.z, c.pos.x, c.pos.z)) { bd = d; best = c; }
-      }
+      };
+      foes().forEach(consider);
+      // police fight every crew, and every crew fights the police
+      for (const o of enemies) if (!o.dead && o !== this && (o.crew === 'police') !== (this.crew === 'police')) consider({ pos: o.g.position, enemy: o });
       this.foe = best; this.los = !!best;
       if (this.los) { this.target.set(best.pos.x, best.pos.z); if (!was) this.shootT = Math.max(this.shootT, rand(0.5, 1)); }
       else if (was) { this.wp = null; this.retargetT = 0; }
@@ -1450,7 +1466,7 @@ class Enemy {
     // without a target in sight: hunt you inside their own turf, otherwise patrol it
     if (!this.los && (this.retargetT -= dt) <= 0) {
       this.retargetT = rand(3, 6);
-      if (zone === 'street' && districtAt(player.pos.x, player.pos.z) === this.home) this.target.set(player.pos.x, player.pos.z);
+      if (zone === 'street' && (this.crew === 'police' || districtAt(player.pos.x, player.pos.z) === this.home)) this.target.set(player.pos.x, player.pos.z);
       else { const ns = districtNodes(this.home), n = ns[Math.floor(Math.random() * ns.length)]; this.target.set(n.x, n.z); }
     }
     let mx = 0, mz = 0, face = null;
@@ -1742,6 +1758,115 @@ function updateWar(dt, alive) {
   else if (war.kind === 'defend' && (war.timer -= dt) <= 0) endWar(false);
 }
 
+// ---------- police: wanted level ----------
+const HEAT_MAX = 200, STAR_AT = [40, 90, 150];
+let heat = 0, lastShotT = -99, lastStars = 0, policeT = 0;
+const starsOf = h => STAR_AT.filter(s => h >= s).length;
+const policeCars = [];
+function makePoliceCar() {
+  const g = new THREE.Group();
+  const part = (geo, mat, sx, sy, sz, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.scale.set(sx, sy, sz); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+  part(box1, std(0xf4f4f4, { roughness: 0.4, metalness: 0.3 }), 1.9, 0.8, 4.6, 0, 0.62, 0);
+  part(box1, std(0x1f4fbf), 1.94, 0.2, 3.4, 0, 0.66, 0);
+  part(box1, std(0x111111), 1.92, 0.1, 1.1, 0, 1.05, 1.7);
+  part(box1, glassMat, 1.72, 0.55, 2.4, 0, 1.27, -0.2);
+  const red = new THREE.MeshStandardMaterial({ color: 0x440000, emissive: 0xff2020, emissiveIntensity: 2 });
+  const blue = new THREE.MeshStandardMaterial({ color: 0x000044, emissive: 0x2050ff, emissiveIntensity: 2 });
+  part(box1, red, 0.6, 0.16, 0.3, -0.36, 1.62, -0.2); part(box1, blue, 0.6, 0.16, 0.3, 0.36, 1.62, -0.2);
+  for (const [x, z] of [[-0.88, 1.45], [0.88, 1.45], [-0.88, -1.45], [0.88, -1.45]]) part(geo.wheel, tireMat, 1, 1, 1, x, 0.36, z);
+  return { g, red, blue };
+}
+class PoliceCar {
+  constructor(n) {
+    Object.assign(this, makePoliceCar());
+    this.g.position.set(n.x, 0, n.z); scene.add(this.g);
+    this.prev = null; this.next = n; this.parked = false; this.life = 0;
+  }
+  pickNext() {
+    const opts = [];
+    for (const [dx, dz] of [[P, 0], [-P, 0], [0, P], [0, -P]]) {
+      const x = this.next.x + dx, z = this.next.z + dz;
+      if (Math.abs(x) > 175 || Math.abs(z) > 175) continue;
+      if (this.prev && this.prev.x === x && this.prev.z === z) continue;
+      opts.push({ x, z, s: Math.hypot(x - player.pos.x, z - player.pos.z) });
+    }
+    opts.sort((a, b) => a.s - b.s);
+    const cur = this.next; this.next = opts[0] || this.prev; this.prev = cur;
+  }
+  park() {
+    this.parked = true;
+    const p = this.g.position, a = this.g.rotation.y;
+    for (const s of [-1, 1]) {
+      const x = p.x + Math.cos(a) * 2.4 * s, z = p.z - Math.sin(a) * 2.4 * s;
+      enemies.push(new Enemy(x, z, 'police', districtAt(x, z)));
+    }
+    rebuildParts(); feed('🚓 경찰 도착!', CREWS.police.css);
+  }
+  update(dt) {
+    const on = Math.sin(t * 14) > 0;
+    this.red.emissiveIntensity = on ? 3 : 0.15; this.blue.emissiveIntensity = on ? 0.15 : 3;
+    if (this.parked) { this.life += dt; return; }
+    const p = this.g.position, dx = this.next.x - p.x, dz = this.next.z - p.z, d = Math.hypot(dx, dz);
+    const dp = Math.hypot(player.pos.x - p.x, player.pos.z - p.z);
+    if (dp < 32 && losClear(p.x, p.z, player.pos.x, player.pos.z)) return this.park();
+    if (d < 0.5) {
+      if (this.next.x === snapNode(player.pos.x) && this.next.z === snapNode(player.pos.z)) return this.park();
+      return this.pickNext();
+    }
+    const sp = Math.min(d, 18 * dt);
+    p.x += dx / d * sp; p.z += dz / d * sp;
+    this.g.rotation.y = Math.atan2(dx, dz);
+  }
+}
+function spawnPoliceCar() {
+  let pick = null;
+  for (let k = 0; k < 40; k++) {
+    const n = { x: NODES[Math.floor(Math.random() * 8)], z: NODES[Math.floor(Math.random() * 8)] };
+    const d = Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
+    if (d < 80 || d > 180) continue;
+    pick = n;
+    if (!losClear(n.x, n.z, player.pos.x, player.pos.z)) break;
+  }
+  if (pick) policeCars.push(new PoliceCar(pick));
+}
+function clearPolice() {
+  for (const c of policeCars) scene.remove(c.g);
+  policeCars.length = 0;
+  for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].crew === 'police') { scene.remove(enemies[i].g); enemies.splice(i, 1); }
+  rebuildParts();
+}
+let siren = null;
+function setSiren(vol) {
+  if (!actx) return;
+  if (!siren) {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'triangle'; g.gain.value = 0; o.connect(g).connect(master); o.start();
+    siren = { o, g };
+  }
+  const now = actx.currentTime;
+  siren.o.frequency.setTargetAtTime(Math.sin(t * 4.4) > 0 ? 960 : 720, now, 0.04);   // hi-lo wail
+  siren.g.gain.setTargetAtTime(vol, now, 0.15);
+}
+function updatePolice(dt) {
+  if (zone !== 'street') { setSiren(0); return; }
+  const cops = enemies.filter(e => !e.dead && e.crew === 'police');
+  const seen = cops.some(e => e.los && e.foe && !e.foe.ally && !e.foe.enemy);
+  // heat cools off once you stop shooting and no officer can see you
+  if (t - lastShotT > 3 && !seen) heat = Math.max(0, heat - 5 * dt);
+  const stars = starsOf(heat);
+  if (stars > lastStars) { msg('★'.repeat(stars) + ' 수배!', 1.8); beep(1200, 0.12, 0.08, 'square'); setTimeout(() => beep(900, 0.12, 0.08, 'square'), 140); }
+  else if (stars === 0 && lastStars > 0) { feed('수배 해제 · 경찰이 철수했다', '#9ae6ff'); clearPolice(); }
+  lastStars = stars;
+  if (stars > 0 && (policeT -= dt) <= 0 && cops.length + policeCars.filter(c => !c.parked).length * 2 < stars * 2) { spawnPoliceCar(); policeT = 9; }
+  for (let i = policeCars.length - 1; i >= 0; i--) {
+    const c = policeCars[i]; c.update(dt);
+    if (c.life > 80) { scene.remove(c.g); policeCars.splice(i, 1); }
+  }
+  let near = Infinity;
+  for (const c of policeCars) near = Math.min(near, Math.hypot(c.g.position.x - player.pos.x, c.g.position.z - player.pos.z));
+  setSiren(stars > 0 && near < 200 ? clamp(0.07 * (1 - near / 200), 0.008, 0.07) : 0);
+}
+
 // ---------- pickups ----------
 const pickups = [];
 const pickMats = {
@@ -1803,6 +1928,7 @@ function findAssistTarget() {
 }
 function fire() {
   ammo--; fireT = cls.rate; kick = 1;
+  heat = Math.min(HEAT_MAX, heat + 1); lastShotT = t;
   const sp = Math.hypot(player.vel.x, player.vel.z);
   let spread = 0.006 + Math.min(sp, 10) * 0.003 + (player.onGround ? 0 : 0.05);
   if (aiming) spread *= cls.fov < 40 ? 0.12 : 0.3;
@@ -1867,6 +1993,10 @@ function drawMap() {
   for (const e of enemies) if (!e.dead && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < radar) {
     mctx.fillStyle = e.C.css; mctx.beginPath(); mctx.arc(mx(e.g.position.x), mz(e.g.position.z), 3, 0, 7); mctx.fill(); mctx.stroke();
   }
+  for (const c of policeCars) {
+    mctx.fillStyle = Math.sin(t * 14) > 0 ? '#ff3030' : '#3060ff';
+    mctx.fillRect(mx(c.g.position.x) - 3, mz(c.g.position.z) - 3, 6, 6);
+  }
   mctx.fillStyle = myCrew.color;
   for (const a of allies) if (a.up) { mctx.beginPath(); mctx.arc(mx(a.g.position.x), mz(a.g.position.z), 2.6, 0, 7); mctx.fill(); mctx.stroke(); }
   mctx.save(); mctx.translate(mx(player.pos.x), mz(player.pos.z));
@@ -1902,6 +2032,8 @@ function updateSubway(dt) {
   if (zone === 'street' && Math.abs(p.x - ENTRANCE.x) < 1.15 && Math.abs(p.z - ENTRANCE.z) < 1.7) {
     fadeThen(() => {
       zone = 'subway'; placePlayer(-25.4, SY, ZC, -Math.PI / 2);
+      if (heat >= STAR_AT[0]) feed('지하철로 경찰을 따돌렸다!', '#9ae6ff');
+      heat = 0; lastStars = 0; clearPolice();
       msg('BEDFORD AV', 2);
       if (!open) feed(`지하철역은 안전해요 · 구역 ${DOOR_CAPS}곳을 점령하면 무언가 열린다는 소문이…`, '#c08bff');
     });
@@ -2016,12 +2148,13 @@ function update(dt) {
   if ((firing || autoFire) && fireT <= 0 && !reloading && !sprint) { if (ammo > 0) fire(); else { startReload(); fireT = 0.3; if (!reserve) beep(200, 0.05, 0.08); } }
 
   // the street is frozen while you're underground: the station is a safe room
-  const alive = enemies.filter(e => !e.dead).length;
+  const alive = enemies.filter(e => !e.dead && e.crew !== 'police').length;   // police don't count toward wars
   if (zone === 'street') {
     for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].update(dt)) { scene.remove(enemies[i].g); enemies.splice(i, 1); }
     updateWar(dt, alive);
   }
   for (const a of allies) a.update(dt);
+  updatePolice(dt);
   updateNPCs(dt);
   updateSubway(dt);
 
@@ -2069,6 +2202,10 @@ function update(dt) {
     ? (war.kind === 'attack' ? `⚔ 영역 전쟁 · 남은 적 ${alive + toSpawn}` : `🛡 ${war.d.name} 방어 ${Math.ceil(war.timer)}초 · 남은 적 ${alive + toSpawn}`)
     : `${here ? ownerName(here.owner) + ' 구역 · ' : ''}내 구역 ${ownedCount()}/9`;
   $('cross').classList.toggle('ads', aiming);
+  const stars = starsOf(heat);
+  $('wanted').innerHTML = stars ? '★'.repeat(stars) + `<span class="off">${'★'.repeat(3 - stars)}</span>` : '';
+  $('strobe').style.opacity = stars ? 0.85 : 0;
+  $('strobe').style.background = Math.sin(t * 14) > 0 ? '#ff2020' : '#2050ff';
   drawMap();
 }
 
@@ -2076,6 +2213,7 @@ let last = performance.now();
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (state !== 'play') setSiren(0);
   if (state === 'play') update(dt);
   else if (state === 'menu') { t += dt; yaw += dt * 0.05; camera.position.set(player.pos.x, 1.7, player.pos.z); camera.rotation.set(0.05, yaw, 0); }
   updateFx(dt);
@@ -2093,7 +2231,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; } };
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars };
 </script>
 </body>
 </html>
