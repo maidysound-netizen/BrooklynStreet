@@ -81,6 +81,21 @@
   #rot { display:none; margin-bottom:14px; padding:8px 14px; border-radius:6px; background:rgba(242,183,5,.9); color:#111; font:800 14px system-ui,sans-serif; }
   @media (orientation: portrait) { body.touch #rot { display:inline-block; } }
   @media (max-width: 480px) { #menu h1 { font-size:44px; } }
+
+  /* subway fade + Takako World portal */
+  #fade { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition:opacity .35s; }
+  #fade.white { background:#fff; }
+  #portal { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; overflow:hidden;
+    background:radial-gradient(circle at 50% 42%, #5a1a7a 0%, #2a0a45 45%, #0c0418 100%); }
+  #portal::before { content:""; position:absolute; inset:-50%; animation:drift 40s linear infinite;
+    background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 140px 80px,#ff9ae6,transparent),radial-gradient(1.5px 1.5px at 90px 150px,#9ae6ff,transparent),radial-gradient(2px 2px at 200px 190px,#fff,transparent),radial-gradient(1.5px 1.5px at 250px 40px,#ffd1f5,transparent);
+    background-size:280px 220px; }
+  @keyframes drift { to { transform:translate(280px,220px); } }
+  #portal img { position:relative; width:min(78vw,620px); max-height:52vh; object-fit:contain; filter:drop-shadow(0 0 30px rgba(255,80,210,.6)); animation:bob 3s ease-in-out infinite; }
+  @keyframes bob { 50% { transform:translateY(-10px) rotate(-1deg); } }
+  #portal .soon { position:relative; font-size:clamp(28px,6vw,56px); letter-spacing:8px; background:linear-gradient(90deg,#ff7ad9,#c08bff,#7fe3ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  #portal .tag { position:relative; font:700 clamp(13px,2.2vw,18px) system-ui,sans-serif; color:#f3d6ff; letter-spacing:2px; }
+  #portal .back { position:relative; margin-top:14px; padding:12px 28px; border-radius:30px; background:linear-gradient(90deg,#ff4fb8,#8a5cff); font:800 16px system-ui,sans-serif; cursor:pointer; box-shadow:0 0 24px rgba(255,79,184,.5); }
   @media (max-height: 520px) {
     #top { left:14px; top:8px; }
     #wave { font-size:20px; } #score { font-size:15px; } #left { font-size:12px; }
@@ -115,6 +130,13 @@
     <div class="tb" id="bPause" data-b="pause">❚❚</div>
   </div>
 </div>
+<div id="portal" class="hidden">
+  <img src="takako-logo.webp" alt="Takako World">
+  <div class="soon">COMING SOON</div>
+  <div class="tag">마법 · 칼 · 도끼 · 스팀펑크의 세계</div>
+  <div class="back" id="portalBack">브루클린으로 돌아가기</div>
+</div>
+<div id="fade"></div>
 <div id="menu">
   <div class="box">
     <h1>BROOKLYN<br>STREETS</h1>
@@ -531,6 +553,7 @@ function blockProps(cx, cz, dist) {
   inst('hydrant', geo.hydrant, std(0xb3221b), hx, 0.65, hz);
 }
 
+const ENTRANCE = { x: 12, z: 37 };   // subway stairs in the park; the open side faces north
 function park(cx, cz) {
   const gt = texOf(noiseTex('#4f7a34', 18, 256, 9000)); gt.repeat.set(6, 6);
   const grass = new THREE.Mesh(new THREE.PlaneGeometry(36, 36), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
@@ -548,6 +571,7 @@ function park(cx, cz) {
   for (let k = 0; k < 22; k++) {
     const x = rr(-16, 16), z = rr(-16, 16);
     if (Math.abs(x) < 3 || Math.abs(z) < 3 || Math.hypot(x, z) < 7) continue;
+    if (Math.hypot(cx + x - ENTRANCE.x, cz + z - ENTRANCE.z) < 4.5) continue;
     tree(cx + x, cz + z, 0.25, rr(1, 1.4));
   }
   for (const [x, z, ry] of [[-9, 2.4, 0], [9, 2.4, 0], [-9, -2.4, Math.PI], [9, -2.4, Math.PI], [2.4, 10, Math.PI / 2], [-2.4, -10, -Math.PI / 2]]) {
@@ -741,11 +765,132 @@ for (const nx of NODES) for (const nz of NODES) {
   const emp = new THREE.Mesh(new THREE.BoxGeometry(30, 300, 30), facadeMats.cream[0]); emp.position.set(120, 148, -1200); scene.add(emp);
   const empTop = new THREE.Mesh(new THREE.CylinderGeometry(1, 8, 70, 8), facadeMats.cream[1]); empTop.position.set(120, 333, -1200); scene.add(empTop);
 }
+// ---------- hidden subway station under the park ----------
+const SY = -40, ZC = 50;                          // platform floor height, station centre line
+const SUB = { x0: -28.5, x1: 29.2, z0: ZC - 3.4, z1: ZC + 3.2 };
+const subwayCols = [];
+const DOOR_X = 30.2;
+let doorPivot, doorGlow, doorLight;
+const gears = [], doorSparks = [];
+{
+  // street entrance: dark stairwell, green railings, globe lamps, sign
+  const E = ENTRANCE, green = std(0x1f5a3a, { metalness: 0.4, roughness: 0.5 });
+  for (let k = 0; k < 6; k++) {
+    const st = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.68), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(0, 0, 0.3 - k * 0.055) }));
+    st.rotation.x = -Math.PI / 2; st.position.set(E.x, 0.285, E.z - 1.7 + k * 0.68); scene.add(st);
+  }
+  for (const s of [-1, 1]) {
+    inst('subRail', box1, green, E.x + s * 1.4, 1.1, E.z, { s: [0.08, 0.08, 4.2] });
+    for (const dz of [-2, 0, 2]) inst('subPost', box1, green, E.x + s * 1.4, 0.7, E.z + dz, { s: [0.08, 0.9, 0.08] });
+    inst('globePole', geo.pole, green, E.x + s * 1.5, 1.3, E.z - 2.1, { s: [0.5, 0.36, 0.5] });
+    inst('globe', new THREE.SphereGeometry(0.22, 12, 8), new THREE.MeshStandardMaterial({ color: 0x9effa0, emissive: 0x3ddc84, emissiveIntensity: 1.4 }), E.x + s * 1.5, 2.45, E.z - 2.1, { shadow: false });
+    addCol(E.x + s * 1.4 - 0.1, E.x + s * 1.4 + 0.1, E.z - 2.1, E.z + 2.1, true);
+  }
+  inst('subRail', box1, green, E.x, 1.1, E.z + 2.1, { s: [2.9, 0.08, 0.08] });
+  addCol(E.x - 1.5, E.x + 1.5, E.z + 2, E.z + 2.2, true);
+  const c = mkCanvas(512, 128), g = c.getContext('2d');
+  g.fillStyle = '#111'; g.fillRect(0, 0, 512, 128);
+  g.fillStyle = '#fff'; g.font = 'bold 64px Arial'; g.textBaseline = 'middle'; g.fillText('Subway', 30, 66);
+  g.fillStyle = '#a7a9ac'; g.beginPath(); g.arc(420, 64, 44, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.font = 'bold 60px Arial'; g.textAlign = 'center'; g.fillText('L', 420, 68);
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.65), new THREE.MeshStandardMaterial({ map: texOf(c, false), side: THREE.DoubleSide }));
+  sign.position.set(E.x, 1.55, E.z + 2.1); sign.rotation.y = Math.PI; scene.add(sign);
+
+  // station box
+  const tileC = mkCanvas(256, 256), tg = tileC.getContext('2d');
+  tg.fillStyle = '#b9b3a8'; tg.fillRect(0, 0, 256, 256);
+  for (let r = 0; r < 10; r++) for (let q = -1; q < 5; q++) { tg.fillStyle = shade('#e8e4da', rr(-8, 6)); tg.fillRect(q * 51.2 + (r % 2) * 25.6 + 2, r * 25.6 + 2, 47.2, 21.6); }
+  const tileMat = new THREE.MeshStandardMaterial({ map: texOf(tileC), roughness: 0.4 });
+  const concrete = new THREE.MeshStandardMaterial({ map: texOf(noiseTex('#77736c', 10)), roughness: 0.95 });
+  const box = (w, h, d, x, y, z, m, uw = 1.5) => {
+    const b = new THREE.Mesh(scaledBox(w, h, d, uw, uw), m); b.position.set(x, y, z);
+    b.castShadow = b.receiveShadow = true; scene.add(b); staticHit.push(b); return b;
+  };
+  box(61, 0.4, 8.2, 0.5, SY - 0.2, ZC - 0.1, concrete, 4);
+  box(61, 1.3, 0.2, 0.5, SY - 0.65, ZC + 4, concrete, 4);
+  box(61, 0.4, 7.2, 0.5, SY - 1.5, ZC + 7.5, std(0x2a2826));
+  box(61, 7.4, 0.4, 0.5, SY + 3, ZC - 4.4, tileMat);
+  box(61, 8.4, 0.4, 0.5, SY + 2.6, ZC + 11.2, tileMat);
+  box(0.4, 8.4, 16, -30.4, SY + 2.6, ZC + 3.5, tileMat);
+  box(0.4, 8.4, 16, DOOR_X + 0.2, SY + 2.6, ZC + 3.5, std(0x3a2a22));
+  box(61.5, 0.4, 16, 0.5, SY + 6.7, ZC + 3.5, std(0x2b2b2b));
+  inst('tactile', box1, std(0xe8b923), 0.5, SY + 0.01, ZC + 3.7, { s: [60, 0.02, 0.55], shadow: false });
+  inst('trimBand', box1, std(0x2f6b4f), 0.5, SY + 2.5, ZC - 4.18, { s: [60, 0.35, 0.04], shadow: false });
+  for (const z of [ZC + 6.8, ZC + 8.2]) inst('track', box1, std(0x8a8580, { metalness: 0.8, roughness: 0.4 }), 0.5, SY - 1.2, z, { s: [60, 0.14, 0.1] });
+  for (let x = -29; x < 30; x += 0.8) inst('tie', box1, std(0x3b2a1e), x, SY - 1.27, ZC + 7.5, { s: [0.25, 0.08, 2.4], shadow: false });
+  for (let x = -21; x <= 21; x += 7) {
+    inst('pillar', box1, std(0x3b4a44, { metalness: 0.3 }), x, SY + 3.2, ZC + 3, { s: [0.35, 6.6, 0.35] });
+    subwayCols.push({ minX: x - 0.2, maxX: x + 0.2, minZ: ZC + 2.8, maxZ: ZC + 3.2 });
+  }
+  for (let x = -24; x <= 24; x += 8) inst('tube', box1, new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xf4f8ff, emissiveIntensity: 1.3 }), x, SY + 6.45, ZC + 0.5, { s: [5, 0.1, 0.3], shadow: false });
+  for (const x of [-12, 12]) {
+    inst('sbench', box1, std(0x6b4a2a), x, SY + 0.5, ZC - 3.7, { s: [3, 0.12, 0.6] });
+    inst('sbench', box1, std(0x6b4a2a), x, SY + 0.9, ZC - 4.05, { s: [3, 0.6, 0.08] });
+    subwayCols.push({ minX: x - 1.5, maxX: x + 1.5, minZ: ZC - 4.2, maxZ: ZC - 3.4 });
+  }
+  const nameC = mkCanvas(512, 96), ng = nameC.getContext('2d');
+  ng.fillStyle = '#2f6b4f'; ng.fillRect(0, 0, 512, 96); ng.fillStyle = '#111'; ng.fillRect(8, 8, 496, 80);
+  ng.fillStyle = '#fff'; ng.font = 'bold 54px Arial'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText('Bedford Av', 256, 50);
+  const nameMat = new THREE.MeshStandardMaterial({ map: texOf(nameC, false) });
+  for (const x of [-18, 0, 18]) { const n = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 0.6), nameMat); n.position.set(x, SY + 3.4, ZC - 4.18); scene.add(n); }
+
+  // parked L train
+  const trC = mkCanvas(512, 256), trg = trC.getContext('2d');
+  trg.fillStyle = '#b8bcc0'; trg.fillRect(0, 0, 512, 256);
+  for (let i = 0; i < 400; i++) { trg.fillStyle = `rgba(255,255,255,${rr(0, 0.12)})`; trg.fillRect(rnd() * 512, 0, 1, 256); }
+  trg.fillStyle = '#7d8286'; trg.fillRect(0, 196, 512, 6);
+  for (const x of [20, 150, 360]) { trg.fillStyle = '#20303c'; trg.fillRect(x, 70, 110, 70); }
+  trg.fillStyle = '#9da2a6'; trg.fillRect(270, 40, 80, 190); trg.fillStyle = '#20303c'; trg.fillRect(282, 60, 24, 60); trg.fillRect(314, 60, 24, 60);
+  const train = box(40, 3.4, 3, 0, SY + 1.5, ZC + 7.5, new THREE.MeshStandardMaterial({ map: texOf(trC), metalness: 0.5, roughness: 0.45 }), 8);
+  train.material.map.repeat.set(1, 8 / 3.4);
+
+  // exit stairs at the west end
+  for (let k = 0; k < 8; k++) box(0.5, (k + 1) * 0.5, 4, -26.25 - k * 0.5, SY + (k + 1) * 0.25, ZC - 1.5, concrete, 4);
+  const exC = mkCanvas(256, 96), eg = exC.getContext('2d');
+  eg.fillStyle = '#111'; eg.fillRect(0, 0, 256, 96); eg.fillStyle = '#3ddc84'; eg.font = 'bold 40px Arial'; eg.textAlign = 'center'; eg.textBaseline = 'middle'; eg.fillText('↑ EXIT 출구', 128, 50);
+  const ex = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.68), new THREE.MeshBasicMaterial({ map: texOf(exC, false) }));
+  ex.position.set(-25.9, SY + 5, ZC - 1.5); ex.rotation.y = Math.PI / 2; scene.add(ex);
+
+  // the steampunk door to Takako World
+  const brass = std(0xb08d3c, { metalness: 0.85, roughness: 0.35 });
+  for (const s of [-1, 1]) box(0.4, 3.4, 0.4, DOOR_X - 0.1, SY + 1.7, ZC + s * 1.4, brass);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.2, 8, 24, Math.PI), brass);
+  arch.rotation.y = Math.PI / 2; arch.position.set(DOOR_X - 0.1, SY + 3.3, ZC); scene.add(arch);
+  doorPivot = new THREE.Group(); doorPivot.position.set(DOOR_X - 0.15, SY, ZC - 1.2); scene.add(doorPivot);
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(0.16, 3.2, 2.4), std(0x3a2418));
+  panel.position.set(0, 1.6, 1.2); panel.castShadow = true; doorPivot.add(panel);
+  for (const y of [0.6, 2.6]) { const band = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.14, 2.4), brass); band.position.set(0, y, 1.2); doorPivot.add(band); }
+  const port = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.07, 8, 20), brass); port.rotation.y = Math.PI / 2; port.position.set(-0.1, 1.9, 1.2); doorPivot.add(port);
+  const portGlass = new THREE.Mesh(new THREE.CircleGeometry(0.3, 20), new THREE.MeshBasicMaterial({ color: 0xff6fd8 })); portGlass.rotation.y = -Math.PI / 2; portGlass.position.set(-0.09, 1.9, 1.2); doorPivot.add(portGlass);
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), brass); knob.position.set(-0.14, 1.4, 2.1); doorPivot.add(knob);
+  const gc = mkCanvas(128, 128), gg = gc.getContext('2d'), grd = gg.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(0.3, 'rgba(255,110,220,0.9)'); grd.addColorStop(0.65, 'rgba(150,90,255,0.55)'); grd.addColorStop(1, 'rgba(90,200,255,0)');
+  gg.fillStyle = grd; gg.fillRect(0, 0, 128, 128);
+  doorGlow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 5.2), new THREE.MeshBasicMaterial({ map: texOf(gc, false), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 }));
+  doorGlow.position.set(DOOR_X - 0.01, SY + 2.3, ZC); doorGlow.rotation.y = -Math.PI / 2; scene.add(doorGlow);
+  doorLight = new THREE.PointLight(0xff4fd8, 6, 16, 1.5); doorLight.position.set(DOOR_X - 1.5, SY + 2.5, ZC); scene.add(doorLight);
+  const logo = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.74), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, alphaTest: 0.08, depthWrite: false }));
+  logo.position.set(DOOR_X - 0.02, SY + 5.65, ZC); logo.rotation.y = -Math.PI / 2; scene.add(logo);
+  new THREE.TextureLoader().load('takako-logo.webp', tx => { tx.colorSpace = THREE.SRGBColorSpace; logo.material.map = tx; logo.material.opacity = 1; logo.material.needsUpdate = true; }, undefined, () => {});
+  for (const [y, z, r, dir] of [[4.6, ZC + 2.6, 0.75, 1], [3.4, ZC + 3.3, 0.45, -1], [4.9, ZC - 2.5, 0.6, -1], [1.2, ZC - 2.9, 0.4, 1]]) {
+    const gear = new THREE.Group();
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.12, 16).rotateZ(Math.PI / 2), brass); gear.add(disc);
+    for (let k = 0; k < 10; k++) { const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.2, 0.16), brass); const a = k / 10 * Math.PI * 2; tooth.position.set(0, Math.cos(a) * (r + 0.08), Math.sin(a) * (r + 0.08)); tooth.rotation.x = -a; gear.add(tooth); }
+    gear.position.set(DOOR_X - 0.1, SY + y, z); scene.add(gear); gears.push({ gear, dir: dir / r });
+  }
+  for (const s of [-1, 1]) box(0.25, 6.4, 0.25, DOOR_X - 0.15, SY + 3.2, ZC + s * 3.6, brass);
+  for (let k = 0; k < 16; k++) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: doorGlow.material.map, color: [0xff7ad9, 0xc08bff, 0x7fe3ff][k % 3], blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 }));
+    sp.scale.setScalar(rr(0.12, 0.3)); scene.add(sp);
+    doorSparks.push({ sp, a: rr(0, 6.28), r: rr(0.6, 1.8), h: rr(0, 4.5), sp0: rr(0.3, 0.9) });
+  }
+}
+
 flushInst();
 
 // ---------- collision / line of sight ----------
-function collide(p, r) {
-  for (const b of colliders) {
+function collide(p, r, sub = false) {
+  for (const b of (sub ? subwayCols : colliders)) {
     const cx = clamp(p.x, b.minX, b.maxX), cz = clamp(p.z, b.minZ, b.maxZ);
     const dx = p.x - cx, dz = p.z - cz, d2 = dx * dx + dz * dz;
     if (d2 >= r * r) continue;
@@ -755,7 +900,8 @@ function collide(p, r) {
       if (m === l) p.x = b.minX - r; else if (m === rt) p.x = b.maxX + r; else if (m === t) p.z = b.minZ - r; else p.z = b.maxZ + r;
     }
   }
-  p.x = clamp(p.x, -181, 181); p.z = clamp(p.z, -194.6, 181);
+  if (sub) { p.x = clamp(p.x, SUB.x0, SUB.x1); p.z = clamp(p.z, SUB.z0, SUB.z1); }
+  else { p.x = clamp(p.x, -181, 181); p.z = clamp(p.z, -194.6, 181); }
 }
 function segRect(ax, az, bx, bz, r) {
   let t0 = 0, t1 = 1;
@@ -876,6 +1022,8 @@ const player = { pos: new THREE.Vector3(25, 0, 25), vel: new THREE.Vector3(), y:
 let yaw = Math.PI * 0.75, pitch = 0, recoil = 0;
 let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing = false, aiming = false, kick = 0;
 let state = 'menu', score = 0, kills = 0, wave = 0, toSpawn = 0, spawnT = 0, waveT = 2.5, hadLock = false, t = 0;
+let zone = 'street', cleared = 0, busy = false, lockMsgT = 0;
+const DOOR_WAVE = 3;   // clear this many waves to unlock the Takako World door
 const keys = {};
 const $ = id => document.getElementById(id);
 
@@ -891,7 +1039,9 @@ addEventListener('mousemove', e => {
   const s = aiming ? 0.0011 : 0.0022;
   yaw -= e.movementX * s; pitch = clamp(pitch - e.movementY * s, -1.45, 1.45);
 });
-addEventListener('mousedown', e => { if (state !== 'play') return; if (e.button === 0) firing = true; if (e.button === 2) aiming = true; });
+addEventListener('mousedown', e => {
+  if (state !== 'play') return;
+  if (!TOUCH && !document.pointerLockElement) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); } if (e.button === 0) firing = true; if (e.button === 2) aiming = true; });
 addEventListener('mouseup', e => { if (e.button === 0) firing = false; if (e.button === 2) aiming = false; });
 addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; firing = aiming = false; });
@@ -1210,6 +1360,7 @@ const ndc = new THREE.Vector2();
 const ASSIST_CONE = 0.24;
 let assistTgt = null;
 function findAssistTarget() {
+  if (zone !== 'street') return null;
   let best = null;
   const cp = camera.position;
   for (const e of enemies) {
@@ -1263,6 +1414,13 @@ const mctx = $('map').getContext('2d');
 const MS = 180 / 400, mx = x => (x + 200) * MS, mz = z => (z + 200) * MS;
 function drawMap() {
   mctx.clearRect(0, 0, 180, 180);
+  if (zone === 'subway') {
+    mctx.fillStyle = '#1a1a1a'; mctx.fillRect(0, 0, 180, 180);
+    mctx.fillStyle = '#a7a9ac'; mctx.beginPath(); mctx.arc(90, 70, 30, 0, 7); mctx.fill();
+    mctx.fillStyle = '#fff'; mctx.font = 'bold 34px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle'; mctx.fillText('L', 90, 72);
+    mctx.font = 'bold 18px Arial'; mctx.fillText('Bedford Av', 90, 128);
+    return;
+  }
   mctx.fillStyle = '#2a4c5c'; mctx.fillRect(0, 0, 180, mz(-196));
   for (const b of blockInfo) {
     mctx.fillStyle = b.dist === 'park' ? '#3f6b3a' : b.dist === 'court' ? '#a5553a' : b.dist === 'ring' ? '#3a332f' : '#6d5a50';
@@ -1277,6 +1435,60 @@ function drawMap() {
   mctx.fillStyle = '#fff'; mctx.beginPath(); mctx.moveTo(0, -6); mctx.lineTo(4, 4); mctx.lineTo(-4, 4); mctx.closePath(); mctx.fill();
   mctx.restore();
 }
+
+// ---------- subway + portal ----------
+function fadeThen(cb, white = false) {
+  busy = true;
+  const f = $('fade'); f.classList.toggle('white', white); f.style.opacity = 1;
+  setTimeout(() => { cb(); f.style.opacity = 0; setTimeout(() => { busy = false; }, 400); }, 380);
+}
+function placePlayer(x, y, z, yawTo) {
+  player.pos.set(x, 0, z); player.y = y; player.vy = 0; player.vel.set(0, 0, 0);
+  yaw = yawTo; pitch = 0; turnLeft = 0;
+}
+function updateSubway(dt) {
+  const open = cleared >= DOOR_WAVE;
+  doorPivot.rotation.y += ((open ? -1.65 : 0) - doorPivot.rotation.y) * Math.min(1, dt * 1.5);
+  doorGlow.material.opacity = open ? 0.95 + Math.sin(t * 3) * 0.05 : 0.3 + Math.sin(t * 2) * 0.08;
+  doorLight.intensity = open ? 22 + Math.sin(t * 4) * 4 : 5;
+  for (const g of gears) g.gear.rotation.x += g.dir * dt * (open ? 1.2 : 0.25);
+  for (const s of doorSparks) {
+    s.a += dt * s.sp0; s.h = (s.h + dt * s.sp0) % 4.8;
+    s.sp.position.set(DOOR_X - 0.6 - Math.sin(s.a) * 0.4, SY + 0.2 + s.h, ZC + Math.cos(s.a) * s.r);
+    s.sp.material.opacity = open ? Math.sin(s.h / 4.8 * Math.PI) : 0;
+  }
+  if (busy) return;
+  const p = player.pos;
+  lockMsgT -= dt;
+  if (zone === 'street' && Math.abs(p.x - ENTRANCE.x) < 1.15 && Math.abs(p.z - ENTRANCE.z) < 1.7) {
+    fadeThen(() => {
+      zone = 'subway'; placePlayer(-25.4, SY, ZC, -Math.PI / 2);
+      msg('BEDFORD AV', 2);
+      if (!open) feed(`지하철역은 안전해요 · 웨이브 ${DOOR_WAVE}을 깨면 무언가 열린다는 소문이…`, '#c08bff');
+    });
+  } else if (zone === 'subway' && p.x < -26.2) {
+    fadeThen(() => { zone = 'street'; placePlayer(ENTRANCE.x, 0.25, ENTRANCE.z - 3.4, 0); });
+  } else if (zone === 'subway' && p.x > 28.4 && Math.abs(p.z - ZC) < 1.3) {
+    if (open) enterPortal();
+    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(`단단히 잠겨 있다… 웨이브 ${DOOR_WAVE} 클리어 필요`, '#ff7ad9'); }
+  }
+}
+function enterPortal() {
+  state = 'portal'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  beep(660, 0.3, 0.1, 'sine'); setTimeout(() => beep(990, 0.3, 0.1, 'sine'), 150); setTimeout(() => beep(1480, 0.6, 0.1, 'sine'), 300);
+  fadeThen(() => { $('hud').classList.add('hidden'); $('portal').classList.remove('hidden'); }, true);
+}
+$('portalBack').addEventListener('click', () => {
+  fadeThen(() => {
+    $('portal').classList.add('hidden'); $('hud').classList.remove('hidden');
+    placePlayer(25.5, SY, ZC, Math.PI / 2);
+    state = 'play';
+  });
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+});
 
 // ---------- main loop ----------
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), wish = new THREE.Vector3();
@@ -1294,9 +1506,9 @@ function update(dt) {
   player.vel.x += (wish.x - player.vel.x) * Math.min(1, acc * dt);
   player.vel.z += (wish.z - player.vel.z) * Math.min(1, acc * dt);
   player.pos.x += player.vel.x * dt; player.pos.z += player.vel.z * dt;
-  collide(player.pos, 0.5);
+  collide(player.pos, 0.5, zone === 'subway');
   player.vy -= 20 * dt; player.y += player.vy * dt;
-  const gy = groundAt(player.pos.x, player.pos.z);
+  const gy = zone === 'subway' ? SY : groundAt(player.pos.x, player.pos.z);
   if (player.y <= gy) { player.y = gy; player.vy = 0; player.onGround = true; }
   const speed = Math.hypot(player.vel.x, player.vel.z);
   const bob = player.onGround ? Math.sin(t * (sprint ? 14 : 10)) * Math.min(speed, 9) * 0.006 : 0;
@@ -1322,12 +1534,21 @@ function update(dt) {
   }
   if ((firing || autoFire) && fireT <= 0 && !reloading && !sprint) { if (ammo > 0) fire(); else { startReload(); fireT = 0.3; if (!reserve) beep(200, 0.05, 0.08); } }
 
-  for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].update(dt)) { scene.remove(enemies[i].g); enemies.splice(i, 1); }
+  // the street is frozen while you're underground: the station is a safe room
   const alive = enemies.filter(e => !e.dead).length;
-  if (toSpawn > 0) { if ((spawnT -= dt) <= 0 && alive < Math.min(4 + wave, 10)) { spawnEnemy(); toSpawn--; spawnT = 1.4; } }
-  else if (alive === 0 && (waveT -= dt) <= 0) { startWave(); waveT = 5; }
+  if (zone === 'street') {
+    for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].update(dt)) { scene.remove(enemies[i].g); enemies.splice(i, 1); }
+    if (toSpawn > 0) { if ((spawnT -= dt) <= 0 && alive < Math.min(4 + wave, 10)) { spawnEnemy(); toSpawn--; spawnT = 1.4; } }
+    else if (alive === 0 && (waveT -= dt) <= 0) { startWave(); waveT = 5; }
+  }
+  if (wave > 0 && toSpawn === 0 && alive === 0 && cleared < wave) {
+    cleared = wave;
+    if (cleared === DOOR_WAVE) { msg('???', 2.5); feed('공원 지하철역에서 이상한 빛이 새어 나온다…', '#ff7ad9'); beep(880, 0.4, 0.08, 'sine'); setTimeout(() => beep(1320, 0.5, 0.08, 'sine'), 200); }
+  }
+  updateSubway(dt);
 
   for (let i = pickups.length - 1; i >= 0; i--) {
+    if (zone !== 'street') break;
     const pk = pickups[i]; pk.t += dt;
     pk.m.rotation.y += dt * 2; pk.m.position.y = groundAt(pk.m.position.x, pk.m.position.z) + 0.5 + Math.sin(pk.t * 3) * 0.1;
     if (Math.hypot(pk.m.position.x - player.pos.x, pk.m.position.z - player.pos.z) < 1.6) {
@@ -1388,7 +1609,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; } };
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, set cleared(v) { cleared = v; } };
 </script>
 </body>
 </html>
