@@ -27,6 +27,7 @@
   #wave { font-size:28px; letter-spacing:2px; color:var(--yellow); }
   #score { font-size:20px; }
   #left { font-size:14px; font-family:system-ui,sans-serif; font-weight:700; opacity:.85; }
+  #clock { margin-top:3px; font:800 14px system-ui,sans-serif; opacity:.9; }
   #wanted { margin-top:4px; font-size:22px; letter-spacing:3px; color:#ffd23f; text-shadow:0 0 6px rgba(0,0,0,.8); }
   #wanted .off { color:rgba(255,255,255,.25); }
   #strobe { position:absolute; left:0; right:0; top:0; height:6px; opacity:0; }
@@ -109,6 +110,7 @@
   #terr div { padding:6px 4px; border-radius:4px; text-align:center; color:#111; }
   #crew .close { margin-top:14px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #bCrew { left:50%; top:10px; margin-left:-84px; width:56px; height:44px; border-radius:10px; font-size:13px; }
+  #bLight { left:50%; top:10px; margin-left:-134px; width:44px; height:44px; border-radius:10px; font-size:18px; }
 
   /* character select, interact prompt, shop, NPC talk */
   #chars { display:flex; gap:10px; justify-content:center; margin:0 auto 18px; flex-wrap:wrap; cursor:default; }
@@ -170,7 +172,7 @@
   <div id="dir"><div></div></div>
   <div id="cross"></div><div id="hitm"></div>
   <div id="strobe"></div>
-  <div id="top"><div id="wave">WAVE 1</div><div id="score">점수 0</div><div id="left">남은 적 0</div><div id="wanted"></div></div>
+  <div id="top"><div id="wave">WAVE 1</div><div id="score">점수 0</div><div id="left">남은 적 0</div><div id="clock"></div><div id="wanted"></div></div>
   <canvas id="map" width="180" height="180"></canvas>
   <div id="feed"></div>
   <div id="hp"><div id="hpl">HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span><span id="armor"></span></div>
@@ -188,6 +190,7 @@
     <div class="tb" id="bTurn" data-b="turn">↻</div>
     <div class="tb" id="bPause" data-b="pause">❚❚</div>
     <div class="tb" id="bCrew" data-b="crew">크루</div>
+    <div class="tb" id="bLight" data-b="light">🔦</div>
   </div>
 </div>
 <div id="portal" class="hidden">
@@ -228,7 +231,7 @@
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-      <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>Esc</kbd> 일시정지</li>
+      <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
       <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
@@ -292,7 +295,8 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(2600, 32, 16), new THREE.Sha
 sky.renderOrder = -1;
 scene.add(sky);
 
-scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x7a5c48, 1.25));
+const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x7a5c48, 1.25);
+scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffcf9a, 3.0);
 sun.position.copy(sunDir).multiplyScalar(420);
 sun.castShadow = true;
@@ -549,8 +553,10 @@ const geo = {
 };
 const markMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -1 });
 
+const lampSpots = [];   // where each street lamp shines, for the night-time light pools
 function lamp(x, z, nx, nz) {
   const y0 = 0.25;
+  lampSpots.push([x + nx * 1.55, z + nz * 1.55]);
   inst('pole', geo.pole, poleMat, x, y0 + 3, z);
   inst('arm', box1, poleMat, x + nx * 0.8, y0 + 5.95, z + nz * 0.8, { s: [0.08, 0.08, 1.6], ry: Math.atan2(nx, nz) });
   inst('lampHead', box1, lampHeadMat, x + nx * 1.55, y0 + 5.85, z + nz * 1.55, { s: [0.45, 0.16, 0.75], ry: Math.atan2(nx, nz), shadow: false });
@@ -968,6 +974,88 @@ const gears = [], doorSparks = [];
 
 flushInst();
 
+// ---------- day & night ----------
+// 1 game hour = 20 real seconds, so a full day is 8 minutes. Starts late afternoon.
+const HOUR_SECS = 20;
+let tod = 17, night = 0, flashOn = false, flashAuto = true, lastPhase = '';
+const C = h => new THREE.Color(h);
+const LOOKS = {
+  day:   { top: C(0x3f7fd0), hor: C(0xcfe3f5), sun: C(0xfff3d0), sunI: 3.2, sunC: C(0xfff1dc), hemiI: 1.4, hemiC: C(0xdde9ff), win: 0.35, n: 0, fogFar: 1500 },
+  dusk:  { top: C(0x4a6fa5), hor: C(HORIZON), sun: C(0xffe2b0), sunI: 3.0, sunC: C(0xffcf9a), hemiI: 1.25, hemiC: C(0xcfe0ff), win: 0.6, n: 0.3, fogFar: 1500 },
+  night: { top: C(0x03060f), hor: C(0x141b2e), sun: C(0x8fa6ff), sunI: 0.35, sunC: C(0x8fa8ff), hemiI: 0.32, hemiC: C(0x6a80c0), win: 1.7, n: 1, fogFar: 700 },
+};
+const KEYS = [[0, 'night'], [4.5, 'night'], [6, 'dusk'], [8, 'day'], [16.5, 'day'], [18.5, 'dusk'], [20.5, 'night'], [24, 'night']];
+const lerpN = (a, b, k) => a + (b - a) * k;
+const winMats = [...Object.values(facadeMats).flat(), ...storeMats];
+const winBase = winMats.map(m => m.emissiveIntensity);
+// stars
+const stars = (() => {
+  const pts = [];
+  for (let i = 0; i < 1400; i++) {
+    const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = Math.sqrt(1 - u * u);
+    if (u < 0.05) continue;
+    pts.push(Math.cos(a) * r * 2300, u * 2300, Math.sin(a) * r * 2300);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  const s = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0, fog: false, depthWrite: false }));
+  s.renderOrder = -1; scene.add(s); return s;
+})();
+// warm light pools under every street lamp
+const lampGlow = (() => {
+  const c = mkCanvas(128, 128), g = c.getContext('2d'), grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, 'rgba(255,210,140,0.9)'); grd.addColorStop(0.5, 'rgba(255,180,90,0.35)'); grd.addColorStop(1, 'rgba(255,160,60,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+  const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(10, 10).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ map: texOf(c, false), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), lampSpots.length);
+  const m = new THREE.Matrix4();
+  lampSpots.forEach(([x, z], i) => im.setMatrixAt(i, m.makeTranslation(x, 0.29, z)));
+  scene.add(im); return im;
+})();
+const flashlight = new THREE.SpotLight(0xfff2d6, 0, 55, 0.42, 0.55, 1.4);
+scene.add(flashlight, flashlight.target);
+function toggleFlashlight() {
+  if (state !== 'play') return;
+  flashAuto = false; flashOn = !flashOn;
+  beep(1800, 0.03, 0.06, 'square');
+  document.getElementById('bLight')?.classList.toggle('on', flashOn);
+}
+// how far enemies can spot you: much shorter at night, unless your flashlight gives you away
+const sightRange = () => lerpN(120, flashOn ? 75 : 40, night);
+function applyTime(underground = false) {
+  let i = 0; while (KEYS[i + 1][0] <= tod) i++;
+  const [h0, k0] = KEYS[i], [h1, k1] = KEYS[i + 1];
+  const a = LOOKS[k0], b = LOOKS[k1], k = (tod - h0) / (h1 - h0);
+  const u = sky.material.uniforms;
+  u.top.value.copy(a.top).lerp(b.top, k); u.hor.value.copy(a.hor).lerp(b.hor, k); u.sunCol.value.copy(a.sun).lerp(b.sun, k);
+  scene.fog.color.copy(u.hor.value); scene.fog.far = lerpN(a.fogFar, b.fogFar, k);
+  sun.intensity = lerpN(a.sunI, b.sunI, k); sun.color.copy(a.sunC).lerp(b.sunC, k);
+  hemi.intensity = underground ? 1.25 : lerpN(a.hemiI, b.hemiI, k);   // the station is always lit hemi.color.copy(a.hemiC).lerp(b.hemiC, k);
+  night = lerpN(a.n, b.n, k);
+  const w = lerpN(a.win, b.win, k);
+  winMats.forEach((m, j) => { m.emissiveIntensity = winBase[j] * w / 0.55; });
+  lampHeadMat.emissiveIntensity = 1.2 + night * 2.5;
+  stars.material.opacity = Math.max(0, night - 0.3) * 1.4;
+  lampGlow.material.opacity = Math.max(0, night - 0.2) * 0.9;
+}
+function updateTime(dt) {
+  tod = (tod + dt / HOUR_SECS) % 24;
+  applyTime(zone === 'subway');
+  stars.position.copy(camera.position);
+  if (flashAuto) { flashOn = night > 0.6; document.getElementById('bLight')?.classList.toggle('on', flashOn); }
+  flashlight.intensity = flashOn && zone === 'street' ? 140 : 0;
+  flashlight.position.copy(camera.position);
+  flashlight.target.position.copy(camera.position).add(new THREE.Vector3(0, 0, -10).applyQuaternion(camera.quaternion));
+  const phase = night > 0.85 ? 'night' : night < 0.05 ? 'day' : 'dusk';
+  if (phase !== lastPhase && lastPhase) {
+    if (phase === 'night') { msg('🌙 밤이 됐다', 2.2); feed('적의 시야가 짧아졌다 · 손전등은 들키기 쉽다 (F)', '#9ab6ff'); }
+    if (phase === 'day' && tod < 12) { msg('☀️ 아침이 밝았다', 2.2); }
+  }
+  lastPhase = phase;
+  const hh = Math.floor(tod), mm = Math.floor((tod - hh) * 60 / 10) * 10;
+  document.getElementById('clock').textContent = `${phase === 'night' ? '🌙' : phase === 'day' ? '☀️' : tod > 12 ? '🌇' : '🌅'} ${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}${flashOn ? ' · 🔦' : ''}`;
+}
+applyTime();
+
 // ---------- collision / line of sight ----------
 function collide(p, r, sub = false) {
   for (const b of (sub ? subwayCols : colliders)) {
@@ -1138,6 +1226,7 @@ addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
   if (e.code === 'KeyE') { useNPC(); return; }
+  if (e.code === 'KeyF') { toggleFlashlight(); return; }
   if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
   keys[e.code] = true;
   if (e.code === 'KeyR') startReload();
@@ -1219,6 +1308,7 @@ if (TOUCH) {
       else if (b === 'turn') { if (!turnLeft) turnLeft = Math.PI; }
       else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
       else if (b === 'crew') { openCrew(); $('bAim').classList.remove('on'); }
+      else if (b === 'light') toggleFlashlight();
       else if (t.clientX < innerWidth * 0.4 && joy.id === null) {
         Object.assign(joy, { id: t.identifier, ox: t.clientX, oy: t.clientY });
         Object.assign(stick.style, { left: t.clientX - 60 + 'px', top: t.clientY - 60 + 'px', bottom: 'auto' });
@@ -1455,7 +1545,7 @@ class Enemy {
     if ((this.losT -= dt) <= 0) {
       this.losT = 0.2 + Math.random() * 0.1;
       const was = this.los;
-      let best = null, bd = 120;
+      let best = null, bd = sightRange();
       const consider = c => {
         const d = Math.hypot(c.pos.x - p.x, c.pos.z - p.z);
         if (d < bd && losClear(p.x, p.z, c.pos.x, c.pos.z)) { bd = d; best = c; }
@@ -1546,7 +1636,7 @@ class Ally {
     if (!this.g.visible) this.spawnNear();
     const p = this.g.position;
     if ((this.scanT -= dt) <= 0) {
-      this.scanT = 0.25; this.tgt = null; let bd = 80;
+      this.scanT = 0.25; this.tgt = null; let bd = 80 - night * 25;
       for (const e of enemies) {
         if (e.dead) continue;
         const d = Math.hypot(e.g.position.x - p.x, e.g.position.z - p.z);
@@ -2198,6 +2288,7 @@ $('portalBack').addEventListener('click', () => {
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), wish = new THREE.Vector3();
 function update(dt) {
   t += dt;
+  updateTime(dt);
   fwd.set(-Math.sin(yaw), 0, -Math.cos(yaw)); right.set(Math.cos(yaw), 0, -Math.sin(yaw));
   wish.set(0, 0, 0)
     .addScaledVector(fwd, (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) - joy.y)
@@ -2323,7 +2414,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; },
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
