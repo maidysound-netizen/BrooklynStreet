@@ -2203,7 +2203,7 @@ class Boss extends Enemy {
   get name() { return L('bossName', { c: CREWS[this.crew].name }); }
   constructor(x, z, crew) {
     super(x, z, crew, districtAt(x, z));
-    this.boss = true; this.hunter = true;
+    this.boss = true;   // not a hunter: the boss guards the bridge and waits for you
     this.g.scale.setScalar(1.55);
     this.maxHp = this.hp = BOSS_HP[crew];
     this.speed = 3.8; this.pref = 16;
@@ -2243,6 +2243,13 @@ class Boss extends Enemy {
   update(dt) {
     if (this.dead) return super.update(dt);
     const p = this.g.position, dx = player.pos.x - p.x, dz = player.pos.z - p.z, dist = Math.hypot(dx, dz);
+    // leash: never chase more than ~45m away from the bridge; out of range, walk back and pace under it
+    const fromHome = Math.hypot(p.x - BOSS_SPOT.x, p.z - BOSS_SPOT.z);
+    if (fromHome > 45 && this.mode === 'normal') { this.los = false; this.foe = null; this.losT = 0.5; }
+    if (!this.los) {   // pace back and forth right under the bridge
+      if (!this.pace || Math.hypot(p.x - this.pace.x, p.z - this.pace.z) < 2) this.pace = { x: BOSS_SPOT.x + (this.pace && this.pace.x > BOSS_SPOT.x ? -7 : 7), z: BOSS_SPOT.z };
+      this.wp = this.pace; this.target.set(BOSS_SPOT.x, BOSS_SPOT.z); this.retargetT = 1;
+    }
     if (this.mode === 'wind') {   // telegraph: flashes white and glares at you
       this.windT -= dt;
       this.hood.emissive.setHex(Math.sin(t * 40) > 0 ? 0xffffff : 0x000000);
