@@ -84,7 +84,6 @@
   body.touch #mag { font-size:28px; }
   body.touch #res { font-size:15px; }
   #rot { display:none; margin-bottom:14px; padding:8px 14px; border-radius:6px; background:rgba(242,183,5,.9); color:#111; font:800 14px system-ui,sans-serif; }
-  @media (orientation: portrait) { body.touch #rot { display:inline-block; } }
   @media (max-width: 480px) { #menu h1 { font-size:44px; } }
   @media (max-width: 640px) {
     #msg { font-size:30px; letter-spacing:2px; }
@@ -178,6 +177,35 @@
     #menu .go { padding:10px 26px; font-size:18px; }
     #chars { margin-bottom:10px; gap:6px; }
     .ch { width:118px; padding:5px 6px; } .ch .ic { font-size:18px; } .ch b { font-size:14px; margin:0; } .ch small { font-size:10.5px; }
+  }
+  /* phone held upright: info on top, controls along the bottom */
+  @media (orientation: portrait) {
+    body.touch #top { left:12px; top:8px; max-width:58vw; }
+    body.touch #wave { font-size:18px; letter-spacing:1px; }
+    body.touch #score { font-size:13px; }
+    body.touch #left, body.touch #clock { font-size:11px; }
+    body.touch #wanted { font-size:16px; }
+    body.touch #map { width:100px; height:100px; right:10px; top:10px; }
+    body.touch #bPause, body.touch #bCrew, body.touch #bLight { left:auto; margin-left:0; top:118px; height:40px; }
+    body.touch #bPause { right:10px; width:40px; }
+    body.touch #bCrew { right:56px; width:52px; }
+    body.touch #bLight { right:114px; width:40px; }
+    body.touch #hp { left:12px; top:124px; bottom:auto; transform:none; }
+    body.touch #hp .bar { width:90px; }
+    body.touch #ammo { left:12px; top:150px; }
+    body.touch #mag { font-size:24px; }
+    body.touch #feed { top:172px; right:10px; max-width:58vw; font-size:11px; }
+    body.touch #nav { top:204px; max-width:92vw; white-space:normal; text-align:center; }
+    body.touch #bossbar { top:240px; width:82vw; }
+    body.touch #prompt { top:280px; }
+    body.touch #talk { top:330px; }
+    body.touch #msg { top:36%; font-size:28px; letter-spacing:2px; }
+    body.touch #stick { left:20px; bottom:40px; }
+    body.touch #bFire { right:18px; bottom:40px; width:96px; height:96px; }
+    body.touch #bAim { right:124px; bottom:24px; width:58px; height:58px; }
+    body.touch #bReload { right:128px; bottom:96px; width:50px; height:50px; }
+    body.touch #bJump { right:28px; bottom:150px; width:58px; height:58px; }
+    body.touch #bTurn { right:112px; bottom:160px; width:50px; height:50px; }
   }
 </style>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
@@ -1322,7 +1350,7 @@ $('menu').addEventListener('click', () => {
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
   if (TOUCH) {
     const fs = document.documentElement.requestFullscreen?.();
-    if (fs && fs.then) fs.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+    if (fs && fs.catch) fs.catch(() => {});   // portrait and landscape both work, so no orientation lock
     return;
   }
   const r = renderer.domElement.requestPointerLock?.();
@@ -2558,7 +2586,8 @@ function update(dt) {
   recoil *= Math.max(0, 1 - dt * 7);
   camera.position.set(player.pos.x, player.y + 1.7 + bob, player.pos.z);
   camera.rotation.set(pitch + recoil, yaw, 0);
-  camera.fov += ((aiming ? cls.fov : 75) - camera.fov) * Math.min(1, dt * 12); camera.updateProjectionMatrix();
+  const bf = baseFov();
+  camera.fov += ((aiming ? cls.fov * bf / 75 : bf) - camera.fov) * Math.min(1, dt * 12); camera.updateProjectionMatrix();
 
   fireT -= dt;
   if (reloading && (reloadT -= dt) <= 0) {
@@ -2657,11 +2686,16 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 
-addEventListener('resize', () => {
+// a tall phone screen needs a taller vertical field of view, or you'd see the world through a slit
+function baseFov() { return camera.aspect < 1 ? 98 : 75; }
+function fitView() {
   renderer.setSize(innerWidth, innerHeight);
   camera.aspect = gunCam.aspect = innerWidth / innerHeight;
+  camera.fov = baseFov(); gunCam.fov = camera.aspect < 1 ? 78 : 55;
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
-});
+}
+addEventListener('resize', fitView);
+fitView();
 
 window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
   // test hook: advance the simulation without waiting for animation frames
