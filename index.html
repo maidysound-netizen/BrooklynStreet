@@ -75,6 +75,7 @@
   #bTurn { right:150px; bottom:186px; width:54px; height:54px; font-size:22px; }
   #opts { display:none; margin:0 auto 14px; gap:18px; justify-content:center; align-items:center; font:700 14px system-ui,sans-serif; cursor:default; }
   body.touch #opts { display:flex; }
+  #sndHint { display:inline-block; margin:0 auto 12px; padding:7px 16px; border-radius:20px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35); font:800 13px system-ui,sans-serif; cursor:pointer; animation:pulse 1.4s infinite; }
   #vol { display:flex; margin:0 auto 12px; gap:18px; justify-content:center; align-items:center; flex-wrap:wrap; font:700 14px system-ui,sans-serif; cursor:default; }
   #vol input { width:110px; vertical-align:middle; accent-color:#f2b705; }
   #opts input[type=range] { width:110px; vertical-align:middle; accent-color:#f2b705; }
@@ -279,6 +280,7 @@
     <h1>BROOKLYN<br>STREETS</h1>
     <h2 id="sub">브루클린 3D FPS</h2>
     <div id="stat" class="stat hidden"></div>
+    <div id="sndHint" class="hidden">🔈 화면을 터치하면 음악이 나와요</div>
     <div id="vol">
       <label>🎵 음악 <input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5"></label>
       <label>🔊 효과음 <input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4"></label>
@@ -1387,12 +1389,35 @@ $('vol').addEventListener('click', e => e.stopPropagation());
 const bgm = new Audio('bgm.mp3');
 bgm.loop = true; bgm.preload = 'auto';
 const BGM_MAX = 0.35;   // even at 100% the music stays under the gunfire
-const applyVolume = () => { bgm.volume = settings.bgm * BGM_MAX; if (master) master.gain.value = settings.sfx; };
+// iPhone Safari ignores audio.volume, so once sound is unlocked the music goes through a Web Audio gain instead
+let bgmGain = null;
+function routeBgm() {
+  if (bgmGain || !actx || !location.protocol.startsWith('http')) return;   // file:// pages can't route media this way
+  try {
+    bgmGain = actx.createGain();
+    actx.createMediaElementSource(bgm).connect(bgmGain).connect(actx.destination);
+    bgm.volume = 1;
+  } catch { bgmGain = null; }
+}
+const applyVolume = () => {
+  const v = settings.bgm * BGM_MAX;
+  if (bgmGain) bgmGain.gain.value = v; else bgm.volume = v;
+  if (master) master.gain.value = settings.sfx;
+};
 applyVolume();
 function playBgm() { if (settings.bgm > 0 && bgm.paused) bgm.play().catch(() => {}); }
-$('bgmVol').addEventListener('input', e => { settings.bgm = +e.target.value; applyVolume(); saveSettings(); if (settings.bgm > 0) playBgm(); else bgm.pause(); });
+// browsers only allow sound after the first touch, click or key press, so start the music on whichever comes first
+function unlockSound() { audio(); routeBgm(); applyVolume(); playBgm(); }
+for (const ev of ['pointerdown', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockSound, { passive: true });
+const syncSndHint = () => $('sndHint').classList.toggle('hidden', !bgm.paused || settings.bgm === 0);
+bgm.addEventListener('play', syncSndHint); bgm.addEventListener('pause', syncSndHint);
+$('sndHint').addEventListener('click', e => { e.stopPropagation(); unlockSound(); });
+playBgm();   // works right away only if the browser already allows sound for this site
+syncSndHint();
+$('bgmVol').addEventListener('input', e => { settings.bgm = +e.target.value; applyVolume(); saveSettings(); if (settings.bgm > 0) playBgm(); else bgm.pause(); syncSndHint(); });
 $('sfxVol').addEventListener('input', e => { settings.sfx = +e.target.value; applyVolume(); saveSettings(); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else if (state !== 'menu') playBgm(); });
+$('sfxVol').addEventListener('change', () => { audio(); applyVolume(); bang(0.55, 3500, 0.22); });   // test shot at the new level
+document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else playBgm(); });
 $('sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); });
 $('autoF').addEventListener('change', e => { settings.autoFire = e.target.checked; saveSettings(); });
 if (TOUCH) {
