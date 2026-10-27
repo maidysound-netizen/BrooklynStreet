@@ -92,6 +92,8 @@
   #bReload { right:156px; bottom:116px; width:56px; height:56px; }
   #bJump { right:44px; bottom:176px; width:64px; height:64px; }
   #bTurn { right:150px; bottom:186px; width:54px; height:54px; font-size:22px; }
+  #bSwap { right:222px; bottom:146px; width:56px; height:56px; font-size:22px; }
+  #wname { font:800 13px system-ui,sans-serif; opacity:.9; }
   #opts { display:none; margin:0 auto 14px; gap:18px; justify-content:center; align-items:center; font:700 14px system-ui,sans-serif; cursor:default; }
   body.touch #opts { display:flex; }
   #langs { display:inline-flex; gap:2px; margin-bottom:14px; padding:3px; border-radius:20px; background:rgba(255,255,255,.1); font:800 13px system-ui,sans-serif; cursor:default; }
@@ -235,6 +237,7 @@
     body.touch #bReload { right:128px; bottom:96px; width:50px; height:50px; }
     body.touch #bJump { right:28px; bottom:150px; width:58px; height:58px; }
     body.touch #bTurn { right:112px; bottom:160px; width:50px; height:50px; }
+    body.touch #bSwap { right:184px; bottom:122px; width:50px; height:50px; }
   }
 </style>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
@@ -253,7 +256,7 @@
   <div id="talk"></div>
   <div id="nav" class="hidden"></div>
   <div id="bossbar" class="hidden"><div id="bossname"></div><div class="bb"><div id="bossfill"></div></div></div>
-  <div id="ammo"><span id="mag">30</span><span id="res">/ 120</span><div id="rl"></div></div>
+  <div id="ammo"><div id="wname"></div><span id="mag">30</span><span id="res">/ 120</span><div id="rl"></div></div>
   <div id="msg"></div>
   <div id="touch">
     <div id="stick"><div id="knob"></div></div>
@@ -265,6 +268,7 @@
     <div class="tb" id="bPause" data-b="pause">❚❚</div>
     <div class="tb" id="bCrew" data-b="crew" data-i18n="crewBtn">크루</div>
     <div class="tb" id="bLight" data-b="light">🔦</div>
+    <div class="tb hidden" id="bSwap" data-b="swap">🔁</div>
   </div>
 </div>
 <div id="portal" class="hidden">
@@ -327,7 +331,7 @@
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-      <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
       <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
@@ -386,17 +390,17 @@ const STR = {
   keysDesktop: [
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
      <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-     <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+     <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
      <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move · <kbd>Shift</kbd> Sprint · <kbd>Space</kbd> Jump</li>
      <li><kbd>Mouse</kbd> Look · <kbd>Left click</kbd> Shoot · <kbd>Right click</kbd> Aim</li>
-     <li><kbd>R</kbd> Reload · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
+     <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
      <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Brooklyn</b></li>
      <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移動 · <kbd>Shift</kbd> ダッシュ · <kbd>Space</kbd> ジャンプ</li>
      <li><kbd>マウス</kbd> 視点 · <kbd>左クリック</kbd> 射撃 · <kbd>右クリック</kbd> エイム</li>
-     <li><kbd>R</kbd> リロード · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
+     <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
      <li>🎯 目標：ライバルクルーを追い出し、<b>ブルックリンの9地区</b>をすべて制圧しよう</li>
      <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
   ],
@@ -495,6 +499,12 @@ const STR = {
   mapLabel: ['🗺️ 노선도 · 열차 타기', '🗺️ Subway map · Ride the train', '🗺️ 路線図・電車に乗る'],
   item_hp: ['샌드위치 (체력 +50)', 'Sandwich (HP +50)', 'サンドイッチ（体力 +50）'],
   item_ammo: ['탄약 상자 (+60발)', 'Ammo box (+60 rounds)', '弾薬ボックス（+60発）'],
+  item_shotgun: ['펌프 샷건 (가까이서 한 방이 아주 셈)', 'Pump shotgun (huge close-range blast)', 'ポンプショットガン（近距離の一撃が強力）'],
+  owned: ['보유 중', 'Owned', '所持中'],
+  w_rifle: ['소총', 'Rifle', 'ライフル'],
+  w_shotgun: ['샷건', 'Shotgun', 'ショットガン'],
+  swapTip: ['Q 키 · 숫자 1/2 · 마우스 휠로 무기 교체', 'Switch weapons with Q, 1/2 or the mouse wheel', 'Qキー・1/2・マウスホイールで武器切り替え'],
+  swapTipTouch: ['🔁 버튼으로 무기 교체', 'Tap 🔁 to switch weapons', '🔁ボタンで武器切り替え'],
   item_armor: ['방탄조끼 (피해 60% 흡수, 50)', 'Body armor (absorbs 60% of damage, 50)', '防弾ベスト（ダメージ60%吸収・50）'],
   repCost: ['평판 {c}', 'Rep {c}', '評判 {c}'],
   full: ['가득 참', 'Full', '満タン'],
@@ -1508,6 +1518,21 @@ const gun = new THREE.Group(); gunScene.add(gun);
   p(new THREE.BoxGeometry(0.09, 0.075, 0.14), glove, 0.005, -0.07, 0.12);
   p(new THREE.BoxGeometry(0.1, 0.07, 0.15), glove, 0, -0.05, -0.27);
 }
+// pump shotgun, shown instead of the rifle once you buy it at a bodega
+const rifleParts = [...gun.children];
+const shotgunModel = new THREE.Group(); shotgunModel.visible = false; gun.add(shotgunModel);
+{
+  const dark = std(0x1b1c1e, { metalness: 0.7, roughness: 0.4 }), wood = std(0x7a4a26, { roughness: 0.7 }), glove = std(0x2a2420);
+  const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; shotgunModel.add(o); };
+  p(new THREE.BoxGeometry(0.075, 0.1, 0.3), dark, 0, 0, 0.02);
+  p(new THREE.CylinderGeometry(0.022, 0.022, 0.62, 12).rotateX(Math.PI / 2), dark, 0, 0.028, -0.43);
+  p(new THREE.CylinderGeometry(0.017, 0.017, 0.5, 10).rotateX(Math.PI / 2), dark, 0, -0.018, -0.37);
+  p(new THREE.BoxGeometry(0.08, 0.07, 0.2), wood, 0, -0.022, -0.3);
+  p(new THREE.BoxGeometry(0.066, 0.1, 0.28), wood, 0, -0.03, 0.3, 0.12);
+  p(new THREE.BoxGeometry(0.012, 0.016, 0.012), std(0xd4af37, { metalness: 0.8 }), 0, 0.055, -0.72);
+  p(new THREE.BoxGeometry(0.09, 0.075, 0.14), glove, 0.005, -0.07, 0.12);
+  p(new THREE.BoxGeometry(0.1, 0.07, 0.15), glove, 0, -0.06, -0.3);
+}
 const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffd090, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
 flash.position.set(0, 0.01, -0.6); flash.visible = false; gun.add(flash);
 const HIP = new THREE.Vector3(0.2, -0.2, -0.46), ADS = new THREE.Vector3(0, -0.115, -0.36);
@@ -1550,6 +1575,29 @@ function applyClass() {
 }
 let yaw = Math.PI * 0.75, pitch = 0, recoil = 0;
 let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing = false, aiming = false, kick = 0;
+
+// ---------- weapons ----------
+const WEAPONS = {
+  rifle:   { mag: 30, reload: 1.6, pellets: 1, icon: '🔫', get name() { return L('w_rifle'); } },
+  shotgun: { mag: 6, reload: 2.1, pellets: 9, rate: 0.72, icon: '💥', get name() { return L('w_shotgun'); } },
+};
+const owned = { rifle: true }, mags = { rifle: 30, shotgun: 6 };
+let weapon = 'rifle', swapT = 0, wheelT = 0;
+const W = () => WEAPONS[weapon];
+function switchWeapon(k) {
+  if (!k || k === weapon || !owned[k] || (state !== 'play' && state !== 'shop')) return;
+  mags[weapon] = ammo; weapon = k; ammo = mags[k];
+  reloading = false; document.getElementById('rl').textContent = '';
+  swapT = 0.35; fireT = Math.max(fireT, 0.3);
+  rifleParts.forEach(m => { m.visible = k === 'rifle'; });
+  shotgunModel.visible = k === 'shotgun';
+  flash.position.z = k === 'shotgun' ? -0.76 : -0.6;
+  beep(300, 0.04, 0.06, 'square'); setTimeout(() => beep(420, 0.05, 0.06, 'square'), 120);
+}
+function nextWeapon() {
+  const ks = Object.keys(WEAPONS).filter(k => owned[k]);
+  switchWeapon(ks[(ks.indexOf(weapon) + 1) % ks.length]);
+}
 let state = 'menu', score = 0, kills = 0, wave = 1, toSpawn = 0, spawnT = 0, hadLock = false, t = 0;
 let zone = 'street', busy = false, lockMsgT = 0;
 const DOOR_CAPS = 2;   // capture this many districts to unlock the Takako World door
@@ -1563,6 +1611,9 @@ addEventListener('keydown', e => {
   if (state === 'metro') { if (['KeyE', 'Escape'].includes(e.code)) closeMetro(); return; }
   if (e.code === 'KeyE') { useNPC(); return; }
   if (e.code === 'KeyF') { toggleFlashlight(); return; }
+  if (e.code === 'KeyQ') { nextWeapon(); return; }
+  if (e.code === 'Digit1') { switchWeapon('rifle'); return; }
+  if (e.code === 'Digit2') { switchWeapon('shotgun'); return; }
   if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
   keys[e.code] = true;
   if (e.code === 'KeyR') startReload();
@@ -1580,6 +1631,10 @@ addEventListener('mousedown', e => {
   if (!TOUCH && !document.pointerLockElement) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); } if (e.button === 0) firing = true; if (e.button === 2) aiming = true; });
 addEventListener('mouseup', e => { if (e.button === 0) firing = false; if (e.button === 2) aiming = false; });
 addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('wheel', () => {   // mouse wheel switches weapons (one switch per flick)
+  if (state !== 'play' || performance.now() < wheelT) return;
+  wheelT = performance.now() + 300; nextWeapon();
+}, { passive: true });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; firing = aiming = false; });
 
 $('menu').addEventListener('click', () => {
@@ -1685,6 +1740,7 @@ if (TOUCH) {
       else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
       else if (b === 'crew') { openCrew(); $('bAim').classList.remove('on'); }
       else if (b === 'light') toggleFlashlight();
+      else if (b === 'swap') nextWeapon();
       else if (t.clientX < innerWidth * 0.4 && joy.id === null) {
         Object.assign(joy, { id: t.identifier, ox: t.clientX, oy: t.clientY });
         Object.assign(stick.style, { left: t.clientX - 60 + 'px', top: t.clientY - 60 + 'px', bottom: 'auto' });
@@ -1736,8 +1792,8 @@ function feed(text, color = '#fff') {
   $('feed').prepend(d); setTimeout(() => d.remove(), 2500);
 }
 function startReload() {
-  if (state !== 'play' || reloading || ammo === 30 || reserve === 0) return;
-  reloading = true; reloadT = 1.6; $('rl').textContent = L('reloading');
+  if (state !== 'play' || reloading || ammo === W().mag || reserve === 0) return;
+  reloading = true; reloadT = W().reload; $('rl').textContent = L('reloading');
   beep(320, 0.06, 0.08); setTimeout(() => beep(520, 0.06, 0.08), 900);
 }
 
@@ -2399,6 +2455,8 @@ function useNPC() { if (state === 'play' && nearNPC) nearNPC.use(); }
 
 // ---------- bodega shop ----------
 const SHOP = [
+  { k: 'shotgun', icon: '💥', get name() { return L('item_shotgun'); }, cost: 200, done: 'owned', ok: () => !owned.shotgun,
+    buy: () => { owned.shotgun = true; reserve += 18; switchWeapon('shotgun'); feed(L(TOUCH ? 'swapTipTouch' : 'swapTip'), '#ffd23f'); } },
   { k: 'hp', icon: '🥪', get name() { return L('item_hp'); }, cost: 40, ok: () => player.hp < player.maxHp, buy: () => { player.hp = Math.min(player.maxHp, player.hp + 50); } },
   { k: 'ammo', icon: '📦', get name() { return L('item_ammo'); }, cost: 30, ok: () => true, buy: () => { reserve += 60; } },
   { k: 'armor', icon: '🦺', get name() { return L('item_armor'); }, cost: 80, ok: () => player.armor < 50, buy: () => { player.armor = 50; } },
@@ -2406,7 +2464,7 @@ const SHOP = [
 function renderShop() {
   document.getElementById('items').innerHTML = SHOP.map(it => {
     const can = rep >= it.cost && it.ok();
-    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>${L('repCost', { c: it.cost })}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${L(!it.ok() ? 'full' : rep < it.cost ? 'noRep' : 'buy')}</div></div>`;
+    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>${L('repCost', { c: it.cost })}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${L(!it.ok() ? (it.done || 'full') : rep < it.cost ? 'noRep' : 'buy')}</div></div>`;
   }).join('') + `<div style="text-align:right;font-weight:800;margin:4px 2px 8px">${L('myRep')} <span style="color:var(--yellow)">${rep}</span></div>`;
 }
 function openShop(d) {
@@ -2667,37 +2725,51 @@ function findAssistTarget() {
   return best;
 }
 function fire() {
-  ammo--; fireT = cls.rate; kick = 1;
+  const shot = weapon === 'shotgun';
+  ammo--; fireT = shot ? W().rate : cls.rate; kick = shot ? 1.8 : 1;
   heat = Math.min(HEAT_MAX, heat + 1); lastShotT = t;
-  const sp = Math.hypot(player.vel.x, player.vel.z);
-  let spread = 0.006 + Math.min(sp, 10) * 0.003 + (player.onGround ? 0 : 0.05);
-  if (aiming) spread *= cls.fov < 40 ? 0.12 : 0.3;
-  const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * spread;
-  ndc.set(Math.cos(a) * r, Math.sin(a) * r * camera.aspect);
-  rc.setFromCamera(ndc, camera);
-  // touch: shots close enough to the assisted target go straight at it (walls still block)
-  if (assistTgt && assistTgt.ang < 0.09) rc.set(camera.position, assistTgt.dir);
-  const hits = rc.intersectObjects(enemyParts.concat(staticHit), false);
-  const h = hits[0];
-  if (h) {
+  const sp = Math.hypot(player.vel.x, player.vel.z), air = player.onGround ? 0 : 0.05;
+  let spread;
+  if (shot) spread = (aiming ? 0.045 : 0.075) + air;   // a wide cone of 9 pellets
+  else {
+    spread = 0.006 + Math.min(sp, 10) * 0.003 + air;
+    if (aiming) spread *= cls.fov < 40 ? 0.12 : 0.3;
+  }
+  const targets = enemyParts.concat(staticHit), dealt = new Map();
+  for (let k = 0; k < W().pellets; k++) {
+    const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * spread;
+    ndc.set(Math.cos(a) * r, Math.sin(a) * r * camera.aspect);
+    rc.setFromCamera(ndc, camera);
+    // touch: shots close enough to the assisted target go straight at it (walls still block)
+    if (k === 0 && assistTgt && assistTgt.ang < 0.09) rc.set(camera.position, assistTgt.dir);
+    const h = rc.intersectObjects(targets, false)[0];
+    if (!h) continue;
     const e = h.object.userData.enemy;
     if (e) {
       const head = h.object.userData.head;
-      e.damage(head ? 140 : rand(26, 36) * cls.dmg, head);
-      spark(h.point, 0xaa1010, 8, 0.3);
-      const hm = $('hitm'); hm.className = head ? 'head' : ''; hm.style.opacity = 1;
-      clearTimeout(fire.t); fire.t = setTimeout(() => hm.style.opacity = 0, 90);
-      beep(head ? 1400 : 900, 0.05, 0.08);
+      const d = head ? (shot ? 45 : 140) : rand(26, shot ? 34 : 36) * cls.dmg;
+      const v = dealt.get(e) || { d: 0, head: false };
+      v.d += d; v.head = v.head || head; dealt.set(e, v);
+      spark(h.point, 0xaa1010, shot ? 3 : 8, 0.3);
     } else {
-      spark(h.point);
-      if (h.instanceId === undefined) decal(h);
+      spark(h.point, 0xffd080, shot ? 2 : 6);
+      if (h.instanceId === undefined && k < 3) decal(h);
     }
   }
-  recoil += aiming ? 0.008 : 0.014;
-  yaw += rand(-0.003, 0.003);
-  flash.visible = true; flash.material.rotation = Math.random() * 6; flash.scale.setScalar(rand(0.25, 0.4));
-  flashLight.position.copy(camera.position); flashLight.intensity = 30;
-  bang(0.55, 3500, 0.22);
+  // all pellets that hit the same person land as one hit (bosses still cap single headshots)
+  let headAny = false;
+  for (const [e, v] of dealt) { e.damage(v.d, v.head && !e.boss); headAny = headAny || v.head; }
+  if (dealt.size) {
+    const hm = $('hitm'); hm.className = headAny ? 'head' : ''; hm.style.opacity = 1;
+    clearTimeout(fire.t); fire.t = setTimeout(() => hm.style.opacity = 0, 90);
+    beep(headAny ? 1400 : 900, 0.05, 0.08);
+  }
+  recoil += shot ? 0.05 : aiming ? 0.008 : 0.014;
+  yaw += rand(-0.003, 0.003) * (shot ? 3 : 1);
+  flash.visible = true; flash.material.rotation = Math.random() * 6; flash.scale.setScalar(shot ? rand(0.5, 0.7) : rand(0.25, 0.4));
+  flashLight.position.copy(camera.position); flashLight.intensity = shot ? 55 : 30;
+  if (shot) { bang(0.85, 2000, 0.45); setTimeout(() => beep(180, 0.06, 0.05, 'square'), 380); }   // boom, then the pump
+  else bang(0.55, 3500, 0.22);
 }
 
 // ---------- minimap ----------
@@ -2890,7 +2962,7 @@ function update(dt) {
 
   fireT -= dt;
   if (reloading && (reloadT -= dt) <= 0) {
-    const n = Math.min(30 - ammo, reserve); ammo += n; reserve -= n; reloading = false; $('rl').textContent = '';
+    const n = Math.min(W().mag - ammo, reserve); ammo += n; reserve -= n; reloading = false; $('rl').textContent = '';
   }
   if (turnLeft > 0) { const step = Math.min(turnLeft, dt * Math.PI / 0.22); yaw += step; turnLeft -= step; }
   let autoFire = false;
@@ -2937,7 +3009,8 @@ function update(dt) {
   gun.position.y += Math.abs(Math.cos(t * 9)) * 0.01 * gb * (aiming ? 0.2 : 1) - (sprint ? 0.05 : 0);
   gun.position.z += kick * 0.05;
   let rx = kick * 0.07, ry = sprint ? 0.6 : 0;
-  if (reloading) { const k = Math.sin((1 - reloadT / 1.6) * Math.PI); rx -= k * 0.7; gun.position.y -= k * 0.12; }
+  if (reloading) { const k = Math.sin((1 - reloadT / W().reload) * Math.PI); rx -= k * 0.7; gun.position.y -= k * 0.12; }
+  if (swapT > 0) { swapT -= dt; const k = Math.sin(Math.max(0, swapT) / 0.35 * Math.PI); rx -= k * 0.5; gun.position.y -= k * 0.18; }
   gun.rotation.x += (rx - gun.rotation.x) * Math.min(1, dt * 20);
   gun.rotation.y += (ry - gun.rotation.y) * Math.min(1, dt * 10);
   if (flash.visible && fireT < 0.06) flash.visible = false;
@@ -2953,7 +3026,9 @@ function update(dt) {
   $('hpt').textContent = Math.max(0, Math.ceil(player.hp));
   $('armor').textContent = player.armor > 0 ? `🦺${Math.ceil(player.armor)}` : '';
   $('mag').textContent = ammo; $('res').textContent = '/ ' + reserve;
-  $('mag').style.color = ammo <= 5 ? '#ff3b30' : '#fff';
+  $('mag').style.color = ammo <= Math.ceil(W().mag / 6) ? '#ff3b30' : '#fff';
+  $('wname').textContent = owned.shotgun ? `${W().icon} ${W().name}` : '';
+  $('bSwap').classList.toggle('hidden', !owned.shotgun);
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
   $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
@@ -3128,7 +3203,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
