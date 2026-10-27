@@ -117,11 +117,14 @@
   .ch.on { border-color:var(--yellow); background:rgba(242,183,5,.18); }
   #prompt { position:absolute; left:50%; bottom:90px; transform:translateX(-50%); padding:8px 16px; border-radius:20px; background:rgba(0,0,0,.65); font:800 15px system-ui,sans-serif; white-space:nowrap; }
   #prompt kbd { background:#fff; color:#111; border-radius:4px; padding:0 6px; margin-right:6px; }
-  body.touch #prompt { bottom:auto; top:64px; pointer-events:auto; z-index:5; padding:12px 20px; background:rgba(30,132,73,.9); }
+  body.touch #prompt { bottom:auto; top:100px; pointer-events:auto; z-index:5; padding:12px 20px; background:rgba(30,132,73,.9); }
   #talk { position:absolute; left:50%; bottom:130px; transform:translateX(-50%); max-width:min(560px,86vw); padding:12px 18px; border-radius:14px; background:#fff; color:#111; font:700 15px/1.45 system-ui,sans-serif; box-shadow:0 6px 20px rgba(0,0,0,.4); opacity:0; transition:opacity .25s; }
   #talk b { color:#b9770e; }
-  body.touch #talk { bottom:auto; top:110px; }
+  body.touch #talk { bottom:auto; top:146px; }
   #armor { font:800 15px system-ui,sans-serif; color:#7fc8ff; }
+  #nav { position:absolute; left:50%; top:16px; transform:translateX(-50%); padding:7px 14px; border-radius:18px; background:rgba(0,0,0,.6); font:800 14px system-ui,sans-serif; white-space:nowrap; border:2px solid #ffa630; }
+  #nav .arw { display:inline-block; color:#ffa630; font-size:16px; }
+  body.touch #nav { top:62px; font-size:12px; }
   #shop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
   #shop .cbox { width:min(460px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
   #shop h3 { margin:0 0 4px; font:900 22px "Arial Black",Impact,sans-serif; color:#3ddc84; }
@@ -173,6 +176,7 @@
   <div id="hp"><div id="hpl">HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span><span id="armor"></span></div>
   <div id="prompt" class="hidden"></div>
   <div id="talk"></div>
+  <div id="nav" class="hidden"></div>
   <div id="ammo"><span id="mag">30</span><span id="res">/ 120</span><div id="rl"></div></div>
   <div id="msg"></div>
   <div id="touch">
@@ -1466,7 +1470,7 @@ class Enemy {
     // without a target in sight: hunt you inside their own turf, otherwise patrol it
     if (!this.los && (this.retargetT -= dt) <= 0) {
       this.retargetT = rand(3, 6);
-      if (zone === 'street' && (this.crew === 'police' || districtAt(player.pos.x, player.pos.z) === this.home)) this.target.set(player.pos.x, player.pos.z);
+      if (zone === 'street' && (this.crew === 'police' || this.hunter || districtAt(player.pos.x, player.pos.z) === this.home)) this.target.set(player.pos.x, player.pos.z);
       else { const ns = districtNodes(this.home), n = ns[Math.floor(Math.random() * ns.length)]; this.target.set(n.x, n.z); }
     }
     let mx = 0, mz = 0, face = null;
@@ -1633,8 +1637,89 @@ for (const d of DISTRICTS) {
   prop(box1, 0xe9d4b0, x + 1.4, 1.29, z - 0.2, 0.5, 0.08, 0.5);
   signBoard('🍕 BROOKLYN SLICE', '#b3221b', '#fff', x, 4.3, z - 1.2, 0, 3.8);
   addNPC(x, z, { hood: 0xffffff, cap: 0xffffff, jeans: 0x2b2b2b, apron: 0xb3221b },
-    () => '피자집 사장님 · 말 걸기',
-    () => talk('피자집 사장님', ['어이! 요즘 배달할 피자가 산더미야. 조금만 기다려, 곧 일을 맡길게! 🍕', '우리 가게 피자는 브루클린 최고지. 배달 일은 곧 시작이야!', `${myCrew.name}? 이름 좋네! 동네가 조용해지면 배달 좀 부탁할게.`][Math.floor(Math.random() * 3)]));
+    () => delivery ? '피자집 사장님 · 배달 중!' : '피자집 사장님 · 🍕 배달 받기',
+    () => delivery ? talk('피자집 사장님', '뭐 해! 피자 식는다, 얼른 가!') : startDelivery());
+}
+
+// ---------- pizza delivery ----------
+const PIZZA_SHOP = { x: -1 * P - 6, z: H + 1.3 };   // same spot as the pizza owner above
+let delivery = null, deliveries = 0, nextJobT = 0;
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 60, 16, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0xffa630, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+const ring = new THREE.Mesh(new THREE.RingGeometry(1.0, 1.4, 32).rotateX(-Math.PI / 2),
+  new THREE.MeshBasicMaterial({ color: 0xffd060, transparent: true, opacity: 0.9, side: THREE.DoubleSide }));
+beam.visible = ring.visible = false; scene.add(beam, ring);
+// a pizza box held in your left hand while delivering
+const heldPizza = new THREE.Group();
+{
+  const boxM = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.06, 0.34), std(0xe9d4b0));
+  const logoM = new THREE.Mesh(new THREE.CircleGeometry(0.09, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xb3221b }));
+  logoM.position.y = 0.031; heldPizza.add(boxM, logoM);
+  heldPizza.position.set(-0.36, -0.3, -0.55); heldPizza.rotation.set(0.35, 0.3, 0.1); heldPizza.visible = false;
+  gunScene.add(heldPizza);
+}
+const nearestIdx = v => NODES.reduce((b, n, i) => Math.abs(n - v) < Math.abs(NODES[b] - v) ? i : b, 0);
+function startDelivery() {
+  if (nextJobT > t) { talk('피자집 사장님', '오븐에서 굽는 중이야! 잠깐만 기다려.'); return; }
+  const blocks = blockInfo.filter(b => !['park', 'court', 'ring'].includes(b.dist));
+  let pick = null;
+  for (let k = 0; k < 60 && !pick; k++) {
+    const b = blocks[Math.floor(Math.random() * blocks.length)];
+    const side = Math.floor(Math.random() * 4), along = rand(-12, 12), off = H + 0.9;
+    const x = b.cx + [off, -off, along, along][side], z = b.cz + [along, along, off, -off][side];
+    const d = Math.hypot(x - PIZZA_SHOP.x, z - PIZZA_SHOP.z);
+    if (d > 80 && d < 230 && z > -170) pick = { x, z, d };
+  }
+  if (!pick) return;
+  const total = Math.round(pick.d / (6.5 * cls.speed) + 18);
+  const addr = `${STREETNAMES_X[nearestIdx(pick.x)]} & ${STREETNAMES_Z[nearestIdx(pick.z)]}`;
+  delivery = { x: pick.x, z: pick.z, start: pick.d, timer: total, addr, district: districtAt(pick.x, pick.z).name, ambushed: false };
+  beam.position.set(pick.x, 30, pick.z); ring.position.set(pick.x, 0.3, pick.z);
+  beam.visible = ring.visible = true; heldPizza.visible = true;
+  talk('피자집 사장님', `${addr} (${delivery.district})로 라지 피자 하나! ${total}초 안에 가면 팁 두둑이 준대!`);
+  msg('🍕 배달 시작!', 1.8);
+}
+function endDelivery(ok) {
+  if (ok) {
+    const tip = Math.floor(delivery.timer), r = 40 + tip;
+    rep += r; score += 200; deliveries++;
+    msg('🍕 배달 완료!', 2); feed(`배달 완료 · 평판 +${r} (팁 ${tip})`, '#ffa630');
+    beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(990, 0.2, 0.1, 'triangle'), 120);
+  } else {
+    msg('피자가 식었다…', 2); feed('배달 실패 · 다시 받으러 가자', '#ff9f7a');
+  }
+  delivery = null; nextJobT = t + 5;
+  beam.visible = ring.visible = false; heldPizza.visible = false;
+}
+function updateDelivery(dt) {
+  const nav = document.getElementById('nav');
+  if (!delivery) { nav.classList.add('hidden'); return; }
+  delivery.timer -= dt;
+  beam.material.opacity = 0.25 + Math.sin(t * 4) * 0.1; ring.rotation.y += dt;
+  const d = Math.hypot(delivery.x - player.pos.x, delivery.z - player.pos.z);
+  if (zone === 'street' && d < 2.2) return endDelivery(true);
+  if (delivery.timer <= 0) return endDelivery(false);
+  // halfway there, a rival crew tries to grab the pizza
+  if (!delivery.ambushed && zone === 'street' && d < delivery.start * 0.55) {
+    delivery.ambushed = true;
+    const rivals = DISTRICTS.filter(x => x.owner !== 'me');
+    if (rivals.length) {
+      const crew = rivals[Math.floor(Math.random() * rivals.length)].owner;
+      const near = [];
+      for (const x of NODES) for (const z of NODES) { const nd = Math.hypot(x - player.pos.x, z - player.pos.z); if (nd > 25 && nd < 70) near.push({ x, z }); }
+      for (let k = 0; k < 2 && near.length; k++) {
+        const n = near.splice(Math.floor(Math.random() * near.length), 1)[0];
+        const e = new Enemy(n.x + rand(-2, 2), n.z + rand(-2, 2), crew, districtAt(n.x, n.z)); e.hunter = true; enemies.push(e);
+      }
+      rebuildParts(); feed(`🍕 ${CREWS[crew].name}가 피자를 노린다!`, CREWS[crew].css);
+    }
+  }
+  nav.classList.remove('hidden');
+  if (zone !== 'street') { nav.innerHTML = `🍕 지하철 밖으로! · ${Math.ceil(delivery.timer)}초`; return; }
+  const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw)), r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+  const v = new THREE.Vector3(delivery.x - player.pos.x, 0, delivery.z - player.pos.z);
+  const ang = Math.atan2(v.dot(r), v.dot(f));
+  nav.innerHTML = `<span class="arw" style="transform:rotate(${ang}rad)">▲</span> 🍕 ${delivery.addr} · ${Math.round(d)}m · <b style="color:${delivery.timer < 10 ? '#ff5a4a' : '#fff'}">${Math.ceil(delivery.timer)}초</b>`;
 }
 
 let talkTimer = 0;
@@ -1993,6 +2078,12 @@ function drawMap() {
   for (const e of enemies) if (!e.dead && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < radar) {
     mctx.fillStyle = e.C.css; mctx.beginPath(); mctx.arc(mx(e.g.position.x), mz(e.g.position.z), 3, 0, 7); mctx.fill(); mctx.stroke();
   }
+  if (delivery) {
+    mctx.strokeStyle = '#ffa630'; mctx.lineWidth = 2;
+    mctx.beginPath(); mctx.arc(mx(delivery.x), mz(delivery.z), 4 + Math.sin(t * 6) * 1.5, 0, 7); mctx.stroke();
+    mctx.fillStyle = '#ffa630'; mctx.beginPath(); mctx.arc(mx(delivery.x), mz(delivery.z), 2, 0, 7); mctx.fill();
+    mctx.strokeStyle = '#000'; mctx.lineWidth = 1;
+  }
   for (const c of policeCars) {
     mctx.fillStyle = Math.sin(t * 14) > 0 ? '#ff3030' : '#3060ff';
     mctx.fillRect(mx(c.g.position.x) - 3, mz(c.g.position.z) - 3, 6, 6);
@@ -2155,6 +2246,7 @@ function update(dt) {
   }
   for (const a of allies) a.update(dt);
   updatePolice(dt);
+  updateDelivery(dt);
   updateNPCs(dt);
   updateSubway(dt);
 
@@ -2231,7 +2323,9 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars };
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; },
+  // test hook: advance the simulation without waiting for animation frames
+  step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
 </body>
 </html>
