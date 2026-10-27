@@ -140,6 +140,17 @@
   .item .ic { font-size:24px; } .item .tx { flex:1; font-size:13px; } .item .tx b { display:block; font-size:15px; }
   .item .btn { padding:8px 12px; border-radius:6px; background:var(--yellow); color:#111; font-weight:900; cursor:pointer; white-space:nowrap; }
   .item .btn.off { background:#3a3a3a; color:#aaa; cursor:default; }
+  #metro { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
+  #metro .cbox { width:min(560px,94vw); max-height:92vh; overflow:auto; background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:16px; font-family:system-ui,sans-serif; }
+  #metro h3 { margin:0 0 4px; font:900 22px "Arial Black",Impact,sans-serif; display:flex; align-items:center; gap:8px; }
+  #metro .lb { display:inline-flex; width:30px; height:30px; border-radius:50%; background:#a7a9ac; color:#fff; align-items:center; justify-content:center; font-size:18px; }
+  #metro .say { font-size:13px; opacity:.8; margin-bottom:10px; }
+  #stations { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .stn { background:#221c17; border-radius:8px; border-left:5px solid; padding:8px; font-size:12px; }
+  .stn b { display:block; font-size:14px; } .stn span { opacity:.7; }
+  .stn .btn { margin-top:6px; padding:6px; text-align:center; border-radius:6px; background:var(--yellow); color:#111; font-weight:900; cursor:pointer; }
+  .stn .btn.off { background:#3a3a3a; color:#aaa; cursor:default; font-weight:700; }
+  #metro .close { margin-top:10px; text-align:center; padding:9px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #shop .close { margin-top:6px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
 
   /* subway fade + Takako World portal */
@@ -221,6 +232,14 @@
     <div class="say" id="shopSay">사장님: 어서 와! 필요한 거 있어?</div>
     <div id="items"></div>
     <div class="close" id="shopClose">닫기</div>
+  </div>
+</div>
+<div id="metro" class="hidden">
+  <div class="cbox">
+    <h3><span class="lb">L</span> 노선도</h3>
+    <div class="say">내 크루 구역의 역으로만 갈 수 있어요. 라이벌 구역 역은 셔터가 내려져 있어요.</div>
+    <div id="stations"></div>
+    <div class="close" id="metroClose">닫기</div>
   </div>
 </div>
 <div id="fade"></div>
@@ -570,6 +589,7 @@ function lamp(x, z, nx, nz) {
 }
 const LEAVES = [0x4d7a35, 0x5b8a3c, 0x3f6b2f, 0x6b8f3a, 0x7a8f35];
 function tree(x, z, y0 = 0.25, sc = 1) {
+  if (nearEntrance(x, z)) return;
   inst('trunk', geo.trunk, trunkMat, x, y0 + 1.6 * sc, z, { s: [sc, sc, sc] });
   const k = rr(0.85, 1.25) * sc;
   inst('canopy', geo.canopy, leafMat, x, y0 + 4.6 * sc, z, { s: [k, k * rr(0.8, 1), k], ry: rr(0, 6), color: pick(LEAVES) });
@@ -645,7 +665,17 @@ function blockProps(cx, cz, dist) {
   inst('hydrant', geo.hydrant, std(0xb3221b), hx, 0.65, hz);
 }
 
-const ENTRANCE = { x: 12, z: 37 };   // subway stairs in the park; the open side faces north
+// subway stairs, one per district (3x3 grid, north row first); the open side faces north.
+// Fort Greene's is in the park; the others sit on the east sidewalk of a block inside the district.
+const STATION_NAMES = ['York St', 'Lorimer St', 'Nassau Av', 'Clark St', 'Bedford Av', 'Myrtle-Wyckoff', '7 Av', 'Franklin Av', 'Nostrand Av'];
+const ENTRANCE_BLOCK = { 0: -2, 1: 1, 2: 2 };
+const ENTRANCES = STATION_NAMES.map((station, i) => {
+  const gx = i % 3, gz = Math.floor(i / 3);
+  if (gx === 1 && gz === 1) return { station, i, x: 12, z: 37 };
+  return { station, i, x: ENTRANCE_BLOCK[gx] * 50 + 17.5 + 1.5, z: ENTRANCE_BLOCK[gz] * 50 - 3 };
+});
+const ENTRANCE = ENTRANCES[4];
+const nearEntrance = (x, z, r = 3.5) => ENTRANCES.some(e => Math.hypot(e.x - x, e.z - z) < r);
 function park(cx, cz) {
   const gt = texOf(noiseTex('#4f7a34', 18, 256, 9000)); gt.repeat.set(6, 6);
   const grass = new THREE.Mesh(new THREE.PlaneGeometry(36, 36), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
@@ -864,9 +894,12 @@ const subwayCols = [];
 const DOOR_X = 30.2;
 let doorPivot, doorGlow, doorLight;
 const gears = [], doorSparks = [];
+let setStationName = () => {};
+let curStation = ENTRANCE;   // the entrance you came down (and will go back up)
 {
   // street entrance: dark stairwell, green railings, globe lamps, sign
-  const E = ENTRANCE, green = std(0x1f5a3a, { metalness: 0.4, roughness: 0.5 });
+  const green = std(0x1f5a3a, { metalness: 0.4, roughness: 0.5 });
+  for (const E of ENTRANCES) {
   for (let k = 0; k < 6; k++) {
     const st = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.68), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(0, 0, 0.3 - k * 0.055) }));
     st.rotation.x = -Math.PI / 2; st.position.set(E.x, 0.285, E.z - 1.7 + k * 0.68); scene.add(st);
@@ -882,11 +915,13 @@ const gears = [], doorSparks = [];
   addCol(E.x - 1.5, E.x + 1.5, E.z + 2, E.z + 2.2, true);
   const c = mkCanvas(512, 128), g = c.getContext('2d');
   g.fillStyle = '#111'; g.fillRect(0, 0, 512, 128);
-  g.fillStyle = '#fff'; g.font = 'bold 64px Arial'; g.textBaseline = 'middle'; g.fillText('Subway', 30, 66);
-  g.fillStyle = '#a7a9ac'; g.beginPath(); g.arc(420, 64, 44, 0, 7); g.fill();
-  g.fillStyle = '#fff'; g.font = 'bold 60px Arial'; g.textAlign = 'center'; g.fillText('L', 420, 68);
+  g.fillStyle = '#fff'; g.font = 'bold 54px Arial'; g.textBaseline = 'middle'; g.fillText('Subway', 30, 46);
+  g.font = 'bold 30px Arial'; g.fillStyle = '#cfd2d6'; g.fillText(E.station, 32, 100);
+  g.fillStyle = '#a7a9ac'; g.beginPath(); g.arc(430, 64, 44, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.font = 'bold 60px Arial'; g.textAlign = 'center'; g.fillText('L', 430, 68);
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.65), new THREE.MeshStandardMaterial({ map: texOf(c, false), side: THREE.DoubleSide }));
   sign.position.set(E.x, 1.55, E.z + 2.1); sign.rotation.y = Math.PI; scene.add(sign);
+  }
 
   // station box
   const tileC = mkCanvas(256, 256), tg = tileC.getContext('2d');
@@ -921,9 +956,30 @@ const gears = [], doorSparks = [];
     subwayCols.push({ minX: x - 1.5, maxX: x + 1.5, minZ: ZC - 4.2, maxZ: ZC - 3.4 });
   }
   const nameC = mkCanvas(512, 96), ng = nameC.getContext('2d');
-  ng.fillStyle = '#2f6b4f'; ng.fillRect(0, 0, 512, 96); ng.fillStyle = '#111'; ng.fillRect(8, 8, 496, 80);
-  ng.fillStyle = '#fff'; ng.font = 'bold 54px Arial'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText('Bedford Av', 256, 50);
   const nameMat = new THREE.MeshStandardMaterial({ map: texOf(nameC, false) });
+  // the platform's name signs change to whichever station you're at
+  setStationName = name => {
+    ng.fillStyle = '#2f6b4f'; ng.fillRect(0, 0, 512, 96); ng.fillStyle = '#111'; ng.fillRect(8, 8, 496, 80);
+    ng.fillStyle = '#fff'; ng.font = 'bold 54px Arial'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText(name, 256, 50);
+    nameMat.map.needsUpdate = true;
+  };
+  setStationName('Bedford Av');
+  // subway map board on the back wall
+  const mapC = mkCanvas(512, 340), mg = mapC.getContext('2d');
+  mg.fillStyle = '#f4f1e8'; mg.fillRect(0, 0, 512, 340);
+  mg.fillStyle = '#111'; mg.fillRect(0, 0, 512, 56);
+  mg.fillStyle = '#fff'; mg.font = 'bold 30px Arial'; mg.textBaseline = 'middle'; mg.fillText('BROOKLYN SUBWAY', 20, 30);
+  mg.fillStyle = '#a7a9ac'; mg.beginPath(); mg.arc(470, 28, 20, 0, 7); mg.fill();
+  mg.fillStyle = '#fff'; mg.font = 'bold 26px Arial'; mg.textAlign = 'center'; mg.fillText('L', 470, 30);
+  const sx = i => 90 + (i % 3) * 166, sz = i => 110 + Math.floor(i / 3) * 90;
+  mg.strokeStyle = '#a7a9ac'; mg.lineWidth = 10; mg.lineJoin = 'round'; mg.beginPath();
+  [0, 1, 2, 5, 4, 3, 6, 7, 8].forEach((i, k) => k ? mg.lineTo(sx(i), sz(i)) : mg.moveTo(sx(i), sz(i))); mg.stroke();
+  STATION_NAMES.forEach((n, i) => {
+    mg.fillStyle = '#fff'; mg.strokeStyle = '#111'; mg.lineWidth = 4; mg.beginPath(); mg.arc(sx(i), sz(i), 11, 0, 7); mg.fill(); mg.stroke();
+    mg.fillStyle = '#111'; mg.font = 'bold 18px Arial'; mg.fillText(n, sx(i), sz(i) + 28);
+  });
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 1.8), new THREE.MeshStandardMaterial({ map: texOf(mapC, false), emissive: 0xffffff, emissiveMap: texOf(mapC, false), emissiveIntensity: 0.25 }));
+  board.position.set(-20.5, SY + 1.3, ZC - 4.17); scene.add(board);   // below the green tile band
   for (const x of [-18, 0, 18]) { const n = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 0.6), nameMat); n.position.set(x, SY + 3.4, ZC - 4.18); scene.add(n); }
 
   // parked L train
@@ -1231,6 +1287,7 @@ const $ = id => document.getElementById(id);
 addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
+  if (state === 'metro') { if (['KeyE', 'Escape'].includes(e.code)) closeMetro(); return; }
   if (e.code === 'KeyE') { useNPC(); return; }
   if (e.code === 'KeyF') { toggleFlashlight(); return; }
   if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
@@ -1942,6 +1999,50 @@ function updateBoss(dt) {
   }
 }
 
+// ---------- L train fast travel ----------
+function renderMetro() {
+  document.getElementById('stations').innerHTML = ENTRANCES.map(e => {
+    const d = DISTRICTS[e.i], here = e === curStation, mine = d.owner === 'me';
+    const btn = here ? '<div class="btn off">현재 역</div>'
+      : mine ? `<div class="btn" data-go="${e.i}">이동</div>`
+      : `<div class="btn off">🔒 ${CREWS[d.owner].name}</div>`;
+    return `<div class="stn" style="border-color:${ownerCss(d.owner)}"><b>${e.station}</b><span>${d.name}</span>${btn}</div>`;
+  }).join('');
+}
+function openMetro() {
+  if (state !== 'play') return;
+  state = 'metro'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  renderMetro(); document.getElementById('metro').classList.remove('hidden');
+}
+function closeMetro(relock = true) {
+  if (state !== 'metro') return;
+  document.getElementById('metro').classList.add('hidden'); state = 'play';
+  if (relock && !TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+function rumble() {
+  if (!actx) return;
+  const now = actx.currentTime, src = actx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+  const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 180;
+  const g = actx.createGain(); g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(0.5, now + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+  src.connect(f).connect(g).connect(master); src.start(now); src.stop(now + 1.7);
+  beep(880, 0.25, 0.06, 'sine'); setTimeout(() => beep(698, 0.35, 0.06, 'sine'), 260);   // door chime
+}
+document.getElementById('stations').addEventListener('click', e => {
+  const i = e.target.dataset?.go; if (i === undefined) return;
+  const dest = ENTRANCES[+i];
+  closeMetro();
+  rumble(); msg(`🚇 다음 역: ${dest.station}`, 1.6);
+  fadeThen(() => {
+    curStation = dest; setStationName(dest.station);
+    placePlayer(-24.6, SY, ZC, -Math.PI / 2);
+    feed(`${dest.station} 도착 · ${DISTRICTS[dest.i].name}`, '#cfd2d6');
+  });
+});
+document.getElementById('metroClose').addEventListener('click', () => closeMetro());
+
 let talkTimer = 0;
 function talk(who, line) {
   const el = document.getElementById('talk');
@@ -1950,11 +2051,15 @@ function talk(who, line) {
   beep(520, 0.05, 0.05, 'triangle'); setTimeout(() => beep(640, 0.05, 0.05, 'triangle'), 70);
 }
 let nearNPC = null;
+// the subway map board on the platform works like an NPC you can use
+npcs.push({ zone: 'subway', pos: { x: -20.5, z: ZC - 3.6 }, label: () => '🗺️ 노선도 · 열차 타기', use: () => openMetro() });
 function updateNPCs(dt) {
   nearNPC = null; let bd = 2.6;
-  if (zone === 'street') for (const n of npcs) {
+  for (const n of npcs) {
+    if ((n.zone || 'street') !== zone) continue;
     const d = Math.hypot(n.pos.x - player.pos.x, n.pos.z - player.pos.z);
     if (d < bd) { bd = d; nearNPC = n; }
+    if (!n.o) continue;
     // turn toward you when you're close, otherwise face the street
     const want = d < 8 ? Math.atan2(player.pos.x - n.pos.x, player.pos.z - n.pos.z) : 0;
     n.o.g.rotation.y += Math.atan2(Math.sin(want - n.o.g.rotation.y), Math.cos(want - n.o.g.rotation.y)) * Math.min(1, dt * 4);
@@ -2277,7 +2382,7 @@ function drawMap() {
     mctx.fillStyle = '#1a1a1a'; mctx.fillRect(0, 0, 180, 180);
     mctx.fillStyle = '#a7a9ac'; mctx.beginPath(); mctx.arc(90, 70, 30, 0, 7); mctx.fill();
     mctx.fillStyle = '#fff'; mctx.font = 'bold 34px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle'; mctx.fillText('L', 90, 72);
-    mctx.font = 'bold 18px Arial'; mctx.fillText('Bedford Av', 90, 128);
+    mctx.font = 'bold 18px Arial'; mctx.fillText(curStation.station, 90, 128);
     return;
   }
   mctx.fillStyle = '#2a4c5c'; mctx.fillRect(0, 0, 180, mz(-196));
@@ -2350,16 +2455,19 @@ function updateSubway(dt) {
   if (busy) return;
   const p = player.pos;
   lockMsgT -= dt;
-  if (zone === 'street' && Math.abs(p.x - ENTRANCE.x) < 1.15 && Math.abs(p.z - ENTRANCE.z) < 1.7) {
+  const down = zone === 'street' && ENTRANCES.find(e => Math.abs(p.x - e.x) < 1.15 && Math.abs(p.z - e.z) < 1.7);
+  if (down) {
     fadeThen(() => {
-      zone = 'subway'; placePlayer(-25.4, SY, ZC, -Math.PI / 2);
+      zone = 'subway'; curStation = down; setStationName(down.station);
+      placePlayer(-25.4, SY, ZC, -Math.PI / 2);
       if (heat >= STAR_AT[0]) feed('지하철로 경찰을 따돌렸다!', '#9ae6ff');
       heat = 0; lastStars = 0; clearPolice();
-      msg('BEDFORD AV', 2);
+      msg(down.station.toUpperCase(), 2);
+      feed('🗺️ 벽의 노선도에서 열차를 탈 수 있어요', '#cfd2d6');
       if (!open) feed(`지하철역은 안전해요 · 구역 ${DOOR_CAPS}곳을 점령하면 무언가 열린다는 소문이…`, '#c08bff');
     });
   } else if (zone === 'subway' && p.x < -26.2) {
-    fadeThen(() => { zone = 'street'; placePlayer(ENTRANCE.x, 0.25, ENTRANCE.z - 3.4, 0); });
+    fadeThen(() => { zone = 'street'; placePlayer(curStation.x, 0.25, curStation.z - 3.4, 0); });
   } else if (zone === 'subway' && p.x > 28.4 && Math.abs(p.z - ZC) < 1.3) {
     if (open) enterPortal();
     else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(`단단히 잠겨 있다… 구역 ${DOOR_CAPS}곳 점령 필요`, '#ff7ad9'); }
@@ -2519,7 +2627,7 @@ function update(dt) {
   $('mag').textContent = ammo; $('res').textContent = '/ ' + reserve;
   $('mag').style.color = ammo <= 5 ? '#ff3b30' : '#fff';
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
-  $('wave').textContent = here ? here.name.toUpperCase() : 'BEDFORD AV';
+  $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
   $('score').textContent = `평판 ${rep} · 점수 ${score}`;
   $('left').textContent = war

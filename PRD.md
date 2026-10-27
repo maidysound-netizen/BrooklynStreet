@@ -1,7 +1,7 @@
 # Brooklyn Streets — PRD (제품 요구사항 문서)
 
 - 작성일: 2026-10-27
-- 상태: Phase 1~6 완료 · 다음은 Phase 7
+- 상태: Phase 1~7 모두 완료 · 다음은 타카코 월드 (별도 PRD)
 - 플랫폼: 웹 브라우저 (PC 키보드·마우스 / 모바일 터치), GitHub Pages 배포
 
 ## 1. 한 줄 소개
@@ -169,8 +169,18 @@
 
 ### Phase 7 — 지하철 이동
 
-- 구역마다 지하철 입구를 두고, 점령한 구역의 역끼리 순간이동할 수 있다.
-- 기존 Bedford Av 역과 타카코 월드 문은 그대로 유지한다.
+- **입구 9곳**: 구역마다 지하철 입구(초록 난간, 초록 전구, "Subway · 역 이름" 간판)가 있다. Fort Greene은 공원 안, 나머지는 구역 안 블록의 동쪽 인도에 있다.
+
+| 구역 | 역 | 구역 | 역 | 구역 | 역 |
+| --- | --- | --- | --- | --- | --- |
+| DUMBO | York St | Williamsburg | Lorimer St | Greenpoint | Nassau Av |
+| Brooklyn Heights | Clark St | Fort Greene | Bedford Av | Bushwick | Myrtle-Wyckoff |
+| Park Slope | 7 Av | Crown Heights | Franklin Av | Bed-Stuy | Nostrand Av |
+
+- **역 안**: 어느 입구로 내려가도 같은 모양의 승강장이 나오고, 역 이름판·화면 제목·미니맵이 그 역 이름으로 바뀐다. 계단으로 올라가면 내려온 입구로 나온다. 지하철역은 어디든 안전 구역이고, 들어가면 수배가 풀린다.
+- **L 열차 타기**: 승강장 벽의 "BROOKLYN SUBWAY" 노선도 앞에서 `E`(모바일: 화면 버튼) → 9개 역 노선도 창. **내 크루 구역의 역만** 이동 가능하고, 라이벌 구역 역은 "🔒 크루 이름"으로 잠겨 있다. 고르면 출발 알림음과 열차 소리 후 그 역 승강장에 도착한다.
+- 기존 Bedford Av 역의 타카코 월드 문은 모든 역 승강장 끝에 그대로 있다.
+- 피자 배달, 보스 찾아가기, 방어전 달려가기에 지름길로 쓸 수 있다.
 
 ### 이후 — 타카코 월드
 
