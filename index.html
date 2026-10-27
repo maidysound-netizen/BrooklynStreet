@@ -1624,10 +1624,14 @@ $('vol').addEventListener('click', e => e.stopPropagation());
 const bgm = new Audio('bgm.mp3');
 bgm.loop = true; bgm.preload = 'auto';
 const BGM_MAX = 0.35;   // even at 100% the music stays under the gunfire
-// iPhone Safari ignores audio.volume, so once sound is unlocked the music goes through a Web Audio gain instead
+// iPhone Safari ignores audio.volume, so once sound is unlocked the music goes through a Web Audio gain instead.
+// But iPhone mutes Web Audio when the ring/silent switch is on, so we only route it when we can mark this page as
+// media playback (iOS 17+ navigator.audioSession); older iPhones keep the plain <audio> so the music still plays.
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let bgmGain = null;
 function routeBgm() {
-  if (bgmGain || !actx || !location.protocol.startsWith('http')) return;   // file:// pages can't route media this way
+  if (bgmGain || !actx || actx.state !== 'running' || !location.protocol.startsWith('http')) return;   // file:// pages can't route media this way
+  if (IOS && !navigator.audioSession) return;
   try {
     bgmGain = actx.createGain();
     actx.createMediaElementSource(bgm).connect(bgmGain).connect(actx.destination);
@@ -1642,8 +1646,15 @@ const applyVolume = () => {
 applyVolume();
 function playBgm() { if (settings.bgm > 0 && bgm.paused) bgm.play().catch(() => {}); }
 // browsers only allow sound after the first touch, click or key press, so start the music on whichever comes first
-function unlockSound() { audio(); routeBgm(); applyVolume(); playBgm(); }
-for (const ev of ['pointerdown', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockSound, { passive: true });
+function unlockSound() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}   // play even in silent mode
+  audio();
+  playBgm();
+  if (actx.state === 'running') { routeBgm(); applyVolume(); }
+  else actx.resume().then(() => { routeBgm(); applyVolume(); }).catch(() => {});
+}
+// capture phase, so no button or panel on the intro can swallow the tap before the music gets it
+for (const ev of ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockSound, { passive: true, capture: true });
 const syncSndHint = () => $('sndHint').classList.toggle('hidden', !bgm.paused || settings.bgm === 0);
 bgm.addEventListener('play', syncSndHint); bgm.addEventListener('pause', syncSndHint);
 $('sndHint').addEventListener('click', e => { e.stopPropagation(); unlockSound(); });
