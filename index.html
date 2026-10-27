@@ -60,6 +60,21 @@
   #menu .credit { margin-top:18px; font:600 12px system-ui,sans-serif; opacity:.7; letter-spacing:.5px; }
   @keyframes pulse { 50% { transform:scale(1.05); } }
 
+  /* title screen (TAP TO START) */
+  #title { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,.1) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.85) 100%); }
+  #title h1 { margin:0; font-size:clamp(38px, 11vw, 112px); letter-spacing:clamp(2px, .5vw, 5px); line-height:.95; color:#fff;
+    text-shadow:5px 5px 0 var(--red), 10px 10px 0 rgba(0,0,0,.5); animation:drop .9s cubic-bezier(.2,1.4,.4,1) both; }
+  #title .tsub { margin-top:14px; font:800 clamp(14px, 2.4vw, 20px) system-ui,sans-serif; letter-spacing:6px; color:var(--yellow); animation:fadein 1s .5s both; }
+  #title .press { margin-top:clamp(40px, 9vh, 90px); font-size:clamp(22px, 4.4vw, 34px); letter-spacing:6px; color:var(--yellow); text-shadow:0 3px 0 #000; animation:blink 1.1s steps(2, jump-none) infinite, fadein .6s 1s both; }
+  #title .thint { margin-top:10px; font:600 13px system-ui,sans-serif; opacity:.75; animation:fadein .6s 1.2s both; }
+  #title .tfoot { position:absolute; bottom:16px; left:0; right:0; font:600 11px system-ui,sans-serif; opacity:.6; letter-spacing:.5px; }
+  @keyframes drop { from { transform:translateY(-40px) scale(1.25); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes fadein { from { opacity:0; } to { opacity:1; } }
+  @keyframes blink { 0% { opacity:1; } 100% { opacity:.15; } }
+  #title.out { animation:titleOut .45s forwards; pointer-events:none; }
+  @keyframes titleOut { to { opacity:0; transform:scale(1.08); } }
+
   /* touch controls */
   body { touch-action:none; -webkit-touch-callout:none; -webkit-user-select:none; }
   #touch { position:absolute; inset:0; pointer-events:auto; display:none; }
@@ -281,7 +296,14 @@
   </div>
 </div>
 <div id="fade"></div>
-<div id="menu">
+<div id="title">
+  <h1>BROOKLYN<br>STREETS</h1>
+  <div class="tsub" data-i18n="subtitle"></div>
+  <div class="press" id="press">TAP TO START</div>
+  <div class="thint" id="thint"></div>
+  <div class="tfoot">🎵 “8-Bit Drop” · Music © 2026 -MAID¥$AMA-</div>
+</div>
+<div id="menu" class="hidden">
   <div class="box">
     <div id="langs"><span data-lang="ko">한국어</span><span data-lang="en">English</span><span data-lang="ja">日本語</span></div>
     <h1>BROOKLYN<br>STREETS</h1>
@@ -347,6 +369,8 @@ const STR = {
   metroTitle: ['노선도', 'Subway Map', '路線図'],
   metroSay: ['내 크루 구역의 역으로만 갈 수 있어요. 라이벌 구역 역은 셔터가 내려져 있어요.', "You can only ride to stations in your crew's districts. Rival stations have their shutters down.", '自分のクルーの地区の駅にだけ行けます。ライバル地区の駅はシャッターが下りています。'],
   subtitle: ['브루클린 3D FPS', 'BROOKLYN 3D FPS', 'ブルックリン 3D FPS'],
+  titleHintTouch: ['화면 아무 곳이나 터치하세요', 'Tap anywhere to begin', '画面のどこかをタップしてね'],
+  titleHintKey: ['아무 곳이나 클릭하거나 키를 누르세요', 'Click anywhere or press any key', 'どこかをクリックするか、キーを押してね'],
   sndHint: ['🔈 화면을 터치하면 음악이 나와요', '🔈 Tap the screen to start the music', '🔈 画面をタップすると音楽が流れます'],
   music: ['🎵 음악', '🎵 Music', '🎵 音楽'],
   sfx: ['🔊 효과음', '🔊 Effects', '🔊 効果音'],
@@ -1524,6 +1548,7 @@ const keys = {};
 const $ = id => document.getElementById(id);
 
 addEventListener('keydown', e => {
+  if (onTitle()) { leaveTitle(); return; }
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
   if (state === 'metro') { if (['KeyE', 'Escape'].includes(e.code)) closeMetro(); return; }
@@ -2910,6 +2935,19 @@ function update(dt) {
   drawMap();
 }
 
+// ---------- title screen: the first tap also unlocks sound, so the music starts with it ----------
+function onTitle() { const el = document.getElementById('title'); return el && !el.classList.contains('out'); }
+function leaveTitle() {
+  if (!onTitle()) return;
+  unlockSound();
+  const el = $('title'); el.classList.add('out');
+  setTimeout(() => el.classList.add('hidden'), 450);
+  $('menu').classList.remove('hidden');
+  stage.fit();   // the stage was hidden until now, so size it for real
+  beep(523, 0.08, 0.08, 'square'); setTimeout(() => beep(784, 0.08, 0.08, 'square'), 90); setTimeout(() => beep(1047, 0.18, 0.08, 'square'), 180);
+}
+$('title').addEventListener('click', e => { e.stopPropagation(); leaveTitle(); });
+
 // ---------- switching language ----------
 function applyLang() {
   document.documentElement.lang = lang;
@@ -2917,6 +2955,8 @@ function applyLang() {
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = L(el.dataset.i18nPh); });
   document.querySelectorAll('#langs [data-lang]').forEach(el => el.classList.toggle('on', el.dataset.lang === lang));
   $('keys').innerHTML = L(TOUCH ? 'keysTouch' : 'keysDesktop');
+  $('press').textContent = TOUCH ? 'TAP TO START' : 'CLICK TO START';
+  $('thint').textContent = L(TOUCH ? 'titleHintTouch' : 'titleHintKey');
   if (state === 'menu') { $('sub').textContent = L('subtitle'); $('go').textContent = L(TOUCH ? 'tapStart' : 'clickStart'); }
   else if (state === 'pause') { $('sub').textContent = L('paused'); $('go').textContent = L(TOUCH ? 'resumeTap' : 'resumeClick'); }
   // the default crew name follows the language until you pick your own
