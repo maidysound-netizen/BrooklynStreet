@@ -74,6 +74,8 @@
   #bTurn { right:150px; bottom:186px; width:54px; height:54px; font-size:22px; }
   #opts { display:none; margin:0 auto 14px; gap:18px; justify-content:center; align-items:center; font:700 14px system-ui,sans-serif; cursor:default; }
   body.touch #opts { display:flex; }
+  #vol { display:flex; margin:0 auto 12px; gap:18px; justify-content:center; align-items:center; flex-wrap:wrap; font:700 14px system-ui,sans-serif; cursor:default; }
+  #vol input { width:110px; vertical-align:middle; accent-color:#f2b705; }
   #opts input[type=range] { width:110px; vertical-align:middle; accent-color:#f2b705; }
   #opts input[type=checkbox] { width:18px; height:18px; vertical-align:middle; accent-color:#f2b705; }
   #bPause { left:50%; top:10px; margin-left:-22px; width:44px; height:44px; border-radius:10px; font-size:16px; }
@@ -275,8 +277,11 @@
   <div class="box">
     <h1>BROOKLYN<br>STREETS</h1>
     <h2 id="sub">브루클린 3D FPS</h2>
-    <div id="rot">📱 휴대폰을 가로로 돌려서 플레이하세요</div>
     <div id="stat" class="stat hidden"></div>
+    <div id="vol">
+      <label>🎵 음악 <input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5"></label>
+      <label>🔊 효과음 <input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4"></label>
+    </div>
     <div id="opts">
       <label>시점 감도 <input type="range" id="sens" min="0.5" max="2.5" step="0.1" value="1"></label>
       <label><input type="checkbox" id="autoF" checked> 자동 사격</label>
@@ -1181,7 +1186,7 @@ let actx, noiseBuf, master;
 function audio() {
   if (!actx) {
     actx = new (window.AudioContext || window.webkitAudioContext)();
-    master = actx.createGain(); master.gain.value = 0.6; master.connect(actx.destination);
+    master = actx.createGain(); master.gain.value = settings.sfx; master.connect(actx.destination);
     noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     const amb = actx.createBufferSource(); amb.buffer = noiseBuf; amb.loop = true;
@@ -1340,6 +1345,7 @@ addEventListener('blur', () => { for (const k in keys) keys[k] = false; firing =
 $('menu').addEventListener('click', () => {
   audio();
   if (state === 'dead') { location.reload(); return; }
+  playBgm();
   if (state === 'menu') applyClass();
   if (state === 'menu') setTimeout(() => {
     msg('구역을 점령하라', 2.5);
@@ -1367,11 +1373,24 @@ function pauseGame() {
 const joy = { x: 0, y: 0, id: null, ox: 0, oy: 0 };
 const look = { id: null, x: 0, y: 0 };
 let fireId = null, turnLeft = 0;
-const settings = { sens: 1, autoFire: true };
+const settings = { sens: 1, autoFire: true, bgm: 0.5, sfx: 0.4 };
 try { Object.assign(settings, JSON.parse(localStorage.getItem('bk-settings') || '{}')); } catch {}
 $('sens').value = settings.sens; $('autoF').checked = settings.autoFire;
+$('bgmVol').value = settings.bgm; $('sfxVol').value = settings.sfx;
 const saveSettings = () => { try { localStorage.setItem('bk-settings', JSON.stringify(settings)); } catch {} };
 $('opts').addEventListener('click', e => e.stopPropagation());
+$('vol').addEventListener('click', e => e.stopPropagation());
+
+// background music: "8-Bit Drop", looped quietly under the game
+const bgm = new Audio('bgm.mp3');
+bgm.loop = true; bgm.preload = 'auto';
+const BGM_MAX = 0.35;   // even at 100% the music stays under the gunfire
+const applyVolume = () => { bgm.volume = settings.bgm * BGM_MAX; if (master) master.gain.value = settings.sfx; };
+applyVolume();
+function playBgm() { if (settings.bgm > 0 && bgm.paused) bgm.play().catch(() => {}); }
+$('bgmVol').addEventListener('input', e => { settings.bgm = +e.target.value; applyVolume(); saveSettings(); if (settings.bgm > 0) playBgm(); else bgm.pause(); });
+$('sfxVol').addEventListener('input', e => { settings.sfx = +e.target.value; applyVolume(); saveSettings(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else if (state !== 'menu') playBgm(); });
 $('sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); });
 $('autoF').addEventListener('change', e => { settings.autoFire = e.target.checked; saveSettings(); });
 if (TOUCH) {
@@ -2697,7 +2716,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
