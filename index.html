@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Brooklyn Streets</title>
+<title>MAN'S WAR: Kings St.</title>
 <style>
   :root { --red:#ff3b30; --yellow:#f2b705; }
   * { box-sizing:border-box; }
@@ -57,16 +57,20 @@
   #menu kbd { display:inline-block; min-width:26px; padding:0 6px; margin-right:6px; border-radius:4px; background:#fff; color:#111; font-family:system-ui,sans-serif; font-weight:900; font-size:13px; text-align:center; }
   #menu .go { display:inline-block; padding:14px 34px; font-size:22px; background:var(--yellow); color:#111; border-radius:4px; letter-spacing:2px; animation:pulse 1.4s infinite; }
   #menu .stat { font-family:system-ui,sans-serif; font-weight:800; font-size:20px; margin-bottom:20px; }
+  #menu h1 small { display:block; margin-top:6px; font-size:.42em; letter-spacing:5px; text-shadow:0 3px 0 rgba(0,0,0,.5); }
   #menu .credit { margin-top:18px; font:600 12px system-ui,sans-serif; opacity:.7; letter-spacing:.5px; }
   @keyframes pulse { 50% { transform:scale(1.05); } }
 
   /* title screen (TAP TO START) */
   #title { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer;
     background:radial-gradient(ellipse at center, rgba(0,0,0,.1) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.85) 100%); }
-  #title h1 { margin:0; font-size:clamp(38px, 11vw, 112px); letter-spacing:clamp(2px, .5vw, 5px); line-height:.95; color:#fff;
+  #title .eyebrow { font:700 clamp(11px, 1.6vw, 14px) system-ui,sans-serif; letter-spacing:4px; opacity:.85; margin-bottom:10px; animation:fadein .8s both; }
+  #title .rule { width:min(62vw, 380px); height:2px; background:var(--red); margin:16px auto 12px; box-shadow:0 0 12px rgba(255,59,48,.6); animation:fadein .8s .4s both; }
+  #title .kst { font:900 clamp(26px, 6vw, 52px) "Arial Black",Impact,sans-serif; letter-spacing:4px; color:#fff; text-shadow:0 3px 0 rgba(0,0,0,.6); animation:fadein .8s .5s both; }
+  #title h1 { margin:0; font-size:clamp(44px, 12vw, 124px); letter-spacing:clamp(1px, .4vw, 4px); line-height:.95; color:#fff;
     text-shadow:5px 5px 0 var(--red), 10px 10px 0 rgba(0,0,0,.5); animation:drop .9s cubic-bezier(.2,1.4,.4,1) both; }
   #title .tsub { margin-top:12px; font:800 clamp(14px, 2.4vw, 20px) system-ui,sans-serif; letter-spacing:2px; color:var(--yellow); animation:fadein 1s .5s both; }
-  #title .tline { margin-top:8px; font:700 clamp(13px, 2vw, 17px) system-ui,sans-serif; color:#fff; opacity:.9; text-shadow:0 2px 6px #000; animation:fadein 1s .7s both; }
+  #title .tline { margin-top:10px; font:700 clamp(11px, 1.6vw, 14px) system-ui,sans-serif; letter-spacing:3px; color:#fff; opacity:.9; text-shadow:0 2px 6px #000; animation:fadein 1s .7s both; }
   #title .vs { display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:22px; font:800 12px system-ui,sans-serif; animation:fadein 1s .9s both; }
   #title .vs span { padding:5px 11px; border-radius:14px; color:#111; box-shadow:0 2px 8px rgba(0,0,0,.5); }
   #title .vs b { font:900 14px "Arial Black",Impact,sans-serif; color:#fff; text-shadow:0 2px 4px #000; }
@@ -275,7 +279,7 @@
   <img src="takako-logo.webp" alt="Takako World">
   <div class="soon">COMING SOON</div>
   <div class="tag" data-i18n="portalTag">마법 · 칼 · 도끼 · 스팀펑크의 세계</div>
-  <div class="back" id="portalBack" data-i18n="portalBack">브루클린으로 돌아가기</div>
+  <div class="back" id="portalBack" data-i18n="portalBack"></div>
 </div>
 <div id="crew" class="hidden">
   <div class="cbox">
@@ -305,19 +309,21 @@
 </div>
 <div id="fade"></div>
 <div id="title">
-  <h1>BROOKLYN<br>STREETS</h1>
-  <div class="tsub" data-i18n="subtitle"></div>
-  <div class="tline" data-i18n="tagline"></div>
+  <div class="eyebrow">URBAN FPS · CREW WARFARE</div>
+  <h1>MAN'S WAR</h1>
+  <div class="rule"></div>
+  <div class="kst">KINGS ST.</div>
+  <div class="tline">EVERY BLOCK HAS A PRICE.</div>
   <div class="vs" id="titleVs"></div>
   <div class="press" id="press">TAP TO START</div>
   <div class="thint" id="thint"></div>
-  <div class="tfoot">🎵 “8-Bit Drop” · Music © 2026 -MAID¥$AMA-</div>
+  <div class="tfoot">🎵 “8-Bit Drop” · Music © 2026 -MAID¥$AMA-<br><span data-i18n="fiction"></span></div>
 </div>
 <div id="menu" class="hidden">
   <div class="box">
     <div id="langs"><span data-lang="ko">한국어</span><span data-lang="en">English</span><span data-lang="ja">日本語</span></div>
-    <h1>BROOKLYN<br>STREETS</h1>
-    <h2 id="sub">브루클린 3D FPS</h2>
+    <h1>MAN'S WAR<small>KINGS ST.</small></h1>
+    <h2 id="sub"></h2>
     <div id="stat" class="stat hidden"></div>
     <div id="sndHint" class="hidden" data-i18n="sndHint"></div>
     <div id="vol">
@@ -332,13 +338,14 @@
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
       <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
-      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
+      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
     <div id="stage"></div>
     <div id="chars"></div>
     <div><span class="go" id="go">클릭해서 시작</span></div>
     <div class="credit">🎵 BGM “8-Bit Drop” · Music © 2026 -MAID¥$AMA- · All rights reserved</div>
+    <div class="credit" data-i18n="fiction"></div>
   </div>
 </div>
 
@@ -369,7 +376,7 @@ const STR = {
   jump: ['점프', 'JUMP', 'ジャンプ'],
   crewBtn: ['크루', 'CREW', 'クルー'],
   portalTag: ['마법 · 칼 · 도끼 · 스팀펑크의 세계', 'Magic · Swords · Axes · A Steampunk World', '魔法・剣・斧・スチームパンクの世界'],
-  portalBack: ['브루클린으로 돌아가기', 'Back to Brooklyn', 'ブルックリンに戻る'],
+  portalBack: ['킹스 스트리트로 돌아가기', 'Back to Kings St.', 'キングス・ストリートに戻る'],
   myCrew: ['내 크루', 'My Crew', 'マイクルー'],
   crewNamePh: ['크루 이름', 'Crew name', 'クルー名'],
   rep: ['평판', 'Rep', '評判'],
@@ -378,10 +385,10 @@ const STR = {
   shopHello: ['사장님: 어서 와! 필요한 거 있어?', 'Owner: Welcome! Need anything?', '店主：いらっしゃい！何か要る？'],
   metroTitle: ['노선도', 'Subway Map', '路線図'],
   metroSay: ['내 크루 구역의 역으로만 갈 수 있어요. 라이벌 구역 역은 셔터가 내려져 있어요.', "You can only ride to stations in your crew's districts. Rival stations have their shutters down.", '自分のクルーの地区の駅にだけ行けます。ライバル地区の駅はシャッターが下りています。'],
-  subtitle: ['브루클린 3D FPS', 'BROOKLYN 3D FPS', 'ブルックリン 3D FPS'],
+  subtitle: ['어반 FPS · 크루 전쟁', 'URBAN FPS · CREW WARFARE', 'アーバンFPS・クルー戦争'],
+  fiction: ['모든 인물·크루·사건은 허구이며 실제 지역·단체와 관계없습니다.', 'All characters, crews and events are fictional and not related to any real place or group.', '登場する人物・クルー・出来事はすべてフィクションであり、実在の地域・団体とは関係ありません。'],
   titleHintTouch: ['화면 아무 곳이나 터치하세요', 'Tap anywhere to begin', '画面のどこかをタップしてね'],
   titleHintKey: ['아무 곳이나 클릭하거나 키를 누르세요', 'Click anywhere or press any key', 'どこかをクリックするか、キーを押してね'],
-  tagline: ['크루를 모아 브루클린을 되찾아라', 'Build your crew. Take back Brooklyn.', 'クルーを集めて、ブルックリンを取り戻せ'],
   sndHint: ['🔈 화면을 터치하면 음악이 나와요', '🔈 Tap the screen to start the music', '🔈 画面をタップすると音楽が流れます'],
   music: ['🎵 음악', '🎵 Music', '🎵 音楽'],
   sfx: ['🔊 효과음', '🔊 Effects', '🔊 効果音'],
@@ -391,17 +398,17 @@ const STR = {
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
      <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
-     <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
+     <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
      <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move · <kbd>Shift</kbd> Sprint · <kbd>Space</kbd> Jump</li>
      <li><kbd>Mouse</kbd> Look · <kbd>Left click</kbd> Shoot · <kbd>Right click</kbd> Aim</li>
      <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
-     <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Brooklyn</b></li>
+     <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Kings St.</b></li>
      <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移動 · <kbd>Shift</kbd> ダッシュ · <kbd>Space</kbd> ジャンプ</li>
      <li><kbd>マウス</kbd> 視点 · <kbd>左クリック</kbd> 射撃 · <kbd>右クリック</kbd> エイム</li>
      <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
-     <li>🎯 目標：ライバルクルーを追い出し、<b>ブルックリンの9地区</b>をすべて制圧しよう</li>
+     <li>🎯 目標：ライバルクルーを追い出し、<b>キングス・ストリートの9地区</b>をすべて制圧しよう</li>
      <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
   ],
   keysTouch: [
@@ -409,19 +416,19 @@ const STR = {
      <li>오른쪽 화면 드래그 — 시점 돌리기 (빠르게 쓸면 크게 돈다)</li>
      <li>조준점이 적 근처에 가면 <span style="color:#f2b705">자동으로 따라붙고</span>, 닿으면 자동 사격</li>
      <li><kbd>↻</kbd> 뒤돌기 · <kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd> · <kbd>크루</kbd> 동료 영입</li>
-     <li>🎯 목표: 브루클린 9개 구역을 모두 점령하세요</li>
+     <li>🎯 목표: 킹스 스트리트의 9개 구역을 모두 점령하세요</li>
      <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
     `<li>Drag on the left side — move (push all the way to sprint)</li>
      <li>Drag on the right side — look around (swipe fast for big turns)</li>
      <li>Near an enemy the crosshair <span style="color:#f2b705">locks on</span>, and fires by itself when it touches them</li>
      <li><kbd>↻</kbd> Turn around · <kbd>AIM</kbd> Aim · <kbd>R</kbd> Reload · <kbd>JUMP</kbd> · <kbd>CREW</kbd> Recruit allies</li>
-     <li>🎯 Goal: take all 9 districts of Brooklyn</li>
+     <li>🎯 Goal: take all 9 districts of Kings St.</li>
      <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
     `<li>画面の左側をドラッグ — 移動（端まで倒すとダッシュ）</li>
      <li>画面の右側をドラッグ — 視点を回す（素早くスワイプで大きく回転）</li>
      <li>照準が敵に近づくと<span style="color:#f2b705">自動で追従</span>し、重なると自動で射撃</li>
      <li><kbd>↻</kbd> 振り向き · <kbd>エイム</kbd> エイム · <kbd>R</kbd> リロード · <kbd>ジャンプ</kbd> · <kbd>クルー</kbd> 仲間の勧誘</li>
-     <li>🎯 目標：ブルックリンの9地区をすべて制圧しよう</li>
+     <li>🎯 目標：キングス・ストリートの9地区をすべて制圧しよう</li>
      <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
   ],
   clickStart: ['클릭해서 시작', 'Click to start', 'クリックでスタート'],
@@ -431,7 +438,7 @@ const STR = {
   paused: ['일시정지', 'Paused', '一時停止'],
   restart: ['다시 시작', 'Play again', 'もう一度'],
   died: ['사망했습니다', 'You died', 'やられた…'],
-  won: ['🏆 브루클린 통일! — {c}', '🏆 Brooklyn united! — {c}', '🏆 ブルックリン統一！ — {c}'],
+  won: ['🏆 킹스 스트리트 통일! — {c}', '🏆 Kings St. is yours! — {c}', '🏆 キングス・ストリート統一！ — {c}'],
   endStat: ['내 구역 {o}/9 · 처치 {k} · 평판 {r} · 점수 {s}', 'Districts {o}/9 · Kills {k} · Rep {r} · Score {s}', '地区 {o}/9 · 撃破 {k} · 評判 {r} · スコア {s}'],
   night: ['🌙 밤이 됐다', '🌙 Night falls', '🌙 夜になった'],
   nightTip: ['적의 시야가 짧아졌다 · 손전등은 들키기 쉽다 (F)', "Enemies can't see as far · your flashlight gives you away (F)", '敵の視界が狭くなった・懐中電灯は見つかりやすい (F)'],
@@ -489,9 +496,9 @@ const STR = {
   bossCharge: ['⚠ 보스가 돌진한다! 옆으로 피해!', '⚠ The boss is charging! Dodge sideways!', '⚠ ボスが突進してくる！横に避けろ！'],
   lastFell: ['{c}의 마지막 구역이 무너졌다…', "{c}'s last district has fallen…", '{c}の最後の地区が陥落した…'],
   bossLater: ['{c}의 구역이 모두 무너졌다 · 내 구역이 {n}곳이 되면 보스가 나타난다', '{c} lost all their turf · their boss shows up once you hold {n} districts', '{c}のナワバリはすべて陥落・自分の地区が{n}つになるとボスが現れる'],
-  allNineBoss: ['9구역 점령! 남은 보스를 쓰러뜨리면 브루클린 통일', 'All 9 districts! Beat the remaining bosses to unite Brooklyn', '9地区制圧！残りのボスを倒せばブルックリン統一'],
+  allNineBoss: ['9구역 점령! 남은 보스를 쓰러뜨리면 킹스 스트리트 통일', 'All 9 districts! Beat the remaining bosses to take all of Kings St.', '9地区制圧！残りのボスを倒せばキングス・ストリート統一'],
   bossAppear: ['👑 {n} 등장!', '👑 {n} appears!', '👑 {n} 登場！'],
-  bossGo: ['브루클린 브리지 아래 강변으로 가라! (미니맵 B)', 'Head to the waterfront under the Brooklyn Bridge! (B on the minimap)', 'ブルックリン橋の下の川沿いへ向かえ！（ミニマップのB）'],
+  bossGo: ['킹스 브리지 아래 강변으로 가라! (미니맵 B)', 'Head to the waterfront under Kings Bridge! (B on the minimap)', 'キングス橋の下の川沿いへ向かえ！（ミニマップのB）'],
   curStation: ['현재 역', 'You are here', '現在の駅'],
   goStation: ['이동', 'Go', '移動'],
   nextStop: ['🚇 다음 역: {s}', '🚇 Next stop: {s}', '🚇 次は {s}'],
@@ -733,7 +740,7 @@ function makeStore() {
   return { map: texOf(c), em: texOf(e) };
 }
 
-const GRAF = ['BKLYN', 'KINGS', 'NYC', 'BK', 'WBURG', 'SPRAY', 'RIDE'];
+const GRAF = ['KINGS', 'KST', 'TURF', 'BLOCK', 'CREW', 'SPRAY', 'RIDE'];
 const GCOL = [['#ff3b30', '#ffcc00'], ['#00c2ff', '#7d3cff'], ['#3ddc84', '#ffe600'], ['#ff2d95', '#ff9f0a'], ['#ffffff', '#5ac8fa']];
 function makeGraffiti() {
   const c = mkCanvas(512, 256), g = c.getContext('2d');
@@ -919,8 +926,8 @@ function graffiti(x, z, ry, w = 6) {
   scene.add(m);
 }
 
-const STREETNAMES_X = ['Kent Av', 'Wythe Av', 'Berry St', 'Bedford Av', 'Driggs Av', 'Roebling St', 'Marcy Av', 'Nostrand Av'];
-const STREETNAMES_Z = ['Water St', 'Front St', 'Grand St', 'Metropolitan Av', 'Broadway', 'Myrtle Av', 'Fulton St', 'Atlantic Av'];
+const STREETNAMES_X = ['Dock St', 'Pike Av', 'Larch St', 'Kings Av', 'Hollis St', 'Cobalt Av', 'Marlow Av', 'Ember Av'];
+const STREETNAMES_Z = ['Water St', 'Pier St', 'Copper St', 'Grand St', 'Lantern St', 'Brick Av', 'Saltbox Av', 'Cedar Av'];
 const signMats = {};
 const signMat = n => signMats[n] || (signMats[n] = new THREE.MeshStandardMaterial({ map: signTex(n), side: THREE.DoubleSide, roughness: 0.6 }));
 
@@ -941,8 +948,8 @@ function blockProps(cx, cz, dist) {
 }
 
 // subway stairs, one per district (3x3 grid, north row first); the open side faces north.
-// Fort Greene's is in the park; the others sit on the east sidewalk of a block inside the district.
-const STATION_NAMES = ['York St', 'Lorimer St', 'Nassau Av', 'Clark St', 'Bedford Av', 'Myrtle-Wyckoff', '7 Av', 'Franklin Av', 'Nostrand Av'];
+// The home district's is in the park; the others sit on the east sidewalk of a block inside the district.
+const STATION_NAMES = ['Anchor St', 'Saltworks', 'Rivet Av', 'Copper Av', 'Kings Commons', 'Ember St', 'Lantern Av', 'Brickfield', 'Marlow Av'];
 const ENTRANCE_BLOCK = { 0: -2, 1: 1, 2: 2 };
 const ENTRANCES = STATION_NAMES.map((station, i) => {
   const gx = i % 3, gz = Math.floor(i / 3);
@@ -1026,7 +1033,7 @@ function genBlock(i, j, ring) {
   if (!ring) blockProps(cx, cz, dist);
   if (dist === 'warehouse') {
     for (const s of [-1, 1]) building(cx + s * H / 2, cz, H, 2 * H, i === 1 ? 5 : Math.floor(rr(4, 7)), 'ware', { front: 1, fire: false });
-    if (i === 1) brooklynSign(cx, 17.5, cz);
+    if (i === 1) rooftopSign(cx, 17.5, cz);
     for (const s of [-1, 1]) if (rnd() < 0.7) graffiti(cx + s * (H + 0.03), cz + rr(-10, 10), s * Math.PI / 2, 8);
     return;
   }
@@ -1051,12 +1058,12 @@ function genBlock(i, j, ring) {
   }
 }
 
-function brooklynSign(cx, y, cz) {
+function rooftopSign(cx, y, cz) {
   const c = mkCanvas(1024, 200), g = c.getContext('2d');
   g.fillStyle = 'rgba(0,0,0,0)'; g.fillRect(0, 0, 1024, 200);
   g.font = '900 170px "Arial Black", Impact, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.shadowColor = '#ff3b30'; g.shadowBlur = 30; g.fillStyle = '#ff5a4a'; g.fillText('BROOKLYN', 512, 105);
-  g.shadowBlur = 0; g.fillStyle = '#ffd0c8'; g.fillText('BROOKLYN', 512, 105);
+  g.shadowColor = '#ff3b30'; g.shadowBlur = 30; g.fillStyle = '#ff5a4a'; g.fillText('KINGS ST.', 512, 105);
+  g.shadowBlur = 0; g.fillStyle = '#ffd0c8'; g.fillText('KINGS ST.', 512, 105);
   const mat = new THREE.MeshStandardMaterial({ map: texOf(c, false), emissiveMap: texOf(c, false), emissive: 0xffffff, emissiveIntensity: 1.4, transparent: true, alphaTest: 0.1 });
   for (const r of [0, Math.PI]) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(30, 6), mat);
@@ -1238,12 +1245,12 @@ let curStation = ENTRANCE;   // the entrance you came down (and will go back up)
     ng.fillStyle = '#fff'; ng.font = 'bold 54px Arial'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText(name, 256, 50);
     nameMat.map.needsUpdate = true;
   };
-  setStationName('Bedford Av');
+  setStationName(STATION_NAMES[4]);
   // subway map board on the back wall
   const mapC = mkCanvas(512, 340), mg = mapC.getContext('2d');
   mg.fillStyle = '#f4f1e8'; mg.fillRect(0, 0, 512, 340);
   mg.fillStyle = '#111'; mg.fillRect(0, 0, 512, 56);
-  mg.fillStyle = '#fff'; mg.font = 'bold 30px Arial'; mg.textBaseline = 'middle'; mg.fillText('BROOKLYN SUBWAY', 20, 30);
+  mg.fillStyle = '#fff'; mg.font = 'bold 30px Arial'; mg.textBaseline = 'middle'; mg.fillText('KINGS ST. SUBWAY', 20, 30);
   mg.fillStyle = '#a7a9ac'; mg.beginPath(); mg.arc(470, 28, 20, 0, 7); mg.fill();
   mg.fillStyle = '#fff'; mg.font = 'bold 26px Arial'; mg.textAlign = 'center'; mg.fillText('L', 470, 30);
   const sx = i => 90 + (i % 3) * 166, sz = i => 110 + Math.floor(i / 3) * 90;
@@ -1816,9 +1823,9 @@ const ownerCss = o => o === 'me' ? myCrew.color : CREWS[o].css;
 const ownerName = o => o === 'me' ? myCrew.name : CREWS[o].name;
 
 const DISTRICTS = [
-  ['DUMBO', 'iron'], ['Williamsburg', 'iron'], ['Greenpoint', 'iron'],
-  ['Brooklyn Heights', 'teal'], ['Fort Greene', 'me'], ['Bushwick', 'red'],
-  ['Park Slope', 'teal'], ['Crown Heights', 'red'], ['Bed-Stuy', 'red'],
+  ['Anchor Yard', 'iron'], ['Saltworks', 'iron'], ['Rivet Point', 'iron'],
+  ['Copper Heights', 'teal'], ['Kings Commons', 'me'], ['Ember Hill', 'red'],
+  ['Lantern Slope', 'teal'], ['Brickfield', 'red'], ['Marlow Flats', 'red'],
 ].map(([name, owner], i) => ({ name, owner, gx: i % 3, gz: Math.floor(i / 3), home: owner === 'me' }));
 const DB = [-181, -75, 75, 181];   // district edges (x and z)
 const gridOf = v => v < -75 ? 0 : v < 75 ? 1 : 2;
@@ -2157,7 +2164,7 @@ for (const d of DISTRICTS) {
   const x = -1 * P - 6, z = 0 * P + H + 1.3;
   prop(box1, 0xd8d1c4, x + 1.4, 0.75, z - 0.2, 1.4, 1, 0.8);
   prop(box1, 0xe9d4b0, x + 1.4, 1.29, z - 0.2, 0.5, 0.08, 0.5);
-  signBoard('🍕 BROOKLYN SLICE', '#b3221b', '#fff', x, 4.3, z - 1.2, 0, 3.8);
+  signBoard('🍕 KINGS SLICE', '#b3221b', '#fff', x, 4.3, z - 1.2, 0, 3.8);
   addNPC(x, z, { hood: 0xffffff, cap: 0xffffff, jeans: 0x2b2b2b, apron: 0xb3221b },
     () => L(delivery ? 'pizzaBusy' : 'pizzaTake'),
     () => delivery ? talk(L('pizzaWho'), L('pizzaHurry')) : startDelivery());
@@ -2245,7 +2252,7 @@ function updateDelivery(dt) {
 }
 
 // ---------- bosses: "Bridge Showdown" ----------
-// when a rival crew loses its last district, its boss waits under the Brooklyn Bridge
+// when a rival crew loses its last district, its boss waits under Kings Bridge
 const RIVALS = ['red', 'iron', 'teal'];
 const BOSS_HP = { red: 1100, iron: 1500, teal: 1250 };
 const BOSS_SPOT = { x: -90, z: -188 };
