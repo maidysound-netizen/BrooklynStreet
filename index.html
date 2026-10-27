@@ -81,6 +81,30 @@
   #rot { display:none; margin-bottom:14px; padding:8px 14px; border-radius:6px; background:rgba(242,183,5,.9); color:#111; font:800 14px system-ui,sans-serif; }
   @media (orientation: portrait) { body.touch #rot { display:inline-block; } }
   @media (max-width: 480px) { #menu h1 { font-size:44px; } }
+  @media (max-width: 640px) {
+    #msg { font-size:30px; letter-spacing:2px; }
+    #hp .bar { width:110px; } #hpt { font-size:20px; }
+    #mag { font-size:34px; } #res { font-size:16px; }
+  }
+
+  /* crew panel */
+  #crew { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
+  #crew .cbox { width:min(580px,94vw); max-height:92vh; overflow:auto; background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
+  #crew h3 { margin:0 0 10px; font:900 22px "Arial Black",Impact,sans-serif; letter-spacing:1px; }
+  #crew .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  #crewName { flex:1; min-width:140px; padding:8px 10px; border-radius:6px; border:1px solid #555; background:#0d0b09; color:#fff; font:700 15px system-ui,sans-serif; }
+  .sw { width:28px; height:28px; border-radius:50%; border:3px solid transparent; cursor:pointer; }
+  .sw.on { border-color:#fff; }
+  #crew .rep { font-weight:800; margin:6px 0 12px; } #repv { color:var(--yellow); font-size:20px; }
+  #cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  .card { background:#221c17; border-radius:8px; padding:10px; font-size:13px; line-height:1.4; }
+  .card b { display:block; font-size:15px; margin-bottom:2px; }
+  .card .btn { margin-top:8px; padding:7px; text-align:center; border-radius:6px; background:var(--yellow); color:#111; font-weight:900; cursor:pointer; }
+  .card .btn.off { background:#3a3a3a; color:#aaa; cursor:default; }
+  #terr { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:14px; font-size:11px; font-weight:800; }
+  #terr div { padding:6px 4px; border-radius:4px; text-align:center; color:#111; }
+  #crew .close { margin-top:14px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
+  #bCrew { left:50%; top:10px; margin-left:-84px; width:56px; height:44px; border-radius:10px; font-size:13px; }
 
   /* subway fade + Takako World portal */
   #fade { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition:opacity .35s; }
@@ -128,6 +152,7 @@
     <div class="tb" id="bJump" data-b="jump">점프</div>
     <div class="tb" id="bTurn" data-b="turn">↻</div>
     <div class="tb" id="bPause" data-b="pause">❚❚</div>
+    <div class="tb" id="bCrew" data-b="crew">크루</div>
   </div>
 </div>
 <div id="portal" class="hidden">
@@ -135,6 +160,16 @@
   <div class="soon">COMING SOON</div>
   <div class="tag">마법 · 칼 · 도끼 · 스팀펑크의 세계</div>
   <div class="back" id="portalBack">브루클린으로 돌아가기</div>
+</div>
+<div id="crew" class="hidden">
+  <div class="cbox">
+    <h3>내 크루</h3>
+    <div class="row"><input id="crewName" maxlength="14" placeholder="크루 이름"><div class="row" id="swatches" style="margin:0"></div></div>
+    <div class="rep">평판 <span id="repv">0</span> <span style="opacity:.6;font-weight:600;font-size:12px">· 처치 +10 · 헤드샷 +15 · 점령 +100 · 방어 +50</span></div>
+    <div id="cards"></div>
+    <div id="terr"></div>
+    <div class="close" id="crewClose">닫기</div>
+  </div>
 </div>
 <div id="fade"></div>
 <div id="menu">
@@ -150,7 +185,8 @@
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-      <li><kbd>R</kbd> 재장전 · <kbd>Esc</kbd> 일시정지</li>
+      <li><kbd>R</kbd> 재장전 · <kbd>C</kbd> 크루 관리 · <kbd>Esc</kbd> 일시정지</li>
+      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>브루클린 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
     <div><span class="go" id="go">클릭해서 시작</span></div>
@@ -1021,13 +1057,15 @@ const HIP = new THREE.Vector3(0.2, -0.2, -0.46), ADS = new THREE.Vector3(0, -0.1
 const player = { pos: new THREE.Vector3(25, 0, 25), vel: new THREE.Vector3(), y: 0, vy: 0, onGround: true, hp: 100 };
 let yaw = Math.PI * 0.75, pitch = 0, recoil = 0;
 let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing = false, aiming = false, kick = 0;
-let state = 'menu', score = 0, kills = 0, wave = 0, toSpawn = 0, spawnT = 0, waveT = 2.5, hadLock = false, t = 0;
-let zone = 'street', cleared = 0, busy = false, lockMsgT = 0;
-const DOOR_WAVE = 3;   // clear this many waves to unlock the Takako World door
+let state = 'menu', score = 0, kills = 0, wave = 1, toSpawn = 0, spawnT = 0, hadLock = false, t = 0;
+let zone = 'street', busy = false, lockMsgT = 0;
+const DOOR_CAPS = 2;   // capture this many districts to unlock the Takako World door
 const keys = {};
 const $ = id => document.getElementById(id);
 
 addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
+  if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
   keys[e.code] = true;
   if (e.code === 'KeyR') startReload();
   if (e.code === 'Space' && state === 'play' && player.onGround) { player.vy = 6.5; player.onGround = false; }
@@ -1049,6 +1087,11 @@ addEventListener('blur', () => { for (const k in keys) keys[k] = false; firing =
 $('menu').addEventListener('click', () => {
   audio();
   if (state === 'dead') { location.reload(); return; }
+  if (state === 'menu') setTimeout(() => {
+    msg('구역을 점령하라', 2.5);
+    feed('주변 라이벌 구역에 들어가면 영역 전쟁이 시작돼요', '#fff');
+    feed(TOUCH ? '크루 버튼: 크루 이름·색 · 동료 영입' : 'C 키: 크루 이름·색 · 동료 영입', myCrew.color);
+  }, 700);
   state = 'play';
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
   if (TOUCH) {
@@ -1082,7 +1125,8 @@ if (TOUCH) {
     <li>왼쪽 화면 드래그 — 이동 (끝까지 밀면 달리기)</li>
     <li>오른쪽 화면 드래그 — 시점 돌리기 (빠르게 쓸면 크게 돈다)</li>
     <li>조준점이 적 근처에 가면 <span style="color:#f2b705">자동으로 따라붙고</span>, 닿으면 자동 사격</li>
-    <li><kbd>↻</kbd> 뒤돌기 · <kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd></li>
+    <li><kbd>↻</kbd> 뒤돌기 · <kbd>조준</kbd> 정조준 · <kbd>R</kbd> 재장전 · <kbd>점프</kbd> · <kbd>크루</kbd> 동료 영입</li>
+    <li>🎯 목표: 브루클린 9개 구역을 모두 점령하세요</li>
     <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`;
   $('go').textContent = '터치해서 시작';
   const layer = $('touch'), stick = $('stick'), knob = $('knob'), R = 55;
@@ -1100,6 +1144,7 @@ if (TOUCH) {
       else if (b === 'jump') { if (player.onGround) { player.vy = 6.5; player.onGround = false; } }
       else if (b === 'turn') { if (!turnLeft) turnLeft = Math.PI; }
       else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
+      else if (b === 'crew') { openCrew(); $('bAim').classList.remove('on'); }
       else if (t.clientX < innerWidth * 0.4 && joy.id === null) {
         Object.assign(joy, { id: t.identifier, ox: t.clientX, oy: t.clientY });
         Object.assign(stick.style, { left: t.clientX - 60 + 'px', top: t.clientY - 60 + 'px', bottom: 'auto' });
@@ -1157,6 +1202,43 @@ function startReload() {
 }
 
 // ---------- enemies ----------
+const EM = { jeans: std(0x2c3b57), gun: std(0x151515, { metalness: 0.5 }) };
+const SKINS = [0xc68b59, 0x8d5524, 0xe0ac69, 0x5c3a21, 0xf1c27d];
+
+// ---------- crews & districts ----------
+const CREWS = {
+  red:  { name: '레드 후드', css: '#e0453a', hood: 0xb3221b, cap: 0x8e1414, jeans: 0x2c3b57, hp: 90,  speed: [4.2, 5.2], acc: 0,    rate: 0.85 },
+  iron: { name: '아이언 재킷', css: '#9aa0a6', hood: 0x1c1c1c, cap: 0x111111, jeans: 0x3a3a3a, hp: 135, speed: [3.0, 3.8], acc: 0,    rate: 1 },
+  teal: { name: '틸 킹스', css: '#2ec4b6', hood: 0x1f8a8a, cap: 0xeeeeee, jeans: 0x1f2f3a, hp: 100, speed: [3.4, 4.4], acc: 0.08, rate: 1.1 },
+};
+const MY_COLORS = ['#f2b705', '#a855f7', '#ff7a1a', '#e5e5e5', '#3b82f6'];
+const myCrew = { name: '옐로 캡스', color: '#f2b705' };
+try { Object.assign(myCrew, JSON.parse(localStorage.getItem('bk-crew') || '{}')); } catch {}
+const saveCrew = () => { try { localStorage.setItem('bk-crew', JSON.stringify(myCrew)); } catch {} };
+const ownerCss = o => o === 'me' ? myCrew.color : CREWS[o].css;
+const ownerName = o => o === 'me' ? myCrew.name : CREWS[o].name;
+
+const DISTRICTS = [
+  ['DUMBO', 'iron'], ['Williamsburg', 'iron'], ['Greenpoint', 'iron'],
+  ['Brooklyn Heights', 'teal'], ['Fort Greene', 'me'], ['Bushwick', 'red'],
+  ['Park Slope', 'teal'], ['Crown Heights', 'red'], ['Bed-Stuy', 'red'],
+].map(([name, owner], i) => ({ name, owner, gx: i % 3, gz: Math.floor(i / 3), home: owner === 'me' }));
+const DB = [-181, -75, 75, 181];   // district edges (x and z)
+const gridOf = v => v < -75 ? 0 : v < 75 ? 1 : 2;
+const districtAt = (x, z) => DISTRICTS[gridOf(z) * 3 + gridOf(x)];
+const districtNodes = d => {
+  const out = [];
+  for (const x of NODES) for (const z of NODES) if (gridOf(x) === d.gx && gridOf(z) === d.gz) out.push({ x, z });
+  return out;
+};
+const neighbours = d => DISTRICTS.filter(o => Math.abs(o.gx - d.gx) + Math.abs(o.gz - d.gz) === 1);
+const ownedCount = () => DISTRICTS.filter(d => d.owner === 'me').length;
+
+let rep = 0, captured = 0;
+let war = null;                      // { d, kind: 'attack' | 'defend', crew, timer }
+let counterT = 0;
+
+// ---------- people (shared by enemies and allies) ----------
 const EG = {
   leg: new THREE.BoxGeometry(0.22, 0.85, 0.24).translate(0, -0.425, 0),
   torso: new THREE.BoxGeometry(0.56, 0.72, 0.32),
@@ -1165,41 +1247,63 @@ const EG = {
   cap: new THREE.BoxGeometry(0.33, 0.09, 0.44),
   gun: new THREE.BoxGeometry(0.07, 0.13, 0.62),
 };
-const EM = { jeans: std(0x2c3b57), gun: std(0x151515, { metalness: 0.5 }), cap: std(0x111111), capR: std(0x9b1c1c) };
-const HOODS = [0x8b1e1e, 0x1e1e1e, 0x3d4a2a, 0x6b6b6b, 0x1f3a6b, 0x5a3a1a];
-const SKINS = [0xc68b59, 0x8d5524, 0xe0ac69, 0x5c3a21, 0xf1c27d];
+function buildHuman(o, x, z, look, hitTag) {
+  const g = o.g = new THREE.Group(); g.rotation.order = 'YXZ';
+  g.position.set(x, groundAt(x, z), z);
+  o.hood = std(look.hood);
+  const skin = std(SKINS[Math.floor(Math.random() * SKINS.length)]);
+  const jeans = std(look.jeans ?? 0x2c3b57), cap = std(look.cap);
+  o.parts = [];
+  const add = (geo, mat, px, py, pz, head = false) => {
+    const m = new THREE.Mesh(geo, mat); m.position.set(px, py, pz); m.castShadow = true;
+    if (hitTag) { m.userData.enemy = o; m.userData.head = head; }
+    g.add(m); o.parts.push(m); return m;
+  };
+  o.lL = add(EG.leg, jeans, -0.14, 0.85, 0); o.lR = add(EG.leg, jeans, 0.14, 0.85, 0);
+  add(EG.torso, o.hood, 0, 1.21, 0);
+  const aL = add(EG.arm, o.hood, -0.36, 1.52, 0); aL.rotation.set(-1.35, 0, 0.4);
+  const aR = add(EG.arm, o.hood, 0.36, 1.52, 0); aR.rotation.x = -1.45;
+  add(EG.head, skin, 0, 1.74, 0, true);
+  add(EG.cap, cap, 0, 1.93, 0.05, true);
+  const gn = add(EG.gun, EM.gun, 0.2, 1.46, 0.5);
+  o.tip = new THREE.Object3D(); o.tip.position.set(0, 0.03, 0.33); gn.add(o.tip);
+  o.muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffc070, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+  o.muzzle.scale.setScalar(0.7); o.muzzle.visible = false; o.tip.add(o.muzzle);
+  o.phase = Math.random() * 6; o.last = new THREE.Vector3(x, 0, z);
+  scene.add(g);
+}
+// walk animation + facing, shared
+function animateHuman(o, dt, face) {
+  const p = o.g.position;
+  if (face !== null) { const da = Math.atan2(Math.sin(face - o.g.rotation.y), Math.cos(face - o.g.rotation.y)); o.g.rotation.y += da * Math.min(1, dt * 8); }
+  const moved = Math.hypot(p.x - o.last.x, p.z - o.last.z) / Math.max(dt, 1e-4);
+  o.last.set(p.x, 0, p.z);
+  o.phase += moved * dt * 2.2;
+  const sw = Math.sin(o.phase) * Math.min(1, moved / 3) * 0.7;
+  o.lL.rotation.x = sw; o.lR.rotation.x = -sw;
+  return moved;
+}
+
 const enemies = [];
 let enemyParts = [];
 const rebuildParts = () => { enemyParts = enemies.filter(e => !e.dead).flatMap(e => e.parts); };
 const snapNode = v => clamp(Math.round((v - 25) / P) * P + 25, -175, 175);
+const allies = [];
+// everyone an enemy may shoot at: you (above ground) and allies who are up
+function foes() {
+  const out = zone === 'street' ? [{ pos: player.pos, ally: null }] : [];
+  for (const a of allies) if (a.up && a.g.visible) out.push({ pos: a.g.position, ally: a });
+  return out;
+}
 
 class Enemy {
-  constructor(x, z) {
-    const g = this.g = new THREE.Group(); g.rotation.order = 'YXZ';
-    g.position.set(x, groundAt(x, z), z);
-    this.hood = std(HOODS[Math.floor(Math.random() * HOODS.length)]);
-    const skin = std(SKINS[Math.floor(Math.random() * SKINS.length)]);
-    this.parts = [];
-    const add = (geo, mat, px, py, pz, head = false) => {
-      const m = new THREE.Mesh(geo, mat); m.position.set(px, py, pz); m.castShadow = true;
-      m.userData.enemy = this; m.userData.head = head; g.add(m); this.parts.push(m); return m;
-    };
-    this.lL = add(EG.leg, EM.jeans, -0.14, 0.85, 0); this.lR = add(EG.leg, EM.jeans, 0.14, 0.85, 0);
-    add(EG.torso, this.hood, 0, 1.21, 0);
-    const aL = add(EG.arm, this.hood, -0.36, 1.52, 0); aL.rotation.set(-1.35, 0, 0.4);
-    const aR = add(EG.arm, this.hood, 0.36, 1.52, 0); aR.rotation.x = -1.45;
-    add(EG.head, skin, 0, 1.74, 0, true);
-    add(EG.cap, Math.random() < 0.3 ? EM.capR : EM.cap, 0, 1.93, 0.05, true);
-    const gn = add(EG.gun, EM.gun, 0.2, 1.46, 0.5);
-    this.tip = new THREE.Object3D(); this.tip.position.set(0, 0.03, 0.33); gn.add(this.tip);
-    this.muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffc070, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    this.muzzle.scale.setScalar(0.7); this.muzzle.visible = false; this.tip.add(this.muzzle);
-    scene.add(g);
-    this.hp = 100; this.dead = false; this.deadT = 0; this.flashT = 0; this.mT = 0;
-    this.speed = rand(3.4, 4.6); this.pref = rand(16, 32);
-    this.los = false; this.losT = 0; this.shootT = rand(0.8, 1.5);
-    this.strafe = 0; this.strafeT = 0; this.wp = null; this.prevWp = null;
-    this.phase = Math.random() * 6; this.stuckT = 0; this.last = new THREE.Vector3(x, 0, z);
+  constructor(x, z, crew, home) {
+    this.crew = crew; this.C = CREWS[crew]; this.home = home;
+    buildHuman(this, x, z, this.C, true);
+    this.hp = this.C.hp; this.dead = false; this.deadT = 0; this.flashT = 0; this.mT = 0;
+    this.speed = rand(...this.C.speed); this.pref = rand(16, 32);
+    this.los = false; this.foe = null; this.losT = 0; this.shootT = rand(0.8, 1.5);
+    this.strafe = 0; this.strafeT = 0; this.wp = null; this.prevWp = null; this.stuckT = 0; this.retargetT = 0;
     this.target = new THREE.Vector2(player.pos.x, player.pos.z);
   }
   nextNode(n) {
@@ -1216,18 +1320,22 @@ class Enemy {
   }
   shoot(dist) {
     const tip = this.tip.getWorldPosition(new THREE.Vector3());
-    const moving = Math.hypot(player.vel.x, player.vel.z);
-    let acc = 0.62 - dist / 150 + wave * 0.015;
-    if (moving > 7) acc *= 0.55; else if (moving > 2) acc *= 0.8;
-    if (TOUCH) acc *= 0.75; // aiming with thumbs is harder
-    acc = clamp(acc, 0.1, 0.72);
+    const ally = this.foe.ally;
+    let acc = 0.62 - dist / 150 + wave * 0.015 + this.C.acc;
+    if (!ally) {
+      const moving = Math.hypot(player.vel.x, player.vel.z);
+      if (moving > 7) acc *= 0.55; else if (moving > 2) acc *= 0.8;
+      if (TOUCH) acc *= 0.75; // aiming with thumbs is harder
+    }
+    acc = clamp(acc, 0.1, 0.75);
     const hit = Math.random() < acc;
-    const tgt = camera.position.clone(); tgt.y -= 0.35;
+    const tgt = ally ? ally.g.position.clone().setY(ally.g.position.y + 1.3) : camera.position.clone().setY(camera.position.y - 0.35);
     if (!hit) tgt.add(new THREE.Vector3(rand(-1.5, 1.5), rand(-0.8, 1.5), rand(-1.5, 1.5)));
     tracer(tip, tgt);
     this.muzzle.visible = true; this.mT = 0.06;
-    bang(clamp(0.5 - dist / 200, 0.05, 0.4), 1800, 0.25);
-    if (hit) hurtPlayer(rand(7, 12) * (1 + wave * 0.04), this.g.position);
+    bang(clamp(0.5 - Math.hypot(tip.x - player.pos.x, tip.z - player.pos.z) / 200, 0.03, 0.4), 1800, 0.25);
+    const dmg = rand(7, 12) * (1 + wave * 0.04);
+    if (hit) { if (ally) ally.hurt(dmg); else hurtPlayer(dmg, this.g.position); }
   }
   damage(dmg, head) {
     if (this.dead) return;
@@ -1236,11 +1344,12 @@ class Enemy {
   }
   die(head) {
     this.dead = true; kills++;
-    const pts = head ? 150 : 100; score += pts;
-    feed(head ? `헤드샷! +${pts}` : `처치 +${pts}`, head ? '#ff6b5a' : '#fff');
+    const pts = head ? 150 : 100, r = head ? 15 : 10;
+    score += pts; rep += r;
+    feed(head ? `헤드샷! 평판 +${r}` : `처치 · 평판 +${r}`, head ? '#ff6b5a' : '#fff');
     this.muzzle.visible = false;
-    const r = Math.random();
-    if (r < 0.55) spawnPickup(this.g.position, 'ammo'); else if (r < 0.85) spawnPickup(this.g.position, 'hp');
+    const k = Math.random();
+    if (k < 0.5) spawnPickup(this.g.position, 'ammo'); else if (k < 0.78) spawnPickup(this.g.position, 'hp');
     rebuildParts();
   }
   update(dt) {
@@ -1253,23 +1362,34 @@ class Enemy {
       if (this.deadT > 4) p.y -= dt * 0.4;
       return this.deadT > 6;
     }
-    const dx = player.pos.x - p.x, dz = player.pos.z - p.z, dist = Math.hypot(dx, dz);
+    if (this.foe && this.foe.ally && !this.foe.ally.up) { this.los = false; this.foe = null; }
     if ((this.losT -= dt) <= 0) {
       this.losT = 0.2 + Math.random() * 0.1;
       const was = this.los;
-      this.los = dist < 120 && losClear(p.x, p.z, player.pos.x, player.pos.z);
-      if (this.los) { this.target.set(player.pos.x, player.pos.z); if (!was) this.shootT = Math.max(this.shootT, rand(0.5, 1)); }
-      else if (was) { this.wp = null; }
+      let best = null, bd = 120;
+      for (const c of foes()) {
+        const d = Math.hypot(c.pos.x - p.x, c.pos.z - p.z);
+        if (d < bd && losClear(p.x, p.z, c.pos.x, c.pos.z)) { bd = d; best = c; }
+      }
+      this.foe = best; this.los = !!best;
+      if (this.los) { this.target.set(best.pos.x, best.pos.z); if (!was) this.shootT = Math.max(this.shootT, rand(0.5, 1)); }
+      else if (was) { this.wp = null; this.retargetT = 0; }
     }
-    if (!this.los && Math.random() < dt * 0.3) this.target.set(player.pos.x, player.pos.z); // they "hear" you
+    // without a target in sight: hunt you inside their own turf, otherwise patrol it
+    if (!this.los && (this.retargetT -= dt) <= 0) {
+      this.retargetT = rand(3, 6);
+      if (zone === 'street' && districtAt(player.pos.x, player.pos.z) === this.home) this.target.set(player.pos.x, player.pos.z);
+      else { const ns = districtNodes(this.home), n = ns[Math.floor(Math.random() * ns.length)]; this.target.set(n.x, n.z); }
+    }
     let mx = 0, mz = 0, face = null;
     if (this.los) {
+      const fp = this.foe.pos, dx = fp.x - p.x, dz = fp.z - p.z, dist = Math.max(0.01, Math.hypot(dx, dz));
       face = Math.atan2(dx, dz);
       const nx = dx / dist, nz = dz / dist;
       if ((this.strafeT -= dt) <= 0) { this.strafeT = rand(0.8, 2); this.strafe = [-1, 0, 1][Math.floor(Math.random() * 3)]; }
       const fw = dist > this.pref + 6 ? 1 : dist < this.pref - 6 ? -0.7 : 0;
       mx = nx * fw - nz * this.strafe * 0.8; mz = nz * fw + nx * this.strafe * 0.8;
-      if ((this.shootT -= dt) <= 0 && dist < 90) { this.shoot(dist); this.shootT = rand(0.7, 1.5) / (1 + wave * 0.05); }
+      if ((this.shootT -= dt) <= 0 && dist < 90) { this.shoot(dist); this.shootT = rand(0.7, 1.5) * this.C.rate / (1 + wave * 0.05); }
     } else {
       if (!this.wp) this.wp = { x: snapNode(p.x), z: snapNode(p.z) };
       const wx = this.wp.x - p.x, wz = this.wp.z - p.z, wd = Math.hypot(wx, wz);
@@ -1288,36 +1408,158 @@ class Enemy {
     }
     collide(p, 0.45);
     p.y += (groundAt(p.x, p.z) - p.y) * Math.min(1, dt * 12);
-    if (face !== null) {
-      let da = face - this.g.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da));
-      this.g.rotation.y += da * Math.min(1, dt * 8);
-    }
-    const moved = Math.hypot(p.x - this.last.x, p.z - this.last.z) / Math.max(dt, 1e-4);
-    this.last.set(p.x, 0, p.z);
+    const moved = animateHuman(this, dt, face);
     if (ml > 0.01 && !this.los && moved < 0.5) { if ((this.stuckT += dt) > 1.2) { this.stuckT = 0; this.prevWp = null; this.wp = this.nextNode({ x: snapNode(p.x), z: snapNode(p.z) }); } } else this.stuckT = 0;
-    this.phase += moved * dt * 2.2;
-    const sw = Math.sin(this.phase) * Math.min(1, moved / 3) * 0.7;
-    this.lL.rotation.x = sw; this.lR.rotation.x = -sw;
     return false;
   }
 }
 
-function spawnEnemy() {
-  let best = null;
-  for (let k = 0; k < 40; k++) {
-    const x = NODES[Math.floor(Math.random() * 8)], z = NODES[Math.floor(Math.random() * 8)];
-    const d = Math.hypot(x - player.pos.x, z - player.pos.z);
-    if (d < 70 || d > 240) continue;
-    best = { x, z };
-    if (!losClear(x, z, player.pos.x, player.pos.z)) break;
+// ---------- allies (your crew) ----------
+const ALLY_TYPES = {
+  artist: { name: '그래피티 아티스트', desc: '균형 잡힌 사수', cost: 150, hp: 110, dmg: [20, 28], acc: 0.55, rate: [0.55, 0.9], cap: 0x2b2b2b },
+  boxer:  { name: '전직 복서', desc: '체력 2배 · 앞에서 버텨 줌', cost: 200, hp: 220, dmg: [26, 34], acc: 0.45, rate: [0.7, 1.1], cap: 0x8a1e1e },
+  hacker: { name: '해커', desc: '미니맵 레이더 범위 무제한', cost: 250, hp: 90, dmg: [16, 22], acc: 0.6, rate: [0.6, 0.9], cap: 0x14532d },
+};
+const hexOf = css => parseInt(css.slice(1), 16);
+class Ally {
+  constructor(key) {
+    this.key = key; this.T = ALLY_TYPES[key];
+    buildHuman(this, player.pos.x, player.pos.z, { hood: hexOf(myCrew.color), cap: this.T.cap }, false);
+    this.up = false; this.downT = 0; this.flashT = 0; this.mT = 0;
+    this.tgt = null; this.scanT = 0; this.shootT = 1;
+    this.spawnNear();
   }
-  if (!best) best = { x: -player.pos.x || 175, z: -player.pos.z || 175 };
-  enemies.push(new Enemy(best.x + rand(-2, 2), best.z + rand(-2, 2)));
+  get idx() { return allies.indexOf(this); }
+  spawnNear() {
+    const a = yaw + (this.idx - 1) * 0.7;
+    const p = this.g.position;
+    p.set(player.pos.x + Math.sin(a) * 3, 0, player.pos.z + Math.cos(a) * 3);
+    collide(p, 0.45);
+    p.y = groundAt(p.x, p.z);
+    this.hp = this.T.hp; this.up = true; this.g.visible = true; this.g.rotation.x = 0;
+  }
+  hurt(d) {
+    if (!this.up) return;
+    this.hp -= d; this.flashT = 0.1;
+    if (this.hp <= 0) {
+      this.up = false; this.g.visible = false; this.downT = 25;
+      feed(`${this.T.name} 쓰러짐 · 25초 뒤 복귀`, '#ff9f7a');
+    }
+  }
+  update(dt) {
+    if (this.mT > 0 && (this.mT -= dt) <= 0) this.muzzle.visible = false;
+    if (this.flashT > 0) { this.flashT -= dt; this.hood.emissive.setHex(this.flashT > 0 ? 0x880000 : 0x000000); }
+    if (!this.up) { if ((this.downT -= dt) <= 0 && zone === 'street') { this.spawnNear(); feed(`${this.T.name} 복귀!`, myCrew.color); } return; }
+    if (zone !== 'street') { this.g.visible = false; return; }
+    if (!this.g.visible) this.spawnNear();
+    const p = this.g.position;
+    if ((this.scanT -= dt) <= 0) {
+      this.scanT = 0.25; this.tgt = null; let bd = 80;
+      for (const e of enemies) {
+        if (e.dead) continue;
+        const d = Math.hypot(e.g.position.x - p.x, e.g.position.z - p.z);
+        if (d < bd && losClear(p.x, p.z, e.g.position.x, e.g.position.z)) { bd = d; this.tgt = e; }
+      }
+    }
+    if (this.tgt && this.tgt.dead) this.tgt = null;
+    // follow a slot behind you; teleport back if left far behind out of sight
+    const slotA = yaw + (this.idx - 1) * 0.6;
+    const sx = player.pos.x + Math.sin(slotA) * 3.5, sz = player.pos.z + Math.cos(slotA) * 3.5;
+    const toP = Math.hypot(player.pos.x - p.x, player.pos.z - p.z);
+    if (toP > 45 && !losClear(p.x, p.z, player.pos.x, player.pos.z)) this.spawnNear();
+    let mx = sx - p.x, mz = sz - p.z, face = null;
+    const ml = Math.hypot(mx, mz);
+    if (ml > 1.2 && !(this.tgt && toP < 12)) {
+      const sp = Math.min(ml, (toP > 12 ? 9 : 6) * dt);
+      p.x += mx / ml * sp; p.z += mz / ml * sp;
+      face = Math.atan2(mx, mz);
+    }
+    for (const o of allies) if (o !== this && o.up) {
+      const ox = p.x - o.g.position.x, oz = p.z - o.g.position.z, d = Math.hypot(ox, oz);
+      if (d < 1 && d > 0.001) { p.x += ox / d * (1 - d) * 0.5; p.z += oz / d * (1 - d) * 0.5; }
+    }
+    collide(p, 0.45);
+    p.y += (groundAt(p.x, p.z) - p.y) * Math.min(1, dt * 12);
+    if (this.tgt) {
+      const ep = this.tgt.g.position, d = Math.hypot(ep.x - p.x, ep.z - p.z);
+      face = Math.atan2(ep.x - p.x, ep.z - p.z);
+      if ((this.shootT -= dt) <= 0) {
+        this.shootT = rand(...this.T.rate);
+        const tip = this.tip.getWorldPosition(new THREE.Vector3());
+        const hit = Math.random() < clamp(this.T.acc - d / 220, 0.15, 0.7);
+        const to = ep.clone().setY(ep.y + 1.2);
+        if (!hit) to.add(new THREE.Vector3(rand(-1.2, 1.2), rand(-0.5, 1.2), rand(-1.2, 1.2)));
+        tracer(tip, to, 0xfff3b0);
+        this.muzzle.visible = true; this.mT = 0.06;
+        bang(0.12, 2400, 0.18);
+        if (hit) this.tgt.damage(rand(...this.T.dmg), false);
+      }
+    }
+    animateHuman(this, dt, face);
+  }
+}
+function recolorAllies() { for (const a of allies) a.hood.color.setHex(hexOf(myCrew.color)); }
+const hackerUp = () => allies.some(a => a.key === 'hacker' && a.up);
+
+// ---------- territory war ----------
+function spawnEnemy(crew, d) {
+  const ns = districtNodes(d);
+  let pick = null;
+  for (let k = 0; k < 30; k++) {
+    const n = ns[Math.floor(Math.random() * ns.length)];
+    const dist = Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
+    if (dist < 28) continue;
+    pick = n;
+    if (!losClear(n.x, n.z, player.pos.x, player.pos.z)) break;
+  }
+  pick = pick || ns[Math.floor(Math.random() * ns.length)];
+  enemies.push(new Enemy(pick.x + rand(-2, 2), pick.z + rand(-2, 2), crew, d));
   rebuildParts();
 }
-function startWave() {
-  wave++; toSpawn = 4 + wave * 2; spawnT = 0;
-  msg(`WAVE ${wave}`, 2.2); beep(440, 0.15, 0.1, 'sawtooth'); setTimeout(() => beep(660, 0.25, 0.1, 'sawtooth'), 160);
+function clearEnemies() {
+  for (const e of enemies) scene.remove(e.g);
+  enemies.length = 0; rebuildParts(); toSpawn = 0;
+}
+function startWar(d, kind, crew) {
+  war = { d, kind, crew, timer: kind === 'defend' ? 60 : 0 };
+  toSpawn = Math.min(12, 4 + captured * 2) - (kind === 'defend' ? 1 : 0); spawnT = 0;
+  if (kind === 'attack') { msg('영역 전쟁!', 2.2); feed(`${d.name} · ${CREWS[crew].name}의 구역`, CREWS[crew].css); }
+  else { msg('방어전!', 2.2); feed(`${CREWS[crew].name}가 ${d.name}을(를) 되찾으러 왔다! 60초`, CREWS[crew].css); }
+  beep(440, 0.15, 0.1, 'sawtooth'); setTimeout(() => beep(660, 0.25, 0.1, 'sawtooth'), 160);
+}
+function endWar(won) {
+  const { d, kind, crew } = war;
+  if (kind === 'attack' && won) {
+    d.owner = 'me'; captured++; wave = 1 + captured; rep += 100;
+    msg(`${d.name} 점령!`, 2.5); feed('구역 점령 · 평판 +100', myCrew.color);
+    beep(660, 0.15, 0.1, 'triangle'); setTimeout(() => beep(990, 0.3, 0.1, 'triangle'), 150);
+    if (captured === DOOR_CAPS) { feed('공원 지하철역에서 이상한 빛이 새어 나온다…', '#ff7ad9'); beep(1320, 0.5, 0.08, 'sine'); }
+  } else if (kind === 'defend' && won) {
+    rep += 50; msg('방어 성공!', 2); feed(`${d.name} 지켜냄 · 평판 +50`, myCrew.color);
+  } else if (kind === 'defend') {
+    d.owner = crew; captured = Math.max(0, captured - 1); wave = 1 + captured;
+    msg(`${d.name}을(를) 빼앗겼다`, 2.5); feed(`${CREWS[crew].name}에게 구역을 잃었다`, CREWS[crew].css);
+    clearEnemies();
+  }
+  war = null; counterT = rand(70, 100);
+  if (ownedCount() === 9) setTimeout(() => gameOver(true), 1500);
+}
+function updateWar(dt, alive) {
+  if (zone !== 'street') return;
+  const here = districtAt(player.pos.x, player.pos.z);
+  if (!war && here.owner !== 'me') startWar(here, 'attack', here.owner);
+  if (!war && captured > 0 && (counterT -= dt) <= 0) {
+    const targets = DISTRICTS.filter(d => d.owner === 'me' && !d.home && d !== here && neighbours(d).some(n => n.owner !== 'me'));
+    if (targets.length) {
+      const d = targets[Math.floor(Math.random() * targets.length)];
+      const rivals = neighbours(d).filter(n => n.owner !== 'me');
+      startWar(d, 'defend', rivals[Math.floor(Math.random() * rivals.length)].owner);
+    } else counterT = 30;
+  }
+  if (!war) return;
+  if (toSpawn > 0 && (spawnT -= dt) <= 0 && alive < 6) { spawnEnemy(war.crew, war.d); toSpawn--; spawnT = 1.2; }
+  if (toSpawn === 0 && alive === 0) endWar(true);
+  else if (war.kind === 'defend' && (war.timer -= dt) <= 0) endWar(false);
 }
 
 // ---------- pickups ----------
@@ -1343,12 +1585,14 @@ function hurtPlayer(d, from) {
   beep(110, 0.12, 0.2, 'sawtooth');
   if (player.hp <= 0) gameOver();
 }
-function gameOver() {
-  player.hp = 0; state = 'dead'; firing = false;
+function gameOver(won = false) {
+  if (state === 'dead') return;
+  if (!won) player.hp = 0;
+  state = 'dead'; firing = false;
   document.exitPointerLock?.();
-  $('sub').textContent = '사망했습니다';
+  $('sub').textContent = won ? `🏆 브루클린 통일! — ${myCrew.name}` : '사망했습니다';
   const st = $('stat'); st.classList.remove('hidden');
-  st.innerHTML = `WAVE ${wave} · 처치 ${kills} · 점수 ${score}`;
+  st.innerHTML = `내 구역 ${ownedCount()}/9 · 처치 ${kills} · 평판 ${rep} · 점수 ${score}`;
   $('keys').classList.add('hidden'); $('go').textContent = '다시 시작';
   setTimeout(() => $('menu').classList.remove('hidden'), 900);
 }
@@ -1364,14 +1608,14 @@ function findAssistTarget() {
   let best = null;
   const cp = camera.position;
   for (const e of enemies) {
-    if (e.dead || !e.los) continue;
+    if (e.dead) continue;
     const ex = e.g.position.x - cp.x, ey = e.g.position.y + 1.3 - cp.y, ez = e.g.position.z - cp.z;
     const h = Math.hypot(ex, ez);
     if (h > 90) continue;
     const yawT = Math.atan2(-ex, -ez), pitchT = Math.atan2(ey, h);
     const dyaw = Math.atan2(Math.sin(yawT - yaw), Math.cos(yawT - yaw));
     const ang = Math.hypot(dyaw * Math.cos(pitch), pitchT - pitch);
-    if (ang < ASSIST_CONE && (!best || ang < best.ang))
+    if (ang < ASSIST_CONE && (!best || ang < best.ang) && losClear(cp.x, cp.z, e.g.position.x, e.g.position.z))
       best = { yawT, pitchT, ang, tol: Math.atan(0.3 / h) + 0.02, dir: new THREE.Vector3(ex, ey, ez).normalize() };
   }
   return best;
@@ -1426,10 +1670,24 @@ function drawMap() {
     mctx.fillStyle = b.dist === 'park' ? '#3f6b3a' : b.dist === 'court' ? '#a5553a' : b.dist === 'ring' ? '#3a332f' : '#6d5a50';
     mctx.fillRect(mx(b.cx - H), mz(b.cz - H), 35 * MS, 35 * MS);
   }
+  // territory tint, war zone pulse
+  for (const d of DISTRICTS) {
+    const x0 = mx(DB[d.gx]), z0 = mz(DB[d.gz]), w = mx(DB[d.gx + 1]) - x0, h = mz(DB[d.gz + 1]) - z0;
+    mctx.globalAlpha = 0.38; mctx.fillStyle = ownerCss(d.owner); mctx.fillRect(x0, z0, w, h);
+    mctx.globalAlpha = 1;
+    if (war && war.d === d) { mctx.strokeStyle = `rgba(255,255,255,${0.5 + Math.sin(t * 8) * 0.5})`; mctx.lineWidth = 3; mctx.strokeRect(x0 + 1.5, z0 + 1.5, w - 3, h - 3); }
+  }
+  mctx.strokeStyle = 'rgba(0,0,0,0.5)'; mctx.lineWidth = 1;
+  for (const v of [-75, 75]) { mctx.beginPath(); mctx.moveTo(mx(v), mz(-181)); mctx.lineTo(mx(v), mz(181)); mctx.moveTo(mx(-181), mz(v)); mctx.lineTo(mx(181), mz(v)); mctx.stroke(); }
   mctx.fillStyle = '#f2b705';
   for (const pk of pickups) mctx.fillRect(mx(pk.m.position.x) - 1.5, mz(pk.m.position.z) - 1.5, 3, 3);
-  mctx.fillStyle = '#ff3b30';
-  for (const e of enemies) if (!e.dead) { mctx.beginPath(); mctx.arc(mx(e.g.position.x), mz(e.g.position.z), 2.6, 0, 7); mctx.fill(); }
+  const radar = hackerUp() ? Infinity : 70;
+  mctx.strokeStyle = '#000'; mctx.lineWidth = 1;
+  for (const e of enemies) if (!e.dead && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < radar) {
+    mctx.fillStyle = e.C.css; mctx.beginPath(); mctx.arc(mx(e.g.position.x), mz(e.g.position.z), 3, 0, 7); mctx.fill(); mctx.stroke();
+  }
+  mctx.fillStyle = myCrew.color;
+  for (const a of allies) if (a.up) { mctx.beginPath(); mctx.arc(mx(a.g.position.x), mz(a.g.position.z), 2.6, 0, 7); mctx.fill(); mctx.stroke(); }
   mctx.save(); mctx.translate(mx(player.pos.x), mz(player.pos.z));
   mctx.rotate(Math.atan2(-Math.sin(yaw), Math.cos(yaw)));
   mctx.fillStyle = '#fff'; mctx.beginPath(); mctx.moveTo(0, -6); mctx.lineTo(4, 4); mctx.lineTo(-4, 4); mctx.closePath(); mctx.fill();
@@ -1447,7 +1705,7 @@ function placePlayer(x, y, z, yawTo) {
   yaw = yawTo; pitch = 0; turnLeft = 0;
 }
 function updateSubway(dt) {
-  const open = cleared >= DOOR_WAVE;
+  const open = captured >= DOOR_CAPS;
   doorPivot.rotation.y += ((open ? -1.65 : 0) - doorPivot.rotation.y) * Math.min(1, dt * 1.5);
   doorGlow.material.opacity = open ? 0.95 + Math.sin(t * 3) * 0.05 : 0.3 + Math.sin(t * 2) * 0.08;
   doorLight.intensity = open ? 22 + Math.sin(t * 4) * 4 : 5;
@@ -1464,13 +1722,13 @@ function updateSubway(dt) {
     fadeThen(() => {
       zone = 'subway'; placePlayer(-25.4, SY, ZC, -Math.PI / 2);
       msg('BEDFORD AV', 2);
-      if (!open) feed(`지하철역은 안전해요 · 웨이브 ${DOOR_WAVE}을 깨면 무언가 열린다는 소문이…`, '#c08bff');
+      if (!open) feed(`지하철역은 안전해요 · 구역 ${DOOR_CAPS}곳을 점령하면 무언가 열린다는 소문이…`, '#c08bff');
     });
   } else if (zone === 'subway' && p.x < -26.2) {
     fadeThen(() => { zone = 'street'; placePlayer(ENTRANCE.x, 0.25, ENTRANCE.z - 3.4, 0); });
   } else if (zone === 'subway' && p.x > 28.4 && Math.abs(p.z - ZC) < 1.3) {
     if (open) enterPortal();
-    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(`단단히 잠겨 있다… 웨이브 ${DOOR_WAVE} 클리어 필요`, '#ff7ad9'); }
+    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(`단단히 잠겨 있다… 구역 ${DOOR_CAPS}곳 점령 필요`, '#ff7ad9'); }
   }
 }
 function enterPortal() {
@@ -1481,6 +1739,48 @@ function enterPortal() {
   beep(660, 0.3, 0.1, 'sine'); setTimeout(() => beep(990, 0.3, 0.1, 'sine'), 150); setTimeout(() => beep(1480, 0.6, 0.1, 'sine'), 300);
   fadeThen(() => { $('hud').classList.add('hidden'); $('portal').classList.remove('hidden'); }, true);
 }
+// ---------- crew panel ----------
+function renderCrew() {
+  $('repv').textContent = rep;
+  $('swatches').innerHTML = MY_COLORS.map(c => `<div class="sw${c === myCrew.color ? ' on' : ''}" data-c="${c}" style="background:${c}"></div>`).join('');
+  $('cards').innerHTML = Object.entries(ALLY_TYPES).map(([k, T]) => {
+    const a = allies.find(x => x.key === k);
+    const btn = a ? `<div class="btn off">${a.up ? '함께하는 중' : `회복 중 ${Math.ceil(a.downT)}초`}</div>`
+      : rep >= T.cost ? `<div class="btn" data-recruit="${k}">영입 · 평판 ${T.cost}</div>`
+      : `<div class="btn off">평판 ${T.cost} 필요</div>`;
+    return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">체력 ${T.hp}</span>${btn}</div>`;
+  }).join('');
+  $('terr').innerHTML = DISTRICTS.map(d => `<div style="background:${ownerCss(d.owner)}">${d.name}<br><span style="font-weight:600">${ownerName(d.owner)}</span></div>`).join('');
+}
+function openCrew() {
+  if (state !== 'play') return;
+  state = 'crew'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  $('crewName').value = myCrew.name;
+  renderCrew(); $('crew').classList.remove('hidden');
+}
+function closeCrew() {
+  if (state !== 'crew') return;
+  myCrew.name = $('crewName').value.trim() || myCrew.name; saveCrew();
+  $('crewName').blur();
+  $('crew').classList.add('hidden'); state = 'play';
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+$('crewClose').addEventListener('click', closeCrew);
+$('swatches').addEventListener('click', e => {
+  const c = e.target.dataset?.c; if (!c) return;
+  myCrew.color = c; saveCrew(); recolorAllies(); renderCrew();
+});
+$('cards').addEventListener('click', e => {
+  const k = e.target.dataset?.recruit; if (!k || allies.some(a => a.key === k)) return;
+  const T = ALLY_TYPES[k]; if (rep < T.cost) return;
+  rep -= T.cost; allies.push(new Ally(k));
+  feed(`${T.name} 영입!`, myCrew.color); beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(880, 0.15, 0.1, 'triangle'), 120);
+  renderCrew();
+});
+
 $('portalBack').addEventListener('click', () => {
   fadeThen(() => {
     $('portal').classList.add('hidden'); $('hud').classList.remove('hidden');
@@ -1538,13 +1838,9 @@ function update(dt) {
   const alive = enemies.filter(e => !e.dead).length;
   if (zone === 'street') {
     for (let i = enemies.length - 1; i >= 0; i--) if (enemies[i].update(dt)) { scene.remove(enemies[i].g); enemies.splice(i, 1); }
-    if (toSpawn > 0) { if ((spawnT -= dt) <= 0 && alive < Math.min(4 + wave, 10)) { spawnEnemy(); toSpawn--; spawnT = 1.4; } }
-    else if (alive === 0 && (waveT -= dt) <= 0) { startWave(); waveT = 5; }
+    updateWar(dt, alive);
   }
-  if (wave > 0 && toSpawn === 0 && alive === 0 && cleared < wave) {
-    cleared = wave;
-    if (cleared === DOOR_WAVE) { msg('???', 2.5); feed('공원 지하철역에서 이상한 빛이 새어 나온다…', '#ff7ad9'); beep(880, 0.4, 0.08, 'sine'); setTimeout(() => beep(1320, 0.5, 0.08, 'sine'), 200); }
-  }
+  for (const a of allies) a.update(dt);
   updateSubway(dt);
 
   for (let i = pickups.length - 1; i >= 0; i--) {
@@ -1581,9 +1877,13 @@ function update(dt) {
   $('hpt').textContent = Math.max(0, Math.ceil(player.hp));
   $('mag').textContent = ammo; $('res').textContent = '/ ' + reserve;
   $('mag').style.color = ammo <= 5 ? '#ff3b30' : '#fff';
-  $('wave').textContent = 'WAVE ' + Math.max(wave, 1);
-  $('score').textContent = '점수 ' + score;
-  $('left').textContent = '남은 적 ' + (alive + toSpawn);
+  const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
+  $('wave').textContent = here ? here.name.toUpperCase() : 'BEDFORD AV';
+  $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
+  $('score').textContent = `평판 ${rep} · 점수 ${score}`;
+  $('left').textContent = war
+    ? (war.kind === 'attack' ? `⚔ 영역 전쟁 · 남은 적 ${alive + toSpawn}` : `🛡 ${war.d.name} 방어 ${Math.ceil(war.timer)}초 · 남은 적 ${alive + toSpawn}`)
+    : `${here ? ownerName(here.owner) + ' 구역 · ' : ''}내 구역 ${ownedCount()}/9`;
   $('cross').classList.toggle('ads', aiming);
   drawMap();
 }
@@ -1609,7 +1909,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix(); gunCam.updateProjectionMatrix();
 });
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, set cleared(v) { cleared = v; } };
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; } };
 </script>
 </body>
 </html>
