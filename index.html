@@ -571,7 +571,7 @@ const STR = {
   pizzaClosed: ['지금은 배달 못 해! 가게가 습격당했다고!', 'No deliveries now! We\'re under attack!', '今は配達どころじゃない！襲撃されてるんだ！'],
   q2Ask: ['그 몸으론 이 동네에서 한 달도 못 버텨. 내 훈련 세 개만 따라와 봐. 하나 끝낼 때마다 더 튼튼해질 거다.', 'You won\'t last a month around here like that. Do my three drills. Every one you finish makes you tougher.', 'その体じゃこの街で一ヶ月ももたない。俺の特訓を三つこなせ。一つ終えるごとに強くなる。'],
   q2Stage0: ['1단계 달리기. 깃발 5개를 70초 안에 걸어서 돌아. 자전거는 반칙이다. 다리가 먼저야.', 'Drill 1: running. Hit 5 flags in 70 seconds, on foot. Bikes are cheating. Legs come first.', '第1段階、ランニング。旗5本を70秒以内に走って回れ。自転車は反則だ。まずは脚だ。'],
-  q2Stage1: ['2단계 사격. 분수대 위 병 10개를 25초 안에 맞혀. 소총만 쓴다. 숨 참고, 당기지 말고 짜듯이.', 'Drill 2: shooting. Hit the 10 bottles on the fountain in 25 seconds, rifle only. Hold your breath. Squeeze, don\'t pull.', '第2段階、射撃。噴水の上の瓶10本を25秒以内に撃て。ライフルのみだ。息を止めて、引くな、絞れ。'],
+  q2Stage1: ['2단계 사격. 분수대 위 병 10개를 50초 안에 맞혀. 소총만 쓴다. 숨 참고, 당기지 말고 짜듯이.', 'Drill 2: shooting. Hit the 10 bottles on the fountain in 50 seconds, rifle only. Hold your breath. Squeeze, don\'t pull.', '第2段階、射撃。噴水の上の瓶10本を50秒以内に撃て。ライフルのみだ。息を止めて、引くな、絞れ。'],
   q2Stage2: ['3단계 실전. 라이벌 크루 10명을 쓰러뜨려. 체력이 20 아래로 떨어지면 처음부터다.', 'Drill 3: the real thing. Drop 10 rival crew members. Fall under 20 HP and you start over.', '第3段階、実戦。ライバルクルーを10人倒せ。体力が20を切ったら最初からだ。'],
   q2Pass: ['좋아! 최대 체력 +20', 'Good! Max HP +20', 'よし！最大体力 +20'],
   q2Fail: ['다시! 준비되면 말해.', 'Again! Tell me when you\'re ready.', 'もう一回！準備ができたら言え。'],
@@ -3479,7 +3479,7 @@ function coachTalk() {
 function coachStart() {
   const q = Q.coach;
   if (q.step === 0) { q.s = 'run'; q.i = 0; q.timer = 70; qFlag.position.set(RUN_FLAGS[0][0], 0, RUN_FLAGS[0][1]); qFlag.visible = true; }
-  else if (q.step === 1) { q.s = 'shoot'; q.n = 0; q.timer = 25; placeBottles(); if (weapon !== 'rifle') switchWeapon('rifle'); }
+  else if (q.step === 1) { q.s = 'shoot'; q.n = 0; q.timer = 50; placeBottles(); if (weapon !== 'rifle') switchWeapon('rifle'); }
   else { q.s = 'fight'; q.k = 0; }
   msg(L('startIt'), 1.2); beep(880, 0.1, 0.1, 'square');
 }
