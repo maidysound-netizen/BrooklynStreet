@@ -337,7 +337,7 @@
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
       <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
@@ -397,17 +397,17 @@ const STR = {
   keysDesktop: [
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
      <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-     <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+     <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
      <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move · <kbd>Shift</kbd> Sprint · <kbd>Space</kbd> Jump</li>
      <li><kbd>Mouse</kbd> Look · <kbd>Left click</kbd> Shoot · <kbd>Right click</kbd> Aim</li>
-     <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
+     <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop/Bike · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
      <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Kings St.</b></li>
      <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移動 · <kbd>Shift</kbd> ダッシュ · <kbd>Space</kbd> ジャンプ</li>
      <li><kbd>マウス</kbd> 視点 · <kbd>左クリック</kbd> 射撃 · <kbd>右クリック</kbd> エイム</li>
-     <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
+     <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ/自転車 · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
      <li>🎯 目標：ライバルクルーを追い出し、<b>キングス・ストリートの9地区</b>をすべて制圧しよう</li>
      <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
   ],
@@ -495,6 +495,9 @@ const STR = {
   bossBeat: ['{n} 격파 · 평판 +300', '{n} defeated · Rep +300', '{n} 撃破・評判 +300'],
   bossCharge: ['⚠ 보스가 돌진한다! 옆으로 피해!', '⚠ The boss is charging! Dodge sideways!', '⚠ ボスが突進してくる！横に避けろ！'],
   lastFell: ['{c}의 마지막 구역이 무너졌다…', "{c}'s last district has fallen…", '{c}の最後の地区が陥落した…'],
+  bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
+  bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
+  bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
   bossLater: ['{c}의 구역이 모두 무너졌다 · 내 구역이 {n}곳이 되면 보스가 나타난다', '{c} lost all their turf · their boss shows up once you hold {n} districts', '{c}のナワバリはすべて陥落・自分の地区が{n}つになるとボスが現れる'],
   allNineBoss: ['9구역 점령! 남은 보스를 쓰러뜨리면 킹스 스트리트 통일', 'All 9 districts! Beat the remaining bosses to take all of Kings St.', '9地区制圧！残りのボスを倒せばキングス・ストリート統一'],
   bossAppear: ['👑 {n} 등장!', '👑 {n} appears!', '👑 {n} 登場！'],
@@ -608,7 +611,7 @@ const sun = new THREE.DirectionalLight(0xffcf9a, 3.0);
 sun.position.copy(sunDir).multiplyScalar(420);
 sun.castShadow = true;
 sun.shadow.mapSize.setScalar(TOUCH ? 2048 : 4096);
-Object.assign(sun.shadow.camera, { left: -240, right: 240, top: 240, bottom: -240, near: 10, far: 1000 });
+Object.assign(sun.shadow.camera, { left: -170, right: 170, top: 170, bottom: -170, near: 10, far: 1000 });
 sun.shadow.bias = -0.0004;
 sun.shadow.normalBias = 0.05;
 scene.add(sun, sun.target);
@@ -806,6 +809,37 @@ function inst(key, geo, mat, x, y, z, o = {}) {
   b.c.push(o.color !== undefined ? new THREE.Color(o.color) : null);
 }
 const staticHit = [];
+// buildings are merged per 100m area and material, so the whole city is a few hundred draw calls instead of thousands
+const boxBatches = new Map();
+function batchBox(geo, x, y, z, mats, area, o = {}) {
+  const g = geo.toNonIndexed(); geo.dispose();
+  const pos = g.attributes.position.array, nor = g.attributes.normal.array, uv = g.attributes.uv.array;
+  const hit = o.hit !== false, shadow = o.shadow !== false;
+  for (const gr of g.groups) {
+    if (gr.materialIndex === 3) continue;   // bottom face, never seen
+    const mat = mats[gr.materialIndex], key = `${area}|${mat.uuid}|${hit}|${shadow}`;
+    let b = boxBatches.get(key);
+    if (!b) boxBatches.set(key, b = { mat, hit, shadow, p: [], n: [], u: [] });
+    for (let i = gr.start; i < gr.start + gr.count; i++) {
+      b.p.push(pos[i * 3] + x, pos[i * 3 + 1] + y, pos[i * 3 + 2] + z);
+      b.n.push(nor[i * 3], nor[i * 3 + 1], nor[i * 3 + 2]);
+      b.u.push(uv[i * 2], uv[i * 2 + 1]);
+    }
+  }
+}
+const areaOf = (x, z) => `${Math.floor(x / 100)},${Math.floor(z / 100)}`;
+function flushBoxes() {
+  for (const b of boxBatches.values()) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(b.n, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(b.u, 2));
+    g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, b.mat); m.castShadow = b.shadow; m.receiveShadow = true;
+    scene.add(m); if (b.hit) staticHit.push(m);
+  }
+  boxBatches.clear();
+}
 function flushInst() {
   const W = new THREE.Color(1, 1, 1);
   for (const b of buckets.values()) {
@@ -821,18 +855,23 @@ function flushInst() {
 
 // ---------- world layout ----------
 const P = 50, H = 17.5;                    // block pitch, half block size
-const NODES = [-175, -125, -75, -25, 25, 75, 125, 175]; // street centre lines
+const NB = 5;                              // playable blocks from the centre to the edge (was 3: the city is now ~1.5x wider)
+const NMAX = NB * P + 25;                  // outermost street centre line
+const EDGE = NMAX + 6;                     // how far you can walk
+const SHORE = -(NB * P + 29.5);            // north edge of the city, where the waterfront promenade starts
+const BZ = SHORE + 179.5;                  // shift for the waterfront/bridge/skyline, which were laid out for the old 3-block city
+const NODES = Array.from({ length: 2 * NB + 2 }, (_, i) => (i - NB - 0.5) * P); // street centre lines
 const colliders = [];
 const addCol = (minX, maxX, minZ, maxZ, noLos = false) => colliders.push({ minX, maxX, minZ, maxZ, noLos });
 const blockInfo = [];
 const isBlock = (x, z) => Math.abs(x - Math.round(x / P) * P) < 20.5 && Math.abs(z - Math.round(z / P) * P) < 20.5;
-const groundAt = (x, z) => (z > -179.5 && isBlock(x, z)) ? 0.25 : (z < -179.5 ? 0.3 : 0);
+const groundAt = (x, z) => (z > SHORE && isBlock(x, z)) ? 0.25 : (z < SHORE ? 0.3 : 0);
 
 // ground
 {
   const t = texOf(noiseTex('#3b3b3d', 9, 256, 9000)); t.repeat.set(250, 150);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(2000, 1200), new THREE.MeshStandardMaterial({ map: t, roughness: 0.95 }));
-  ground.rotation.x = -Math.PI / 2; ground.position.set(0, 0, 404); ground.receiveShadow = true;
+  ground.rotation.x = -Math.PI / 2; ground.position.set(0, 0, 404 + BZ); ground.receiveShadow = true;
   scene.add(ground); staticHit.push(ground);
 }
 // sidewalk texture: one texture per 41m slab
@@ -889,10 +928,7 @@ const AWN = [0x1e5a8a, 0x8a1e1e, 0x1e6b3a, 0x222222, 0x8a5a1e, 0x5a1e6b];
 function building(x, z, w, d, floors, sk, o = {}) {
   const h = floors * 3.5;
   const m = pick(facadeMats[sk]);
-  const mesh = new THREE.Mesh(scaledBox(w, h, d, 14, 14), [m, m, roofMat, roofMat, m, m]);
-  mesh.position.set(x, h / 2, z);
-  mesh.castShadow = mesh.receiveShadow = true;
-  scene.add(mesh); staticHit.push(mesh);
+  batchBox(scaledBox(w, h, d, 14, 14), x, h / 2, z, [m, m, roofMat, roofMat, m, m], areaOf(x, z));
   const s = STY[sk];
   if (!s.glass) {
     inst('cornice', box1, white, x, h + 0.3, z, { s: [w + 0.5, 0.6, d + 0.5], color: s.trim });
@@ -903,9 +939,7 @@ function building(x, z, w, d, floors, sk, o = {}) {
     const fz = z + o.front * d / 2;
     if (o.store) {
       const sm = pick(storeMats);
-      const sf = new THREE.Mesh(scaledBox(w + 0.12, 3.5, d + 0.12, 14, 3.5), [sm, sm, roofMat, roofMat, sm, sm]);
-      sf.position.set(x, 1.75, z); sf.receiveShadow = true;
-      scene.add(sf); staticHit.push(sf);
+      batchBox(scaledBox(w + 0.12, 3.5, d + 0.12, 14, 3.5), x, 1.75, z, [sm, sm, roofMat, roofMat, sm, sm], areaOf(x, z), { shadow: false });
       inst('awning', box1, white, x, 3.3, fz + o.front * 0.75, { s: [w - 1.2, 0.12, 1.5], rx: o.front * 0.25, color: pick(AWN) });
     }
     if (o.fire && floors >= 3) {
@@ -926,8 +960,8 @@ function graffiti(x, z, ry, w = 6) {
   scene.add(m);
 }
 
-const STREETNAMES_X = ['Dock St', 'Pike Av', 'Larch St', 'Kings Av', 'Hollis St', 'Cobalt Av', 'Marlow Av', 'Ember Av'];
-const STREETNAMES_Z = ['Water St', 'Pier St', 'Copper St', 'Grand St', 'Lantern St', 'Brick Av', 'Saltbox Av', 'Cedar Av'];
+const STREETNAMES_X = ['Quay St', 'Tanner Av', 'Dock St', 'Pike Av', 'Larch St', 'Kings Av', 'Hollis St', 'Cobalt Av', 'Marlow Av', 'Ember Av', 'Foundry St', 'Ash Av'];
+const STREETNAMES_Z = ['Water St', 'Harbor St', 'Pier St', 'Mill St', 'Copper St', 'Grand St', 'Lantern St', 'Brick Av', 'Saltbox Av', 'Cedar Av', 'Orchard Av', 'Linden Av'];
 const signMats = {};
 const signMat = n => signMats[n] || (signMats[n] = new THREE.MeshStandardMaterial({ map: signTex(n), side: THREE.DoubleSide, roughness: 0.6 }));
 
@@ -950,7 +984,7 @@ function blockProps(cx, cz, dist) {
 // subway stairs, one per district (3x3 grid, north row first); the open side faces north.
 // The home district's is in the park; the others sit on the east sidewalk of a block inside the district.
 const STATION_NAMES = ['Anchor St', 'Saltworks', 'Rivet Av', 'Copper Av', 'Kings Commons', 'Ember St', 'Lantern Av', 'Brickfield', 'Marlow Av'];
-const ENTRANCE_BLOCK = { 0: -2, 1: 1, 2: 2 };
+const ENTRANCE_BLOCK = { 0: -3, 1: 1, 2: 3 };
 const ENTRANCES = STATION_NAMES.map((station, i) => {
   const gx = i % 3, gz = Math.floor(i / 3);
   if (gx === 1 && gz === 1) return { station, i, x: 12, z: 37 };
@@ -1023,7 +1057,7 @@ function genBlock(i, j, ring) {
   if (ring) dist = 'ring';
   else if (i === 0 && j === 1) dist = 'park';
   else if (i === -2 && j === -1) dist = 'court';
-  else if (j === -3) dist = 'warehouse';
+  else if (j === -NB) dist = 'warehouse';
   else if (i <= -2 && j >= 1) dist = rnd() < 0.55 ? 'downtown' : 'mixed';
   else dist = rnd() < 0.5 ? 'brownstone' : 'mixed';
   blockInfo.push({ cx, cz, dist });
@@ -1050,7 +1084,7 @@ function genBlock(i, j, ring) {
       let sk, floors, store = false, fire = false;
       if (dist === 'brownstone') { sk = pick(['brown', 'brown', 'red', 'cream']); floors = Math.floor(rr(3, 6)); store = rnd() < 0.15; }
       else { sk = pick(['red', 'dark', 'yellow', 'red', 'cream']); floors = Math.floor(rr(4, 8)); store = rnd() < 0.7; fire = rnd() < 0.5; }
-      if (ring) floors += 4;
+      if (ring) { floors += 4; if (w < 10.5) w = H - x < 14 ? H - x : 14; }   // fewer, wider buildings on the unreachable ring
       building(cx + x + w / 2, rz, w, H, floors, sk, { front: row, store, fire });
       x += w;
     }
@@ -1073,7 +1107,7 @@ function rooftopSign(cx, y, cz) {
   inst('signBeam', box1, std(0x2b2b2b, { metalness: 0.5 }), cx, y + 2.5, cz, { s: [29, 0.25, 0.25] });
 }
 
-for (let i = -4; i <= 4; i++) for (let j = -3; j <= 4; j++) genBlock(i, j, Math.abs(i) === 4 || j === 4);
+for (let i = -NB - 1; i <= NB + 1; i++) for (let j = -NB; j <= NB + 1; j++) genBlock(i, j, Math.abs(i) === NB + 1 || j === NB + 1);
 
 // street markings, crosswalks, cars, signs
 const CARCOL = [0x1b1b1b, 0xd8d8d8, 0x7a1f1f, 0x1f3f7a, 0x4a4a4a, 0x2f5a3a, 0x9a9a9a];
@@ -1102,7 +1136,7 @@ for (const c of NODES) for (let a = 0; a < NODES.length - 1; a++) {
   for (const side of [-1, 1]) {
     for (let t = s0 + 11; t < s0 + 40; t += 6.5) {
       if (rnd() < 0.42) car(t, c + side * 3.3, true);
-      if (rnd() < 0.42 && !(c === -175 && side < 0)) car(c + side * 3.3, t, false);
+      if (rnd() < 0.42 && !(c === NODES[0] && side < 0)) car(c + side * 3.3, t, false);
     }
   }
 }
@@ -1111,7 +1145,7 @@ for (const nx of NODES) for (const nz of NODES) {
     inst('cross', geo.stripe, markMat, nx + k, 0.012, nz + s * 6, { s: [0.6, 1, 2.6], shadow: false });
     inst('cross', geo.stripe, markMat, nx + s * 6, 0.012, nz + k, { s: [2.6, 1, 0.6], shadow: false });
   }
-  if (nx < 175 && nz < 175) {
+  if (nx < NMAX && nz < NMAX) {
     const px = nx + 8.6, pz = nz + 8.6;
     inst('signPole', geo.pole, poleMat, px, 0.25 + 2.1, pz, { s: [0.6, 0.7, 0.6] });
     const ix = NODES.indexOf(nx), iz = NODES.indexOf(nz);
@@ -1124,50 +1158,50 @@ for (const nx of NODES) for (const nz of NODES) {
 
 // waterfront, bridge, skyline
 {
-  const prom = new THREE.Mesh(new THREE.BoxGeometry(460, 3.3, 16.5), std(0x8a7a66));
-  prom.position.set(0, -1.35, -187.75); prom.receiveShadow = true; scene.add(prom); staticHit.push(prom);
-  for (let x = -228; x <= 228; x += 3) inst('rpost', box1, std(0x222222, { metalness: 0.5 }), x, 0.85, -195.5, { s: [0.08, 1.1, 0.08] });
-  inst('rail', box1, std(0x222222, { metalness: 0.5 }), 0, 1.4, -195.5, { s: [460, 0.08, 0.08] });
-  for (let x = -220; x <= 220; x += 22) { lamp(x, -192, 0, 1); }
+  const PW = 2 * EDGE + 98;   // promenade length
+  const prom = new THREE.Mesh(new THREE.BoxGeometry(PW, 3.3, 16.5), std(0x8a7a66));
+  prom.position.set(0, -1.35, SHORE - 8.25); prom.receiveShadow = true; scene.add(prom); staticHit.push(prom);
+  for (let x = -PW / 2 + 2; x <= PW / 2 - 2; x += 3) inst('rpost', box1, std(0x222222, { metalness: 0.5 }), x, 0.85, SHORE - 16, { s: [0.08, 1.1, 0.08] });
+  inst('rail', box1, std(0x222222, { metalness: 0.5 }), 0, 1.4, SHORE - 16, { s: [PW, 0.08, 0.08] });
+  for (let x = -EDGE - 39; x <= EDGE + 39; x += 22) { lamp(x, SHORE - 12.5, 0, 1); }
   const water = new THREE.Mesh(new THREE.PlaneGeometry(4000, 2000), std(0x2a4c5c, { roughness: 0.12, metalness: 0.55 }));
-  water.rotation.x = -Math.PI / 2; water.position.set(0, -2, -1196); scene.add(water);
+  water.rotation.x = -Math.PI / 2; water.position.set(0, -2, -1196 + BZ); scene.add(water);
 
   const stone = std(0x9c8b74, { roughness: 0.95 });
   const BX = -90;
   const add = (w, h, d, x, y, z, m = stone) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; b.receiveShadow = true; scene.add(b); return b; };
-  add(28, 46, 40, BX, 21, -222);
-  add(18, 2.2, 700, BX, 43, -555, std(0x5a5045));
-  for (const tz of [-330, -760]) {
+  add(28, 46, 40, BX, 21, -222 + BZ);
+  add(18, 2.2, 700, BX, 43, -555 + BZ, std(0x5a5045));
+  for (const tz of [-330 + BZ, -760 + BZ]) {
     for (const s of [-1, 1]) add(7, 92, 12, BX + s * 10.5, 44, tz);
     add(28, 12, 12, BX, 84, tz);
     add(28, 4, 12, BX, 33, tz);
     add(30, 2, 13, BX, 91, tz);
   }
-  add(28, 46, 40, BX, 21, -890);
+  add(28, 46, 40, BX, 21, -890 + BZ);
   const cableMat = std(0x3a3632, { metalness: 0.6, roughness: 0.5 });
   const lines = [];
   for (const s of [-1, 1]) {
     const x = BX + s * 8;
-    const pts = [[-205, 44], [-270, 66], [-330, 90], [-440, 60], [-545, 48], [-650, 60], [-760, 90], [-820, 66], [-885, 44]].map(([z, y]) => new THREE.Vector3(x, y, z));
+    const pts = [[-205, 44], [-270, 66], [-330, 90], [-440, 60], [-545, 48], [-650, 60], [-760, 90], [-820, 66], [-885, 44]].map(([z, y]) => new THREE.Vector3(x, y, z + BZ));
     const curve = new THREE.CatmullRomCurve3(pts);
     const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 200, 0.45, 6), cableMat); scene.add(tube);
     for (let t = 0.01; t < 1; t += 0.008) { const p = curve.getPoint(t); if (p.y > 45.5) lines.push(p.x, p.y, p.z, p.x, 44, p.z); }
-    for (const tz of [-330, -760]) for (let k = 1; k <= 12; k++) for (const d of [-1, 1]) lines.push(x, 88, tz, x, 44, tz + d * k * 7);
+    for (const tz of [-330 + BZ, -760 + BZ]) for (let k = 1; k <= 12; k++) for (const d of [-1, 1]) lines.push(x, 88, tz, x, 44, tz + d * k * 7);
   }
   const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(lines, 3));
   scene.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x3a3632 })));
 
   for (let k = 0; k < 170; k++) {
-    const x = rr(-700, 600), z = rr(-1000, -1300), w = rr(18, 50), d = rr(18, 50);
+    const x = rr(-700, 600), z = rr(-1000, -1300) + BZ, w = rr(18, 50), d = rr(18, 50);
     const h = rr(40, 160) * (Math.abs(x + 60) < 260 ? 1.6 : 1);
     const m = pick(rnd() < 0.5 ? facadeMats.glass : [...facadeMats.yellow, ...facadeMats.cream]);
-    const b = new THREE.Mesh(scaledBox(w, h, d, 14, 14), [m, m, roofMat, roofMat, m, m]);
-    b.position.set(x, h / 2 - 2, z); scene.add(b);
+    batchBox(scaledBox(w, h, d, 14, 14), x, h / 2 - 2, z, [m, m, roofMat, roofMat, m, m], 'skyline', { hit: false, shadow: false });
   }
   const spire = new THREE.Mesh(new THREE.CylinderGeometry(4, 22, 420, 4), facadeMats.glass[0]);
-  spire.position.set(-260, 208, -1080); spire.rotation.y = Math.PI / 4; scene.add(spire);
-  const emp = new THREE.Mesh(new THREE.BoxGeometry(30, 300, 30), facadeMats.cream[0]); emp.position.set(120, 148, -1200); scene.add(emp);
-  const empTop = new THREE.Mesh(new THREE.CylinderGeometry(1, 8, 70, 8), facadeMats.cream[1]); empTop.position.set(120, 333, -1200); scene.add(empTop);
+  spire.position.set(-260, 208, -1080 + BZ); spire.rotation.y = Math.PI / 4; scene.add(spire);
+  const emp = new THREE.Mesh(new THREE.BoxGeometry(30, 300, 30), facadeMats.cream[0]); emp.position.set(120, 148, -1200 + BZ); scene.add(emp);
+  const empTop = new THREE.Mesh(new THREE.CylinderGeometry(1, 8, 70, 8), facadeMats.cream[1]); empTop.position.set(120, 333, -1200 + BZ); scene.add(empTop);
 }
 // ---------- hidden subway station under the park ----------
 const SY = -40, ZC = 50;                          // platform floor height, station centre line
@@ -1316,7 +1350,7 @@ let curStation = ENTRANCE;   // the entrance you came down (and will go back up)
   }
 }
 
-flushInst();
+flushInst(); flushBoxes();
 
 // ---------- day & night ----------
 // 1 game hour = 20 real seconds, so a full day is 8 minutes. Starts late afternoon.
@@ -1413,7 +1447,7 @@ function collide(p, r, sub = false) {
     }
   }
   if (sub) { p.x = clamp(p.x, SUB.x0, SUB.x1); p.z = clamp(p.z, SUB.z0, SUB.z1); }
-  else { p.x = clamp(p.x, -181, 181); p.z = clamp(p.z, -194.6, 181); }
+  else { p.x = clamp(p.x, -EDGE, EDGE); p.z = clamp(p.z, SHORE - 15.1, EDGE); }
 }
 function segRect(ax, az, bx, bz, r) {
   let t0 = 0, t1 = 1;
@@ -1592,7 +1626,7 @@ const owned = { rifle: true }, mags = { rifle: 30, shotgun: 6 };
 let weapon = 'rifle', swapT = 0, wheelT = 0;
 const W = () => WEAPONS[weapon];
 function switchWeapon(k) {
-  if (!k || k === weapon || !owned[k] || (state !== 'play' && state !== 'shop')) return;
+  if (!k || k === weapon || !owned[k] || riding || (state !== 'play' && state !== 'shop')) return;
   mags[weapon] = ammo; weapon = k; ammo = mags[k];
   reloading = false; document.getElementById('rl').textContent = '';
   swapT = 0.35; fireT = Math.max(fireT, 0.3);
@@ -1624,7 +1658,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
   keys[e.code] = true;
   if (e.code === 'KeyR') startReload();
-  if (e.code === 'Space' && state === 'play' && player.onGround) { player.vy = 6.5; player.onGround = false; }
+  if (e.code === 'Space' && state === 'play' && player.onGround && !riding) { player.vy = 6.5; player.onGround = false; }
   if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault();
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
@@ -1742,7 +1776,7 @@ if (TOUCH) {
         if (look.id === null) Object.assign(look, { id: t.identifier, x: t.clientX, y: t.clientY });
       } else if (b === 'aim') { aiming = !aiming; $('bAim').classList.toggle('on', aiming); }
       else if (b === 'reload') startReload();
-      else if (b === 'jump') { if (player.onGround) { player.vy = 6.5; player.onGround = false; } }
+      else if (b === 'jump') { if (player.onGround && !riding) { player.vy = 6.5; player.onGround = false; } }
       else if (b === 'turn') { if (!turnLeft) turnLeft = Math.PI; }
       else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
       else if (b === 'crew') { openCrew(); $('bAim').classList.remove('on'); }
@@ -1827,7 +1861,7 @@ const DISTRICTS = [
   ['Copper Heights', 'teal'], ['Kings Commons', 'me'], ['Ember Hill', 'red'],
   ['Lantern Slope', 'teal'], ['Brickfield', 'red'], ['Marlow Flats', 'red'],
 ].map(([name, owner], i) => ({ name, owner, gx: i % 3, gz: Math.floor(i / 3), home: owner === 'me' }));
-const DB = [-181, -75, 75, 181];   // district edges (x and z)
+const DB = [-EDGE, -75, 75, EDGE];   // district edges (x and z)
 const gridOf = v => v < -75 ? 0 : v < 75 ? 1 : 2;
 const districtAt = (x, z) => DISTRICTS[gridOf(z) * 3 + gridOf(x)];
 const districtNodes = d => {
@@ -1897,7 +1931,7 @@ function animateHuman(o, dt, face) {
 const enemies = [];
 let enemyParts = [];
 const rebuildParts = () => { enemyParts = enemies.filter(e => !e.dead).flatMap(e => e.parts); };
-const snapNode = v => clamp(Math.round((v - 25) / P) * P + 25, -175, 175);
+const snapNode = v => clamp(Math.round((v - 25) / P) * P + 25, -NMAX, NMAX);
 const allies = [];
 // everyone an enemy may shoot at: you (above ground) and allies who are up
 function foes() {
@@ -1920,7 +1954,7 @@ class Enemy {
     const opts = [];
     for (const [dx, dz] of [[P, 0], [-P, 0], [0, P], [0, -P]]) {
       const x = n.x + dx, z = n.z + dz;
-      if (Math.abs(x) > 175 || Math.abs(z) > 175) continue;
+      if (Math.abs(x) > NMAX || Math.abs(z) > NMAX) continue;
       if (this.prevWp && this.prevWp.x === x && this.prevWp.z === z) continue;
       opts.push({ x, z, s: Math.hypot(x - this.target.x, z - this.target.y) + Math.random() * 25 });
     }
@@ -2147,7 +2181,7 @@ const prop = (geo, color, x, y, z, sx = 1, sy = 1, sz = 1) => {
 };
 const fruitGeo = new THREE.SphereGeometry(0.12, 8, 6);
 // one bodega per district, on the south sidewalk of a block inside it
-const BODEGA_BLOCK = { 0: -2, 1: 1, 2: 2 };            // grid index -> block index (avoids the park and the court)
+const BODEGA_BLOCK = { 0: -3, 1: 1, 2: 3 };            // grid index -> block index (avoids the park and the court)
 for (const d of DISTRICTS) {
   const bx = BODEGA_BLOCK[d.gx] * P, bz = BODEGA_BLOCK[d.gz] * P;
   const x = bx - 8, z = bz + H + 1.3;
@@ -2197,7 +2231,7 @@ function startDelivery() {
     const side = Math.floor(Math.random() * 4), along = rand(-12, 12), off = H + 0.9;
     const x = b.cx + [off, -off, along, along][side], z = b.cz + [along, along, off, -off][side];
     const d = Math.hypot(x - PIZZA_SHOP.x, z - PIZZA_SHOP.z);
-    if (d > 80 && d < 230 && z > -170) pick = { x, z, d };
+    if (d > 80 && d < 320 && z > SHORE + 10) pick = { x, z, d };
   }
   if (!pick) return;
   const total = Math.round(pick.d / (6.5 * cls.speed) + 18);
@@ -2255,7 +2289,7 @@ function updateDelivery(dt) {
 // when a rival crew loses its last district, its boss waits under Kings Bridge
 const RIVALS = ['red', 'iron', 'teal'];
 const BOSS_HP = { red: 1100, iron: 1500, teal: 1250 };
-const BOSS_SPOT = { x: -90, z: -188 };
+const BOSS_SPOT = { x: -90, z: SHORE - 8.5 };
 const bossDone = {}, bossQueue = [];
 let boss = null;
 const bossBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 70, 16, 1, true),
@@ -2290,7 +2324,7 @@ class Boss extends Enemy {
   summon() {
     msg(L('bossCall'), 1.6); feed(L('bossShout', { n: this.name }), this.C.css);
     for (let k = 0; k < 3; k++) {
-      const a = Math.random() * Math.PI * 2, x = this.g.position.x + Math.cos(a) * 8, z = Math.max(-193, this.g.position.z + Math.sin(a) * 8);
+      const a = Math.random() * Math.PI * 2, x = this.g.position.x + Math.cos(a) * 8, z = Math.max(SHORE - 13.5, this.g.position.z + Math.sin(a) * 8);
       const m = new Enemy(x, z, this.crew, this.home); m.hunter = true; m.bossMinion = true; enemies.push(m);
     }
     rebuildParts();
@@ -2441,12 +2475,65 @@ function talk(who, line) {
   beep(520, 0.05, 0.05, 'triangle'); setTimeout(() => beep(640, 0.05, 0.05, 'triangle'), 70);
 }
 let nearNPC = null;
+// ---------- bikes: E (or tap the prompt) to ride, E again to get off ----------
+const BIKE_SPEED = 16;
+const bikes = [];
+let riding = null, bikeHead = 0;
+{
+  const frameMat = std(0xc0392b, { metalness: 0.5, roughness: 0.4 }), blackM = std(0x151515), steel = std(0x9a9a9a, { metalness: 0.8, roughness: 0.3 });
+  const wheelGeo = new THREE.TorusGeometry(0.34, 0.045, 6, 20).rotateY(Math.PI / 2);
+  const tube = (g, m, len, x, y, z, rx) => { const o = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, len), m); o.position.set(x, y, z); o.rotation.x = rx; o.castShadow = true; g.add(o); };
+  const makeBike = (x, z, ry) => {
+    const g = new THREE.Group();
+    for (const wz of [-0.55, 0.55]) { const w = new THREE.Mesh(wheelGeo, blackM); w.position.set(0, 0.36, wz); w.castShadow = true; g.add(w); }
+    tube(g, frameMat, 0.75, 0, 0.78, 0.05, 0);          // top tube
+    tube(g, frameMat, 0.8, 0, 0.56, 0.12, 0.62);        // down tube
+    tube(g, frameMat, 0.62, 0, 0.6, -0.27, -0.25);      // seat tube
+    tube(g, frameMat, 0.6, 0, 0.5, -0.4, 1.1);          // chain stay
+    tube(g, steel, 0.55, 0, 0.7, 0.5, -0.35);           // fork
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.26), blackM); seat.position.set(0, 0.95, -0.3); g.add(seat);
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.04, 0.04), steel); bar.position.set(0, 1.02, 0.42); g.add(bar);
+    g.position.set(x, groundAt(x, z), z); g.rotation.y = ry; scene.add(g);
+    const b = { g };
+    bikes.push(b);
+    npcs.push({ bike: b, pos: g.position, label: () => L('bikeRide'), use: () => mountBike(b) });
+  };
+  makeBike(27.5, 21, 0.3);
+  for (const E of ENTRANCES) makeBike(E.x - 0.2, E.z + 5, 0);
+}
+// handlebars in your view while riding
+const bars = new THREE.Group(); bars.visible = false; gunScene.add(bars);
+{
+  const steel = std(0x9a9a9a, { metalness: 0.8, roughness: 0.3 }), grip = std(0x151515);
+  const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.86, 10).rotateZ(Math.PI / 2), steel); bars.add(bar);
+  for (const s of [-1, 1]) { const g = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.16, 10).rotateZ(Math.PI / 2), grip); g.position.x = s * 0.36; bars.add(g); }
+  const stem = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.16, 0.04), steel); stem.position.set(0, -0.08, 0.02); bars.add(stem);
+  const fr = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.5), std(0xc0392b, { metalness: 0.5, roughness: 0.4 })); fr.position.set(0, -0.15, 0.25); fr.rotation.x = 0.5; bars.add(fr);
+  bars.position.set(0, -0.36, -0.55);
+}
+const rideNPC = { label: () => L('bikeOff'), use: () => dismount() };
+function mountBike(b) {
+  if (riding || zone !== 'street') return;
+  riding = b; bikeHead = b.g.rotation.y;
+  firing = aiming = false; reloading = false; $('rl').textContent = '';
+  player.pos.x = b.g.position.x; player.pos.z = b.g.position.z;
+  gun.visible = false; bars.visible = true;
+  beep(700, 0.05, 0.06, 'triangle'); setTimeout(() => beep(900, 0.05, 0.06, 'triangle'), 60);
+}
+function dismount() {
+  if (!riding) return;
+  riding.g.position.set(player.pos.x, groundAt(player.pos.x, player.pos.z), player.pos.z);
+  riding = null;
+  gun.visible = true; bars.visible = false; swapT = 0.35; fireT = Math.max(fireT, 0.3);
+  beep(500, 0.05, 0.06, 'triangle');
+}
 // the subway map board on the platform works like an NPC you can use
 npcs.push({ zone: 'subway', pos: { x: -20.5, z: ZC - 3.6 }, label: () => L('mapLabel'), use: () => openMetro() });
 function updateNPCs(dt) {
-  nearNPC = null; let bd = 2.6;
+  nearNPC = riding ? rideNPC : null; let bd = riding ? -1 : 2.6;
   for (const n of npcs) {
     if ((n.zone || 'street') !== zone) continue;
+    if (n.bike && riding) continue;
     const d = Math.hypot(n.pos.x - player.pos.x, n.pos.z - player.pos.z);
     if (d < bd) { bd = d; nearNPC = n; }
     if (!n.o) continue;
@@ -2591,7 +2678,7 @@ class PoliceCar {
     const opts = [];
     for (const [dx, dz] of [[P, 0], [-P, 0], [0, P], [0, -P]]) {
       const x = this.next.x + dx, z = this.next.z + dz;
-      if (Math.abs(x) > 175 || Math.abs(z) > 175) continue;
+      if (Math.abs(x) > NMAX || Math.abs(z) > NMAX) continue;
       if (this.prev && this.prev.x === x && this.prev.z === z) continue;
       opts.push({ x, z, s: Math.hypot(x - player.pos.x, z - player.pos.z) });
     }
@@ -2626,9 +2713,9 @@ class PoliceCar {
 function spawnPoliceCar() {
   let pick = null;
   for (let k = 0; k < 40; k++) {
-    const n = { x: NODES[Math.floor(Math.random() * 8)], z: NODES[Math.floor(Math.random() * 8)] };
+    const n = { x: NODES[Math.floor(Math.random() * NODES.length)], z: NODES[Math.floor(Math.random() * NODES.length)] };
     const d = Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
-    if (d < 80 || d > 180) continue;
+    if (d < 80 || d > 220) continue;
     pick = n;
     if (!losClear(n.x, n.z, player.pos.x, player.pos.z)) break;
   }
@@ -2690,6 +2777,7 @@ function hurtPlayer(d, from) {
   if (state !== 'play') return;
   if (player.armor > 0) { const soak = Math.min(player.armor, d * 0.6); player.armor -= soak; d -= soak; }
   player.hp -= d; dmgFlash = 0.6; dirFlash = 1;
+  if (riding) { dismount(); feed(L('bikeFall'), '#ff6b5a'); }
   const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw)), r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
   const v = new THREE.Vector3(from.x - player.pos.x, 0, from.z - player.pos.z);
   $('dir').style.transform = `rotate(${Math.atan2(v.dot(r), v.dot(f))}rad)`;
@@ -2781,7 +2869,7 @@ function fire() {
 
 // ---------- minimap ----------
 const mctx = $('map').getContext('2d');
-const MS = 180 / 400, mx = x => (x + 200) * MS, mz = z => (z + 200) * MS;
+const MS = 180 / (2 * EDGE + 38), mx = x => (x + EDGE + 19) * MS, mz = z => (z + EDGE + 19) * MS;
 function drawMap() {
   mctx.clearRect(0, 0, 180, 180);
   if (zone === 'subway') {
@@ -2791,7 +2879,7 @@ function drawMap() {
     mctx.font = 'bold 18px Arial'; mctx.fillText(curStation.station, 90, 128);
     return;
   }
-  mctx.fillStyle = '#2a4c5c'; mctx.fillRect(0, 0, 180, mz(-196));
+  mctx.fillStyle = '#2a4c5c'; mctx.fillRect(0, 0, 180, mz(SHORE - 16.5));
   for (const b of blockInfo) {
     mctx.fillStyle = b.dist === 'park' ? '#3f6b3a' : b.dist === 'court' ? '#a5553a' : b.dist === 'ring' ? '#3a332f' : '#6d5a50';
     mctx.fillRect(mx(b.cx - H), mz(b.cz - H), 35 * MS, 35 * MS);
@@ -2804,7 +2892,7 @@ function drawMap() {
     if (war && war.d === d) { mctx.strokeStyle = `rgba(255,255,255,${0.5 + Math.sin(t * 8) * 0.5})`; mctx.lineWidth = 3; mctx.strokeRect(x0 + 1.5, z0 + 1.5, w - 3, h - 3); }
   }
   mctx.strokeStyle = 'rgba(0,0,0,0.5)'; mctx.lineWidth = 1;
-  for (const v of [-75, 75]) { mctx.beginPath(); mctx.moveTo(mx(v), mz(-181)); mctx.lineTo(mx(v), mz(181)); mctx.moveTo(mx(-181), mz(v)); mctx.lineTo(mx(181), mz(v)); mctx.stroke(); }
+  for (const v of [-75, 75]) { mctx.beginPath(); mctx.moveTo(mx(v), mz(-EDGE)); mctx.lineTo(mx(v), mz(EDGE)); mctx.moveTo(mx(-EDGE), mz(v)); mctx.lineTo(mx(EDGE), mz(v)); mctx.stroke(); }
   mctx.fillStyle = '#f2b705';
   for (const pk of pickups) mctx.fillRect(mx(pk.m.position.x) - 1.5, mz(pk.m.position.z) - 1.5, 3, 3);
   const radar = hackerUp() ? Infinity : 70;
@@ -2863,6 +2951,10 @@ function updateSubway(dt) {
   lockMsgT -= dt;
   const down = zone === 'street' && ENTRANCES.find(e => Math.abs(p.x - e.x) < 1.15 && Math.abs(p.z - e.z) < 1.7);
   if (down) {
+    if (riding) {   // park it next to where you'll come back up
+      const b = riding; dismount();
+      b.g.position.set(down.x - 2.4, groundAt(down.x - 2.4, down.z - 3.4), down.z - 3.4); b.g.rotation.set(0, 0, 0);
+    }
     fadeThen(() => {
       zone = 'subway'; curStation = down; setStationName(down.station);
       placePlayer(-25.4, SY, ZC, -Math.PI / 2);
@@ -2947,22 +3039,34 @@ function update(dt) {
   wish.set(0, 0, 0)
     .addScaledVector(fwd, (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) - joy.y)
     .addScaledVector(right, (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + joy.x);
+  if (riding) aiming = false;
   const joySprint = Math.hypot(joy.x, joy.y) > 0.95 && -joy.y > 0.7;
-  const sprint = (keys.ShiftLeft || keys.ShiftRight || joySprint) && !aiming && wish.dot(fwd) > 0.3;
+  const sprint = !riding && (keys.ShiftLeft || keys.ShiftRight || joySprint) && !aiming && wish.dot(fwd) > 0.3;
   const wl = wish.length();
-  if (wl > 0) wish.multiplyScalar(Math.min(wl, 1) / wl * (aiming ? 3.5 : sprint ? 9.5 : 6) * cls.speed);
-  const acc = player.onGround ? 12 : 2.5;
+  if (wl > 0) wish.multiplyScalar(Math.min(wl, 1) / wl * (riding ? BIKE_SPEED : aiming ? 3.5 : sprint ? 9.5 : 6) * (riding ? 1 : cls.speed));
+  const acc = riding ? 3.2 : player.onGround ? 12 : 2.5;
   player.vel.x += (wish.x - player.vel.x) * Math.min(1, acc * dt);
   player.vel.z += (wish.z - player.vel.z) * Math.min(1, acc * dt);
   player.pos.x += player.vel.x * dt; player.pos.z += player.vel.z * dt;
-  collide(player.pos, 0.5, zone === 'subway');
+  collide(player.pos, riding ? 0.6 : 0.5, zone === 'subway');
   player.vy -= 20 * dt; player.y += player.vy * dt;
   const gy = zone === 'subway' ? SY : groundAt(player.pos.x, player.pos.z);
   if (player.y <= gy) { player.y = gy; player.vy = 0; player.onGround = true; }
   const speed = Math.hypot(player.vel.x, player.vel.z);
-  const bob = player.onGround ? Math.sin(t * (sprint ? 14 : 10)) * Math.min(speed, 9) * 0.006 : 0;
+  const bob = riding ? 0 : player.onGround ? Math.sin(t * (sprint ? 14 : 10)) * Math.min(speed, 9) * 0.006 : 0;
   recoil *= Math.max(0, 1 - dt * 7);
-  camera.position.set(player.pos.x, player.y + 1.7 + bob, player.pos.z);
+  if (riding) {
+    // the bike points where it's going and leans into turns
+    if (speed > 0.8) { const want = Math.atan2(player.vel.x, player.vel.z), da = Math.atan2(Math.sin(want - bikeHead), Math.cos(want - bikeHead)); bikeHead += da * Math.min(1, dt * 6); riding.lean = -da * 0.6; }
+    riding.g.position.set(player.pos.x, player.y, player.pos.z);
+    riding.g.rotation.set(0, bikeHead, 0); riding.g.rotateZ(clamp(riding.lean || 0, -0.35, 0.35));
+    bars.rotation.y = clamp(Math.atan2(Math.sin(bikeHead + Math.PI - yaw), Math.cos(bikeHead + Math.PI - yaw)), -0.6, 0.6) * 0.5;
+    bars.position.y = -0.36 + Math.sin(t * 9) * 0.004 * Math.min(speed, 16) / 16;
+  }
+  camera.position.set(player.pos.x, player.y + (riding ? 1.85 : 1.7) + bob, player.pos.z);
+  // keep the shadow map centred on you, snapped to a grid so shadows don't swim
+  sun.target.position.set(Math.round(player.pos.x / 8) * 8, 0, Math.round(player.pos.z / 8) * 8);
+  sun.position.copy(sun.target.position).addScaledVector(sunDir, 420);
   camera.rotation.set(pitch + recoil, yaw, 0);
   const bf = baseFov();
   camera.fov += ((aiming ? cls.fov * bf / 75 : bf) - camera.fov) * Math.min(1, dt * 12); camera.updateProjectionMatrix();
@@ -2982,7 +3086,7 @@ function update(dt) {
     pitch += (pitchT - pitch) * pull;
     autoFire = settings.autoFire && ang < tol;
   }
-  if ((firing || autoFire) && fireT <= 0 && !reloading && !sprint) { if (ammo > 0) fire(); else { startReload(); fireT = 0.3; if (!reserve) beep(200, 0.05, 0.08); } }
+  if ((firing || autoFire) && fireT <= 0 && !reloading && !sprint && !riding) { if (ammo > 0) fire(); else { startReload(); fireT = 0.3; if (!reserve) beep(200, 0.05, 0.08); } }
 
   // the street is frozen while you're underground: the station is a safe room
   const alive = enemies.filter(e => !e.dead && e.crew !== 'police' && !e.boss && !e.bossMinion).length;   // police and boss fights don't count toward wars
@@ -3210,7 +3314,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; },
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
