@@ -165,6 +165,28 @@
   #bossbar .bb { height:12px; background:rgba(0,0,0,.6); border:2px solid #d4af37; border-radius:4px; overflow:hidden; }
   #bossfill { height:100%; width:100%; background:linear-gradient(90deg,#b3221b,#ff6b3d); transition:width .15s; }
   body.touch #bossbar { top:96px; }
+  #dlg { position:fixed; inset:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:9vh; background:rgba(0,0,0,.45); z-index:20; }
+  #dlg .cbox { width:min(560px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.18); border-radius:12px; padding:16px 18px; font-family:system-ui,sans-serif; }
+  #dlg .who { font:900 18px "Arial Black",Impact,sans-serif; color:#ffd23f; margin-bottom:6px; }
+  #dlg .line { font-size:15px; line-height:1.5; margin-bottom:10px; }
+  #dlg .opt { padding:11px 12px; border-radius:8px; background:#2b241e; margin-top:6px; font-weight:800; cursor:pointer; }
+  #dlg .opt:hover { background:#3a3129; }
+  #dlg .opt kbd { background:#fff; color:#111; border-radius:4px; padding:0 6px; margin-right:8px; }
+  body.touch #dlg .opt kbd { display:none; }
+  #qline { margin-top:4px; font:800 13px system-ui,sans-serif; color:#ffd23f; max-width:46vw; }
+  #qline .arw { display:inline-block; }
+  #moods { position:absolute; left:20px; bottom:52px; font:800 13px system-ui,sans-serif; text-shadow:0 2px 4px #000; }
+  #moods span { margin-right:8px; }
+  #moods .hot { color:#ff5a4a; }
+  body.touch #moods { left:12px; bottom:auto; top:150px; font-size:11px; }
+  #prologue { position:fixed; left:0; right:0; top:34%; text-align:center; pointer-events:none; font:900 clamp(18px,3.4vw,30px) system-ui,sans-serif; text-shadow:0 3px 10px #000; z-index:15; }
+  #prologue div { opacity:0; transition:opacity 1s; margin:6px 16px; }
+  #prologue div.on { opacity:1; }
+  .mood { height:6px; border-radius:3px; background:#3a3a3a; margin-top:6px; overflow:hidden; }
+  .mood i { display:block; height:100%; background:linear-gradient(90deg,#f2b705,#ff3b30); }
+  #qlog { margin-top:14px; font-size:13px; }
+  #qlog div { display:flex; justify-content:space-between; padding:5px 2px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .ending { margin-top:14px; font-size:15px; line-height:1.6; color:#ffb3e6; }
   #shop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
   #shop .cbox { width:min(460px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
   #shop h3 { margin:0 0 4px; font:900 22px "Arial Black",Impact,sans-serif; color:#3ddc84; }
@@ -252,10 +274,11 @@
   <div id="dir"><div></div></div>
   <div id="cross"></div><div id="hitm"></div>
   <div id="strobe"></div>
-  <div id="top"><div id="wave">WAVE 1</div><div id="score"></div><div id="left"></div><div id="clock"></div><div id="wanted"></div></div>
+  <div id="top"><div id="wave">WAVE 1</div><div id="score"></div><div id="left"></div><div id="qline"></div><div id="clock"></div><div id="wanted"></div></div>
   <canvas id="map" width="180" height="180"></canvas>
   <div id="feed"></div>
   <div id="hp"><div id="hpl">HP</div><div class="bar"><div id="hpf"></div></div><span id="hpt">100</span><span id="armor"></span></div>
+  <div id="moods"></div>
   <div id="prompt" class="hidden"></div>
   <div id="talk"></div>
   <div id="nav" class="hidden"></div>
@@ -288,9 +311,12 @@
     <div class="rep"><span data-i18n="rep">평판</span> <span id="repv">0</span> <span style="opacity:.6;font-weight:600;font-size:12px" data-i18n="repRules"></span></div>
     <div id="cards"></div>
     <div id="terr"></div>
+    <div id="qlog"></div>
     <div class="close" id="crewClose" data-i18n="close">닫기</div>
   </div>
 </div>
+<div id="dlg" class="hidden"><div class="cbox"><div class="who" id="dlgWho"></div><div class="line" id="dlgLine"></div><div id="dlgOpts"></div></div></div>
+<div id="prologue"></div>
 <div id="shop" class="hidden">
   <div class="cbox">
     <h3>BODEGA 24H</h3>
@@ -495,6 +521,101 @@ const STR = {
   bossBeat: ['{n} 격파 · 평판 +300', '{n} defeated · Rep +300', '{n} 撃破・評判 +300'],
   bossCharge: ['⚠ 보스가 돌진한다! 옆으로 피해!', '⚠ The boss is charging! Dodge sideways!', '⚠ ボスが突進してくる！横に避けろ！'],
   lastFell: ['{c}의 마지막 구역이 무너졌다…', "{c}'s last district has fallen…", '{c}の最後の地区が陥落した…'],
+  w_revolver: ['리볼버', 'Revolver', 'リボルバー'],
+  w_knife: ['칼', 'Knife', 'ナイフ'],
+  item_knife: ['칼 · 소리 없는 근접 무기', 'Knife · silent melee', 'ナイフ・静かな近接武器'],
+  item_snack: ['크루 간식 · 불만 -30', 'Crew snacks · discontent -30', 'クルーのおやつ・不満 -30'],
+  snackFed: ['🍕 크루가 간식을 먹고 기분이 풀렸다', '🍕 Your crew ate and cheered up', '🍕 クルーがおやつを食べて機嫌を直した'],
+  backstab: ['🔪 뒤치기!', '🔪 Backstab!', '🔪 背後から一撃！'],
+  doorStuck: ['🔒 꿈쩍도 하지 않는다', '🔒 It won\'t budge', '🔒 びくともしない'],
+  accept: ['승낙', 'Accept', '引き受ける'],
+  decline: ['거절', 'Decline', '断る'],
+  later: ['나중에', 'Later', 'また今度'],
+  startIt: ['시작!', 'Start!', '始める！'],
+  qTalk: ['❗ 부탁 듣기', '❗ Hear the request', '❗ 頼みを聞く'],
+  qTalkTo: ['💬 {n}', '💬 {n}', '💬 {n}'],
+  qNew: ['📜 새 퀘스트: {q}', '📜 New quest: {q}', '📜 新しいクエスト：{q}'],
+  qDone: ['✅ 퀘스트 완료: {q}', '✅ Quest complete: {q}', '✅ クエスト完了：{q}'],
+  qLog: ['퀘스트', 'Quests', 'クエスト'],
+  q_avail: ['❗ 받을 수 있음', '❗ Available', '❗ 受注可能'],
+  q_active: ['▶ 진행 중', '▶ In progress', '▶ 進行中'],
+  q_done: ['✅ 완료', '✅ Done', '✅ 完了'],
+  q_locked: ['🔒 아직', '🔒 Not yet', '🔒 まだ'],
+  q_declined: ['✋ 거절함', '✋ Declined', '✋ 断った'],
+  qt_pizza: ['피자가게의 부탁', 'The Pizza Shop\'s Favor', 'ピザ屋の頼み'],
+  qt_coach: ['코치의 훈련', 'Coach\'s Drills', 'コーチの特訓'],
+  qt_bike: ['도둑맞은 자전거', 'The Stolen Bike', '盗まれた自転車'],
+  qt_lou: ['지하실의 핑크빛', 'Pink Light Below', '地下のピンクの光'],
+  qt_milo: ['부두의 벽돌공', 'The Mason of the Docks', '波止場のレンガ職人'],
+  nm_michelle: ['미쉘', 'Michelle', 'ミシェル'],
+  nm_lou: ['루 "핑키" 마로', 'Lou "Pinky" Marrow', 'ルー・"ピンキー"・マロウ'],
+  nm_ronnie: ['빅 로니', 'Big Ronnie', 'ビッグ・ロニー'],
+  nm_milo: ['"모르타르" 마일로', 'Milo "Mortar"', '"モルタル"マイロ'],
+  nm_nephew: ['보데가 조카', 'Bodega nephew', 'ボデガの甥っ子'],
+  nm_note: ['📜 낡은 쪽지', '📜 Old note', '📜 古いメモ'],
+  blockAppear: ['👑 {n} 등장!', '👑 {n} shows up!', '👑 {n} 登場！'],
+  blockDown: ['👑 {n} 쓰러뜨림! · 평판 +80', '👑 {n} is down! · Rep +80', '👑 {n} を倒した！・評判 +80'],
+  q1Ask: ['저기… Ember Hill의 미쉘이란 녀석이 요즘 매일 와서 행패를 부려. 무서워서 장사를 못 하겠어. 좀 처리해 줄 수 있어?', 'Hey… Michelle from Ember Hill comes in every day and trashes the place. I\'m too scared to run the shop. Could you deal with that?', 'なあ…Ember Hillのミシェルってやつが毎日来て暴れるんだ。怖くて店ができない。なんとかしてくれないか？'],
+  q1AskAgain: ['생각 바뀌었어? 미쉘 녀석, 아직도 와.', 'Changed your mind? Michelle still comes around.', '気が変わった？ミシェルはまだ来るんだ。'],
+  q1Declined: ['…그래, 알았어. 무리한 부탁이었지.', '…Okay. It was too much to ask.', '…そうか。無理な頼みだったな。'],
+  q1Accepted: ['정말? 고마워! Ember Hill은 레드 후드 구역이야. 미쉘을 쓰러뜨리고 그 구역을 차지해 줘.', 'Really? Thank you! Ember Hill is Red Hood turf. Take Michelle down and take the district.', '本当？ありがとう！Ember Hillはレッドフッズのナワバリだ。ミシェルを倒して地区を取ってくれ。'],
+  q1Raid: ['🍕 피자가게가 습격당했다!', '🍕 The pizza shop is under attack!', '🍕 ピザ屋が襲撃された！'],
+  q1RaidHelp: ['미쉘이 왔어! 제발 좀 쫓아내 줘!', 'Michelle\'s here! Please drive them off!', 'ミシェルが来た！追い払ってくれ！'],
+  q1Flee: ['두고 보자! Ember Hill에서 기다리마!', 'You\'ll pay for this! I\'ll be waiting in Ember Hill!', '覚えてろ！Ember Hillで待ってるぜ！'],
+  q1Obj_raid: ['피자가게에서 미쉘을 쫓아내라', 'Drive Michelle away from the pizza shop', 'ピザ屋からミシェルを追い払え'],
+  q1Obj_find: ['Ember Hill에서 미쉘을 쓰러뜨려라', 'Take down Michelle in Ember Hill', 'Ember Hillでミシェルを倒せ'],
+  q1Obj_take: ['Ember Hill을 제패하라', 'Capture Ember Hill', 'Ember Hillを制圧せよ'],
+  q1Obj_back: ['피자가게 사장에게 돌아가기', 'Go back to the pizza shop owner', 'ピザ屋の店主のところへ戻る'],
+  q1Thanks: ['고마워! 이거… 가게 금고에 있던 건데, 너한테 더 필요하겠다.', 'Thank you! This was in the shop safe… you need it more than I do.', 'ありがとう！これ…店の金庫にあったんだ。君の方が必要だろう。'],
+  gotRevolver: ['🔫 리볼버를 받았다 · 평판 +150', '🔫 Got a revolver · Rep +150', '🔫 リボルバーをもらった・評判 +150'],
+  pizzaClosed: ['지금은 배달 못 해! 가게가 습격당했다고!', 'No deliveries now! We\'re under attack!', '今は配達どころじゃない！襲撃されてるんだ！'],
+  q2Ask: ['그 몸으론 이 동네에서 한 달도 못 버텨. 내 훈련 세 개만 따라와 봐. 하나 끝낼 때마다 더 튼튼해질 거다.', 'You won\'t last a month around here like that. Do my three drills. Every one you finish makes you tougher.', 'その体じゃこの街で一ヶ月ももたない。俺の特訓を三つこなせ。一つ終えるごとに強くなる。'],
+  q2Stage0: ['1단계 달리기. 깃발 5개를 70초 안에 걸어서 돌아. 자전거는 반칙이다. 다리가 먼저야.', 'Drill 1: running. Hit 5 flags in 70 seconds, on foot. Bikes are cheating. Legs come first.', '第1段階、ランニング。旗5本を70秒以内に走って回れ。自転車は反則だ。まずは脚だ。'],
+  q2Stage1: ['2단계 사격. 분수대 위 병 10개를 25초 안에 맞혀. 소총만 쓴다. 숨 참고, 당기지 말고 짜듯이.', 'Drill 2: shooting. Hit the 10 bottles on the fountain in 25 seconds, rifle only. Hold your breath. Squeeze, don\'t pull.', '第2段階、射撃。噴水の上の瓶10本を25秒以内に撃て。ライフルのみだ。息を止めて、引くな、絞れ。'],
+  q2Stage2: ['3단계 실전. 라이벌 크루 10명을 쓰러뜨려. 체력이 20 아래로 떨어지면 처음부터다.', 'Drill 3: the real thing. Drop 10 rival crew members. Fall under 20 HP and you start over.', '第3段階、実戦。ライバルクルーを10人倒せ。体力が20を切ったら最初からだ。'],
+  q2Pass: ['좋아! 최대 체력 +20', 'Good! Max HP +20', 'よし！最大体力 +20'],
+  q2Fail: ['다시! 준비되면 말해.', 'Again! Tell me when you\'re ready.', 'もう一回！準備ができたら言え。'],
+  q2FailBike: ['자전거는 반칙이라고 했지!', 'I said no bikes!', '自転車は反則だと言っただろ！'],
+  q2Final: ['이제 넌 이 동네 사람이다.', 'Now you belong to this neighborhood.', 'これでお前もこの街の人間だ。'],
+  q2Obj_ready: ['빅 로니에게 말 걸기 ({i}/3단계)', 'Talk to Big Ronnie (drill {i}/3)', 'ビッグ・ロニーに話しかける（第{i}/3段階）'],
+  q2Obj_run: ['깃발 {i}/5 · {s}초', 'Flag {i}/5 · {s}s', '旗 {i}/5・{s}秒'],
+  q2Obj_shoot: ['병 {n}/10 · {s}초 · 소총만', 'Bottles {n}/10 · {s}s · rifle only', '瓶 {n}/10・{s}秒・ライフルのみ'],
+  q2Obj_fight: ['라이벌 처치 {k}/10 · 체력 20 아래로 떨어지면 실패', 'Rivals down {k}/10 · fail under 20 HP', 'ライバル撃破 {k}/10・体力20未満で失敗'],
+  q3Ask: ['조카 자전거를 아이언 재킷 놈들이 훔쳐 갔어. 가게 배달용인데… Saltworks 어딘가에 세워 놨대.', 'Iron Jackets stole my nephew\'s bike. It\'s our delivery bike… word is it\'s parked somewhere in Saltworks.', '甥っ子の自転車をアイアンジャケットのやつらに盗まれた。店の配達用なんだ…Saltworksのどこかに停めてあるらしい。'],
+  q3Accepted: ['빨간 자전거야. 타고 바로 여기로 와!', 'It\'s the red one. Ride it straight back here!', '赤い自転車だ。乗ってまっすぐここに戻ってきてくれ！'],
+  q3Label: ['❗ 사장님 부탁 듣기', '❗ Hear the owner out', '❗ 店主の頼みを聞く'],
+  q3Shop: ['가게 보기', 'Shop', '店を見る'],
+  q3Obj_find: ['Saltworks에서 빨간 자전거 찾기', 'Find the red bike in Saltworks', 'Saltworksで赤い自転車を探す'],
+  q3Obj_ride: ['빨간 자전거를 타고 보데가로', 'Ride the red bike back to the bodega', '赤い自転車でボデガへ戻る'],
+  q3Chase: ['아이언 재킷이 쫓아온다!', 'Iron Jackets are chasing you!', 'アイアンジャケットが追ってくる！'],
+  q3Thanks: ['체인이랑 기어 손봤어요. 이제 경찰차보다 빨라요!', 'I tuned the chain and gears. They\'re faster than police cars now!', 'チェーンとギアを調整しました。もうパトカーより速いですよ！'],
+  q3Reward: ['🚲 모든 자전거 속도 +20% · 평판 +120', '🚲 All bikes +20% speed · Rep +120', '🚲 全自転車の速度 +20%・評判 +120'],
+  q4Ask: ['지하철역 끝에서 밤마다 핑크빛이 새어 나와. 뭔지 좀 알아봐 줄래? 사례는 섭섭지 않게 하지.', 'A pink light leaks from the end of the subway platform every night. Mind checking what it is? I\'ll make it worth your while.', '地下鉄のホームの端から、夜ごとピンクの光が漏れてるんだ。何なのか調べてくれないか？礼はたっぷりするよ。'],
+  q4Accepted: ['좋아. 아무 역이나 내려가서 승강장 끝까지 가 봐.', 'Good. Go down any station and walk to the end of the platform.', 'いいね。どの駅でもいいから降りて、ホームの端まで行ってみな。'],
+  q4Remind: ['승강장 끝, 핑크빛 나는 문이야. 가 봤어?', 'The pink door at the end of the platform. Been there yet?', 'ホームの端の、ピンクに光るドアだ。行ってみたか？'],
+  q4Later: ['흥, 생각 바뀌면 와.', 'Hmph. Come back if you change your mind.', 'ふん、気が変わったら来な。'],
+  q4Door: ['…문 너머 아주 깊은 곳에서 뭔가 긁는 소리가 난다.', '…Something is scratching, deep beyond the door.', '…ドアのずっと奥で、何かを引っかく音がする。'],
+  q4AskReport: ['그래서, 뭐 봤어?', 'So? What did you see?', 'で、何を見た？'],
+  q4Angry: ['아무것도 없던데? 문도 안 열리고. 시간 낭비했잖아!', 'There was nothing! The door won\'t even open. You wasted my time!', '何もなかったぞ？ドアも開かない。時間の無駄だったじゃないか！'],
+  q4Lie: ['거짓말… 열었지? 네가 먼저 가져갔지!', 'Liar… you opened it, didn\'t you? You took it first!', '嘘つけ…開けたんだろ？先に持っていったな！'],
+  q4Obj_look: ['지하철 승강장 끝의 핑크 문 조사', 'Check the pink door at the end of a subway platform', '地下鉄ホームの端のピンクのドアを調べる'],
+  q4Obj_report: ['공원의 루에게 보고', 'Report to Lou in the park', '公園のルーに報告する'],
+  q4Obj_fight: ['루 "핑키" 마로를 쓰러뜨려라', 'Take down Lou "Pinky" Marrow', 'ルー・"ピンキー"・マロウを倒せ'],
+  q4Note: ['아이언 재킷이 밤마다 Anchor Yard 창고로 벽돌을 나른다. 그 밑에 뭔가 있다.', 'Iron Jackets haul bricks to the Anchor Yard warehouse every night. Something is down there.', 'アイアンジャケットが毎晩Anchor Yardの倉庫にレンガを運んでいる。その下に何かある。'],
+  q5Obj_find: ['밤에 Anchor Yard 창고로', 'Go to the Anchor Yard warehouse at night', '夜にAnchor Yardの倉庫へ'],
+  q5Day: ['창고 문이 잠겨 있다… 밤에 다시 오자.', 'The warehouse is locked… come back at night.', '倉庫は閉まっている…夜にまた来よう。'],
+  q5Line: ['남의 일에 코를 박는 놈은… 벽에 같이 박아 주지.', 'Stick your nose in my business… and I\'ll brick you into the wall with it.', '人の仕事に首を突っ込むやつは…壁に一緒に塗り込めてやる。'],
+  q5Obj_fight: ['"모르타르" 마일로를 쓰러뜨려라', 'Take down Milo "Mortar"', '"モルタル"マイロを倒せ'],
+  q5Obj_hatch: ['창고 앞 바닥 철문 살펴보기', 'Inspect the steel hatch by the warehouse', '倉庫前の床の鉄扉を調べる'],
+  q5Hatch: ['새로 시멘트를 바른 철문이다. 밑에서 긁는 소리가 들린다… 이 밑에 뭐가 있는 거지? (다음 이야기에서 계속)', 'A steel hatch sealed with fresh cement. Something is scratching underneath… what\'s down there? (To be continued)', '塗りたてのセメントで塞がれた鉄扉だ。下から引っかく音がする…この下に何があるんだ？（次の物語へ続く）'],
+  q5Reward: ['🦺 철판 조끼 · 방탄 최대치 100 · 평판 +250', '🦺 Steel-plate vest · max armor 100 · Rep +250', '🦺 鉄板ベスト・防弾上限 100・評判 +250'],
+  prologue: ['킹스 스트리트엔 블록마다 주인이 있다.|{a}, {b}, {c}.|그리고 오늘 밤부터 — 너.', 'Every block on Kings St. has an owner.|{a}. {b}. {c}.|And starting tonight — you.', 'キングス・ストリートには、ブロックごとに主がいる。|{a}、{b}、{c}。|そして今夜から——お前だ。'],
+  ending: ['축하의 밤. 모두가 잠든 뒤, 지하철역 끝의 핑크 문이 한 번 크게 빛났다.<br>그리고 문 너머에서 — 누군가 문을 두드렸다.<br><b>TO BE CONTINUED…</b>', 'A night of celebration. When everyone was asleep, the pink door at the end of the platform flared once.<br>And from the other side — someone knocked.<br><b>TO BE CONTINUED…</b>', '祝いの夜。皆が眠ったあと、ホームの端のピンクのドアが一度大きく光った。<br>そしてドアの向こうから——誰かがノックした。<br><b>TO BE CONTINUED…</b>'],
+  mood: ['불만', 'Discontent', '不満'],
+  moodWarn50: ['😠 {n}의 불만이 쌓이고 있다', '😠 {n} is getting fed up', '😠 {n}の不満がたまっている'],
+  moodWarn80: ['🤬 {n}이(가) 떠나기 직전이다! 보데가에서 간식이라도 사 주자', '🤬 {n} is about to quit! Buy some snacks at a bodega', '🤬 {n}が辞める寸前だ！ボデガでおやつでも買ってやろう'],
+  allyLeft: ['💔 {n}이(가) 크루를 떠나 {c}(으)로 갔다!', '💔 {n} left your crew for the {c}!', '💔 {n}がクルーを抜けて{c}に移った！'],
+  traitor: ['🗡️ 배신자 {n}이(가) {c} 편으로 나타났다!', '🗡️ The traitor {n} shows up with the {c}!', '🗡️ 裏切り者の{n}が{c}側で現れた！'],
   bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
   bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
   bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
@@ -513,9 +634,10 @@ const STR = {
   owned: ['보유 중', 'Owned', '所持中'],
   w_rifle: ['소총', 'Rifle', 'ライフル'],
   w_shotgun: ['샷건', 'Shotgun', 'ショットガン'],
-  swapTip: ['Q 키 · 숫자 1/2 · 마우스 휠로 무기 교체', 'Switch weapons with Q, 1/2 or the mouse wheel', 'Qキー・1/2・マウスホイールで武器切り替え'],
+  swapTip: ['Q 키 · 숫자 1~4 · 마우스 휠로 무기 교체', 'Switch weapons with Q, 1-4 or the mouse wheel', 'Qキー・1〜4・マウスホイールで武器切り替え'],
   swapTipTouch: ['🔁 버튼으로 무기 교체', 'Tap 🔁 to switch weapons', '🔁ボタンで武器切り替え'],
-  item_armor: ['방탄조끼 (피해 60% 흡수, 50)', 'Body armor (absorbs 60% of damage, 50)', '防弾ベスト（ダメージ60%吸収・50）'],
+  item_armor: ['방탄조끼 (피해 60% 흡수, {m})', 'Body armor (absorbs 60% of damage, {m})', '防弾ベスト（ダメージ60%吸収・{m}）'],
+  q1Deliver: ['🍕 배달 일 받기', '🍕 Take a delivery', '🍕 配達を受ける'],
   repCost: ['평판 {c}', 'Rep {c}', '評判 {c}'],
   full: ['가득 참', 'Full', '満タン'],
   noRep: ['평판 부족', 'Not enough rep', '評判不足'],
@@ -539,7 +661,7 @@ const STR = {
   wantedClear: ['수배 해제 · 경찰이 철수했다', 'Heat is off · the police pulled back', '手配解除・警察が撤収した'],
   subwayEscape: ['지하철로 경찰을 따돌렸다!', 'Lost the cops in the subway!', '地下鉄で警察をまいた！'],
   mapTip: ['🗺️ 벽의 노선도에서 열차를 탈 수 있어요', '🗺️ Use the map on the wall to ride the train', '🗺️ 壁の路線図から電車に乗れます'],
-  safeRumor: ['지하철역은 안전해요 · 구역 {n}곳을 점령하면 무언가 열린다는 소문이…', 'Subway stations are safe · rumor says something opens once you hold {n} districts…', '地下鉄の駅は安全・{n}地区を制圧すると何かが開くという噂が…'],
+  safeRumor: ['지하철역은 안전해요 · 역 끝에서 밤마다 핑크빛이 새어 나온다는 소문이…', 'Subway stations are safe · rumor says a pink light leaks from the end of the platform at night…', '地下鉄の駅は安全・ホームの端から夜ごとピンクの光が漏れるという噂が…'],
   locked: ['단단히 잠겨 있다… 구역 {n}곳 점령 필요', 'Locked tight… capture {n} districts', '固く閉ざされている…{n}地区の制圧が必要'],
   withYou: ['함께하는 중', 'With you', '同行中'],
   healing: ['회복 중 {s}초', 'Recovering {s}s', '回復中 {s}秒'],
@@ -1574,12 +1696,34 @@ const shotgunModel = new THREE.Group(); shotgunModel.visible = false; gun.add(sh
   p(new THREE.BoxGeometry(0.09, 0.075, 0.14), glove, 0.005, -0.07, 0.12);
   p(new THREE.BoxGeometry(0.1, 0.07, 0.15), glove, 0, -0.06, -0.3);
 }
+// six-shooter: a quest reward
+const revolverModel = new THREE.Group(); revolverModel.visible = false; gun.add(revolverModel);
+{
+  const steel = std(0x2a2c30, { metalness: 0.8, roughness: 0.35 }), wood = std(0x5a3418, { roughness: 0.7 }), glove = std(0x2a2420);
+  const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; revolverModel.add(o); };
+  p(new THREE.CylinderGeometry(0.016, 0.016, 0.26, 10).rotateX(Math.PI / 2), steel, 0, 0.022, -0.2);
+  p(new THREE.CylinderGeometry(0.04, 0.04, 0.075, 12).rotateX(Math.PI / 2), steel, 0, 0.004, -0.05);
+  p(new THREE.BoxGeometry(0.04, 0.06, 0.13), steel, 0, 0.012, 0.03);
+  p(new THREE.BoxGeometry(0.046, 0.14, 0.06), wood, 0, -0.08, 0.1, 0.35);
+  p(new THREE.BoxGeometry(0.09, 0.08, 0.12), glove, 0.005, -0.1, 0.1);
+}
+// knife: silent, bought at a bodega
+const knifeModel = new THREE.Group(); knifeModel.visible = false; gun.add(knifeModel);
+{
+  const blade = std(0xd8dde2, { metalness: 0.9, roughness: 0.2 }), black = std(0x151515), glove = std(0x2a2420);
+  const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; knifeModel.add(o); };
+  p(new THREE.BoxGeometry(0.012, 0.05, 0.24), blade, 0, 0.03, -0.16, -0.12);
+  p(new THREE.BoxGeometry(0.06, 0.016, 0.02), black, 0, 0.01, -0.04);
+  p(new THREE.BoxGeometry(0.03, 0.04, 0.12), black, 0, -0.005, 0.03);
+  p(new THREE.BoxGeometry(0.09, 0.08, 0.12), glove, 0.005, -0.02, 0.04);
+}
 const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffd090, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
 flash.position.set(0, 0.01, -0.6); flash.visible = false; gun.add(flash);
 const HIP = new THREE.Vector3(0.2, -0.2, -0.46), ADS = new THREE.Vector3(0, -0.115, -0.36);
 gun.position.copy(HIP);   // start in the hand, not on top of the camera
 
 // ---------- player / game state ----------
+let armorMax = 50;
 const player = { pos: new THREE.Vector3(25, 0, 25), vel: new THREE.Vector3(), y: 0, vy: 0, onGround: true, hp: 100, maxHp: 100, armor: 0 };
 
 // ---------- playable characters ----------
@@ -1621,8 +1765,10 @@ let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing 
 const WEAPONS = {
   rifle:   { mag: 30, reload: 1.6, pellets: 1, icon: '🔫', get name() { return L('w_rifle'); } },
   shotgun: { mag: 6, reload: 2.1, pellets: 9, rate: 0.72, icon: '💥', get name() { return L('w_shotgun'); } },
+  revolver: { mag: 6, reload: 2.4, pellets: 1, rate: 0.5, icon: '🤠', get name() { return L('w_revolver'); } },
+  knife: { mag: 1, reload: 0, pellets: 0, rate: 0.45, melee: true, icon: '🔪', get name() { return L('w_knife'); } },
 };
-const owned = { rifle: true }, mags = { rifle: 30, shotgun: 6 };
+const owned = { rifle: true }, mags = { rifle: 30, shotgun: 6, revolver: 6, knife: 1 };
 let weapon = 'rifle', swapT = 0, wheelT = 0;
 const W = () => WEAPONS[weapon];
 function switchWeapon(k) {
@@ -1632,7 +1778,8 @@ function switchWeapon(k) {
   swapT = 0.35; fireT = Math.max(fireT, 0.3);
   rifleParts.forEach(m => { m.visible = k === 'rifle'; });
   shotgunModel.visible = k === 'shotgun';
-  flash.position.z = k === 'shotgun' ? -0.76 : -0.6;
+  revolverModel.visible = k === 'revolver'; knifeModel.visible = k === 'knife';
+  flash.position.z = k === 'shotgun' ? -0.76 : k === 'revolver' ? -0.36 : -0.6;
   beep(300, 0.04, 0.06, 'square'); setTimeout(() => beep(420, 0.05, 0.06, 'square'), 120);
 }
 function nextWeapon() {
@@ -1648,6 +1795,7 @@ const $ = id => document.getElementById(id);
 addEventListener('keydown', e => {
   if (onTitle()) { leaveTitle(); return; }
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
+  if (state === 'dialog') { const n = +e.key; if (n >= 1 && n <= dlgOpts.length) pickOpt(n - 1); else if (e.code === 'Escape') closeDlg(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
   if (state === 'metro') { if (['KeyE', 'Escape'].includes(e.code)) closeMetro(); return; }
   if (e.code === 'KeyE') { useNPC(); return; }
@@ -1655,6 +1803,8 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyQ') { nextWeapon(); return; }
   if (e.code === 'Digit1') { switchWeapon('rifle'); return; }
   if (e.code === 'Digit2') { switchWeapon('shotgun'); return; }
+  if (e.code === 'Digit3') { switchWeapon('revolver'); return; }
+  if (e.code === 'Digit4') { switchWeapon('knife'); return; }
   if (e.code === 'KeyC' || (e.code === 'Escape' && state === 'crew')) { state === 'crew' ? closeCrew() : openCrew(); return; }
   keys[e.code] = true;
   if (e.code === 'KeyR') startReload();
@@ -1683,11 +1833,12 @@ $('menu').addEventListener('click', () => {
   if (state === 'dead') { location.reload(); return; }
   playBgm();
   if (state === 'menu') applyClass();
+  if (state === 'menu') showPrologue();
   if (state === 'menu') setTimeout(() => {
     msg(L('startMsg'), 2.5);
     feed(L('startTip'), '#fff');
     feed(L(TOUCH ? 'startTipTouch' : 'startTipKey'), myCrew.color);
-  }, 700);
+  }, 5600);   // after the prologue
   state = 'play';
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
   if (TOUCH) {
@@ -1833,7 +1984,7 @@ function feed(text, color = '#fff') {
   $('feed').prepend(d); setTimeout(() => d.remove(), 2500);
 }
 function startReload() {
-  if (state !== 'play' || reloading || ammo === W().mag || reserve === 0) return;
+  if (state !== 'play' || W().melee || reloading || ammo === W().mag || reserve === 0) return;
   reloading = true; reloadT = W().reload; $('rl').textContent = L('reloading');
   beep(320, 0.06, 0.08); setTimeout(() => beep(520, 0.06, 0.08), 900);
 }
@@ -1994,7 +2145,7 @@ class Enemy {
       kills++; score += 50; heat += 25;
       feed(L('copDown'), CREWS.police.css);
     } else if (byUs) {
-      kills++; heat += 6;
+      kills++; heat += 6; questKill(this);
       const pts = head ? 150 : 100, r = head ? 15 : 10;
       score += pts; rep += r;
       feed(L(head ? 'headshot' : 'kill', { r }), head ? '#ff6b5a' : '#fff');
@@ -2081,7 +2232,7 @@ class Ally {
     this.key = key; this.T = ALLY_TYPES[key];
     buildHuman(this, player.pos.x, player.pos.z, { hood: hexOf(myCrew.color), cap: this.T.cap }, false);
     this.up = false; this.downT = 0; this.flashT = 0; this.mT = 0;
-    this.tgt = null; this.scanT = 0; this.shootT = 1;
+    this.tgt = null; this.scanT = 0; this.shootT = 1; this.mood = 0; this.warned = 0;
     this.spawnNear();
   }
   get idx() { return allies.indexOf(this); }
@@ -2099,6 +2250,7 @@ class Ally {
     if (this.hp <= 0) {
       this.up = false; this.g.visible = false; this.downT = 25;
       feed(L('allyDown', { n: this.T.name }), '#ff9f7a');
+      addMood(this, 15);
     }
   }
   update(dt) {
@@ -2190,8 +2342,8 @@ for (const d of DISTRICTS) {
   for (let k = 0; k < 4; k++) prop(fruitGeo, [0xff8c1a, 0xe63b2e, 0xf2d03b][k % 3], x + 1.05 + k * 0.17, 1.05, z - 0.1 + (k % 2) * 0.13);
   signBoard('BODEGA 24H', '#1e8449', '#fff', x, 4.3, z - 1.2, 0);
   addNPC(x, z, { hood: 0xf2f2f2, cap: 0x1e8449, jeans: 0x333333, apron: 0x1e8449 },
-    () => L(d.owner === 'me' ? 'bodegaShop' : 'bodegaTalk'),
-    () => d.owner === 'me' ? openShop(d) : talk(L('bodegaWho'), L('bodegaClosed', { c: CREWS[d.owner].name })));
+    () => d.home && Q.bike.s === 'offer' ? L('q3Label') : L(d.owner === 'me' ? 'bodegaShop' : 'bodegaTalk'),
+    () => (d.home && bodegaQuest(d)) || (d.owner === 'me' ? openShop(d) : talk(L('bodegaWho'), L('bodegaClosed', { c: CREWS[d.owner].name }))));
 }
 // pizza shop in the home district
 {
@@ -2200,8 +2352,8 @@ for (const d of DISTRICTS) {
   prop(box1, 0xe9d4b0, x + 1.4, 1.29, z - 0.2, 0.5, 0.08, 0.5);
   signBoard('🍕 KINGS SLICE', '#b3221b', '#fff', x, 4.3, z - 1.2, 0, 3.8);
   addNPC(x, z, { hood: 0xffffff, cap: 0xffffff, jeans: 0x2b2b2b, apron: 0xb3221b },
-    () => L(delivery ? 'pizzaBusy' : 'pizzaTake'),
-    () => delivery ? talk(L('pizzaWho'), L('pizzaHurry')) : startDelivery());
+    () => ['offer', 'declined', 'return'].includes(Q.pizza.s) ? L('qTalk') : L(delivery ? 'pizzaBusy' : 'pizzaTake'),
+    () => pizzaTalk());
 }
 
 // ---------- pizza delivery ----------
@@ -2412,14 +2564,13 @@ function updateBoss(dt) {
     boss = null; checkVictory();
   }
   bossBeam.visible = !!boss && zone === 'street';
-  if (!boss) { bar.classList.add('hidden'); return; }
-  const p = boss.g.position;
-  bossBeam.position.set(p.x, 35, p.z); bossBeam.material.opacity = 0.22 + Math.sin(t * 5) * 0.1;
-  const near = zone === 'street' && Math.hypot(p.x - player.pos.x, p.z - player.pos.z) < 70;
-  bar.classList.toggle('hidden', !near);
-  if (near) {
-    document.getElementById('bossname').innerHTML = `👑 <span style="color:${boss.C.css}">${boss.name}</span>`;
-    document.getElementById('bossfill').style.width = Math.max(0, boss.hp / boss.maxHp * 100) + '%';
+  if (boss) { const p = boss.g.position; bossBeam.position.set(p.x, 35, p.z); bossBeam.material.opacity = 0.22 + Math.sin(t * 5) * 0.1; }
+  const near70 = e => e && !e.dead && zone === 'street' && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < 70;
+  const shown = near70(boss) ? boss : enemies.find(e => e.block && near70(e));
+  bar.classList.toggle('hidden', !shown);
+  if (shown) {
+    document.getElementById('bossname').innerHTML = `👑 <span style="color:${shown.C.css}">${shown.name}</span>`;
+    document.getElementById('bossfill').style.width = Math.max(0, shown.hp / shown.maxHp * 100) + '%';
   }
 }
 
@@ -2477,19 +2628,20 @@ function talk(who, line) {
 let nearNPC = null;
 // ---------- bikes: E (or tap the prompt) to ride, E again to get off ----------
 const BIKE_SPEED = 16;
+let BIKE_SPEED_MUL = 1;
 const bikes = [];
-let riding = null, bikeHead = 0;
+let riding = null, bikeHead = 0, makeBike;
 {
   const frameMat = std(0xc0392b, { metalness: 0.5, roughness: 0.4 }), blackM = std(0x151515), steel = std(0x9a9a9a, { metalness: 0.8, roughness: 0.3 });
   const wheelGeo = new THREE.TorusGeometry(0.34, 0.045, 6, 20).rotateY(Math.PI / 2);
   const tube = (g, m, len, x, y, z, rx) => { const o = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, len), m); o.position.set(x, y, z); o.rotation.x = rx; o.castShadow = true; g.add(o); };
-  const makeBike = (x, z, ry) => {
-    const g = new THREE.Group();
+  makeBike = (x, z, ry, color) => {
+    const g = new THREE.Group(), fm = color ? std(color, { metalness: 0.5, roughness: 0.4 }) : frameMat;
     for (const wz of [-0.55, 0.55]) { const w = new THREE.Mesh(wheelGeo, blackM); w.position.set(0, 0.36, wz); w.castShadow = true; g.add(w); }
-    tube(g, frameMat, 0.75, 0, 0.78, 0.05, 0);          // top tube
-    tube(g, frameMat, 0.8, 0, 0.56, 0.12, 0.62);        // down tube
-    tube(g, frameMat, 0.62, 0, 0.6, -0.27, -0.25);      // seat tube
-    tube(g, frameMat, 0.6, 0, 0.5, -0.4, 1.1);          // chain stay
+    tube(g, fm, 0.75, 0, 0.78, 0.05, 0);          // top tube
+    tube(g, fm, 0.8, 0, 0.56, 0.12, 0.62);        // down tube
+    tube(g, fm, 0.62, 0, 0.6, -0.27, -0.25);      // seat tube
+    tube(g, fm, 0.6, 0, 0.5, -0.4, 1.1);          // chain stay
     tube(g, steel, 0.55, 0, 0.7, 0.5, -0.35);           // fork
     const seat = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.26), blackM); seat.position.set(0, 0.95, -0.3); g.add(seat);
     const bar = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.04, 0.04), steel); bar.position.set(0, 1.02, 0.42); g.add(bar);
@@ -2497,6 +2649,7 @@ let riding = null, bikeHead = 0;
     const b = { g };
     bikes.push(b);
     npcs.push({ bike: b, pos: g.position, label: () => L('bikeRide'), use: () => mountBike(b) });
+    return b;
   };
   makeBike(27.5, 21, 0.3);
   for (const E of ENTRANCES) makeBike(E.x - 0.2, E.z + 5, 0);
@@ -2518,6 +2671,7 @@ function mountBike(b) {
   firing = aiming = false; reloading = false; $('rl').textContent = '';
   player.pos.x = b.g.position.x; player.pos.z = b.g.position.z;
   gun.visible = false; bars.visible = true;
+  questMount(b);
   beep(700, 0.05, 0.06, 'triangle'); setTimeout(() => beep(900, 0.05, 0.06, 'triangle'), 60);
 }
 function dismount() {
@@ -2551,9 +2705,12 @@ function useNPC() { if (state === 'play' && nearNPC) nearNPC.use(); }
 const SHOP = [
   { k: 'shotgun', icon: '💥', get name() { return L('item_shotgun'); }, cost: 200, done: 'owned', ok: () => !owned.shotgun,
     buy: () => { owned.shotgun = true; reserve += 18; switchWeapon('shotgun'); feed(L(TOUCH ? 'swapTipTouch' : 'swapTip'), '#ffd23f'); } },
+  { k: 'knife', icon: '🔪', get name() { return L('item_knife'); }, cost: 60, done: 'owned', ok: () => !owned.knife,
+    buy: () => { owned.knife = true; switchWeapon('knife'); feed(L(TOUCH ? 'swapTipTouch' : 'swapTip'), '#ffd23f'); } },
+  { k: 'snack', icon: '🍕', get name() { return L('item_snack'); }, cost: 40, ok: () => allies.some(a => a.mood > 0), buy: () => { for (const a of allies) a.mood = Math.max(0, a.mood - 30); feed(L('snackFed'), myCrew.color); } },
   { k: 'hp', icon: '🥪', get name() { return L('item_hp'); }, cost: 40, ok: () => player.hp < player.maxHp, buy: () => { player.hp = Math.min(player.maxHp, player.hp + 50); } },
   { k: 'ammo', icon: '📦', get name() { return L('item_ammo'); }, cost: 30, ok: () => true, buy: () => { reserve += 60; } },
-  { k: 'armor', icon: '🦺', get name() { return L('item_armor'); }, cost: 80, ok: () => player.armor < 50, buy: () => { player.armor = 50; } },
+  { k: 'armor', icon: '🦺', get name() { return L('item_armor', { m: armorMax }); }, cost: 80, ok: () => player.armor < armorMax, buy: () => { player.armor = armorMax; } },
 ];
 function renderShop() {
   document.getElementById('items').innerHTML = SHOP.map(it => {
@@ -2599,6 +2756,7 @@ function spawnEnemy(crew, d) {
   }
   pick = pick || ns[Math.floor(Math.random() * ns.length)];
   enemies.push(new Enemy(pick.x + rand(-2, 2), pick.z + rand(-2, 2), crew, d));
+  applyTraitor(enemies[enemies.length - 1], crew);
   rebuildParts();
 }
 function clearEnemies() {
@@ -2615,14 +2773,13 @@ function startWar(d, kind, crew) {
 function endWar(won) {
   const { d, kind, crew } = war;
   if (kind === 'attack' && won) {
-    d.owner = 'me'; captured++; wave = 1 + captured; rep += 100;
+    d.owner = 'me'; captured++; wave = 1 + captured; rep += 100; moodAll(-15);
     msg(L('captured', { d: d.name }), 2.5); feed(L('captureRep'), myCrew.color);
     beep(660, 0.15, 0.1, 'triangle'); setTimeout(() => beep(990, 0.3, 0.1, 'triangle'), 150);
-    if (captured === DOOR_CAPS) { feed(L('doorHint'), '#ff7ad9'); beep(1320, 0.5, 0.08, 'sine'); }
   } else if (kind === 'defend' && won) {
-    rep += 50; msg(L('defendOk'), 2); feed(L('defendOkRep', { d: d.name }), myCrew.color);
+    rep += 50; msg(L('defendOk'), 2); feed(L('defendOkRep', { d: d.name }), myCrew.color); moodAll(-8);
   } else if (kind === 'defend') {
-    d.owner = crew; captured = Math.max(0, captured - 1); wave = 1 + captured;
+    d.owner = crew; captured = Math.max(0, captured - 1); wave = 1 + captured; moodAll(12);
     msg(L('lost', { d: d.name }), 2.5); feed(L('lostTo', { c: CREWS[crew].name }), CREWS[crew].css);
     clearEnemies();
   }
@@ -2791,7 +2948,7 @@ function gameOver(won = false) {
   document.exitPointerLock?.();
   $('sub').textContent = won ? L('won', { c: myCrew.name }) : L('died');
   const st = $('stat'); st.classList.remove('hidden');
-  st.innerHTML = L('endStat', { o: ownedCount(), k: kills, r: rep, s: score });
+  st.innerHTML = L('endStat', { o: ownedCount(), k: kills, r: rep, s: score }) + (won ? `<div class="ending">${L('ending')}</div>` : '');
   $('keys').classList.add('hidden'); $('go').textContent = L('restart');
   setTimeout(() => $('menu').classList.remove('hidden'), 900);
 }
@@ -2820,17 +2977,18 @@ function findAssistTarget() {
   return best;
 }
 function fire() {
-  const shot = weapon === 'shotgun';
-  ammo--; fireT = shot ? W().rate : cls.rate; kick = shot ? 1.8 : 1;
+  if (W().melee) return stab();
+  const shot = weapon === 'shotgun', rev = weapon === 'revolver';
+  ammo--; fireT = shot || rev ? W().rate : cls.rate; kick = shot ? 1.8 : rev ? 1.5 : 1;
   heat = Math.min(HEAT_MAX, heat + 1); lastShotT = t;
   const sp = Math.hypot(player.vel.x, player.vel.z), air = player.onGround ? 0 : 0.05;
   let spread;
   if (shot) spread = (aiming ? 0.045 : 0.075) + air;   // a wide cone of 9 pellets
   else {
-    spread = 0.006 + Math.min(sp, 10) * 0.003 + air;
+    spread = (rev ? 0.003 : 0.006) + Math.min(sp, 10) * 0.003 + air;
     if (aiming) spread *= cls.fov < 40 ? 0.12 : 0.3;
   }
-  const targets = enemyParts.concat(staticHit), dealt = new Map();
+  const targets = enemyParts.concat(staticHit, qTargets), dealt = new Map();
   for (let k = 0; k < W().pellets; k++) {
     const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * spread;
     ndc.set(Math.cos(a) * r, Math.sin(a) * r * camera.aspect);
@@ -2839,10 +2997,11 @@ function fire() {
     if (k === 0 && assistTgt && assistTgt.ang < 0.09) rc.set(camera.position, assistTgt.dir);
     const h = rc.intersectObjects(targets, false)[0];
     if (!h) continue;
+    if (h.object.userData.bottle) { hitBottle(h.object); continue; }
     const e = h.object.userData.enemy;
     if (e) {
       const head = h.object.userData.head;
-      const d = head ? (shot ? 45 : 140) : rand(26, shot ? 34 : 36) * cls.dmg;
+      const d = head ? (shot ? 45 : rev ? 220 : 140) : (rev ? rand(70, 82) : rand(26, shot ? 34 : 36)) * cls.dmg;
       const v = dealt.get(e) || { d: 0, head: false };
       v.d += d; v.head = v.head || head; dealt.set(e, v);
       spark(h.point, 0xaa1010, shot ? 3 : 8, 0.3);
@@ -2859,12 +3018,36 @@ function fire() {
     clearTimeout(fire.t); fire.t = setTimeout(() => hm.style.opacity = 0, 90);
     beep(headAny ? 1400 : 900, 0.05, 0.08);
   }
-  recoil += shot ? 0.05 : aiming ? 0.008 : 0.014;
+  recoil += shot ? 0.05 : rev ? 0.035 : aiming ? 0.008 : 0.014;
   yaw += rand(-0.003, 0.003) * (shot ? 3 : 1);
-  flash.visible = true; flash.material.rotation = Math.random() * 6; flash.scale.setScalar(shot ? rand(0.5, 0.7) : rand(0.25, 0.4));
+  flash.visible = true; flash.material.rotation = Math.random() * 6; flash.scale.setScalar(shot ? rand(0.5, 0.7) : rev ? rand(0.35, 0.5) : rand(0.25, 0.4));
   flashLight.position.copy(camera.position); flashLight.intensity = shot ? 55 : 30;
   if (shot) { bang(0.85, 2000, 0.45); setTimeout(() => beep(180, 0.06, 0.05, 'square'), 380); }   // boom, then the pump
+  else if (rev) bang(0.75, 2600, 0.35);
   else bang(0.55, 3500, 0.22);
+}
+// knife: hits whoever is right in front of you; from behind it's (almost) one hit. No noise, so no heat.
+function stab() {
+  fireT = W().rate; kick = 2.4;
+  const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
+  let best = null, bd = 2.7;
+  for (const e of enemies) {
+    if (e.dead) continue;
+    const dx = e.g.position.x - player.pos.x, dz = e.g.position.z - player.pos.z, d = Math.hypot(dx, dz);
+    if (d < bd && (dx * fx + dz * fz) / Math.max(d, 0.01) > 0.55) { bd = d; best = e; }
+  }
+  beep(1600, 0.04, 0.03, 'triangle');
+  if (!best) return;
+  const p = best.g.position, toMe = Math.atan2(player.pos.x - p.x, player.pos.z - p.z);
+  const behind = Math.cos(toMe - best.g.rotation.y) < -0.2;
+  const h0 = heat;
+  best.damage((behind ? (best.boss || best.block ? 130 : 260) : 60) * cls.dmg, false);
+  heat = h0;
+  spark(new THREE.Vector3(p.x, p.y + 1.2, p.z), 0xaa1010, 8, 0.3);
+  const hm = $('hitm'); hm.className = behind ? 'head' : ''; hm.style.opacity = 1;
+  clearTimeout(fire.t); fire.t = setTimeout(() => hm.style.opacity = 0, 90);
+  beep(behind ? 300 : 220, 0.08, 0.1, 'square');
+  if (behind) feed(L('backstab'), '#ff6b5a');
 }
 
 // ---------- minimap ----------
@@ -2895,6 +3078,17 @@ function drawMap() {
   for (const v of [-75, 75]) { mctx.beginPath(); mctx.moveTo(mx(v), mz(-EDGE)); mctx.lineTo(mx(v), mz(EDGE)); mctx.moveTo(mx(-EDGE), mz(v)); mctx.lineTo(mx(EDGE), mz(v)); mctx.stroke(); }
   mctx.fillStyle = '#f2b705';
   for (const pk of pickups) mctx.fillRect(mx(pk.m.position.x) - 1.5, mz(pk.m.position.z) - 1.5, 3, 3);
+  // bodegas ($, dim if a rival owns them) and bikes near you
+  mctx.font = 'bold 8px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle';
+  for (const d of DISTRICTS) {
+    const x = mx(d.bodega.x), z = mz(d.bodega.z);
+    mctx.globalAlpha = d.owner === 'me' ? 1 : 0.45;
+    mctx.fillStyle = '#1e8449'; mctx.fillRect(x - 4, z - 4, 8, 8);
+    mctx.fillStyle = '#fff'; mctx.fillText('$', x, z + 0.5);
+  }
+  mctx.globalAlpha = 1; mctx.fillStyle = '#5fd4ff';
+  for (const b of bikes) if (b !== riding && Math.hypot(b.g.position.x - player.pos.x, b.g.position.z - player.pos.z) < 120) { mctx.beginPath(); mctx.arc(mx(b.g.position.x), mz(b.g.position.z), 2.2, 0, 7); mctx.fill(); }
+  drawQuestMarks(mx, mz);
   const radar = hackerUp() ? Infinity : 70;
   mctx.strokeStyle = '#000'; mctx.lineWidth = 1;
   for (const e of enemies) if (!e.dead && Math.hypot(e.g.position.x - player.pos.x, e.g.position.z - player.pos.z) < radar) {
@@ -2936,7 +3130,7 @@ function placePlayer(x, y, z, yawTo) {
   yaw = yawTo; pitch = 0; turnLeft = 0;
 }
 function updateSubway(dt) {
-  const open = captured >= DOOR_CAPS;
+  const open = false;   // the pink door stays shut: what's behind it is the next map
   doorPivot.rotation.y += ((open ? -1.65 : 0) - doorPivot.rotation.y) * Math.min(1, dt * 1.5);
   doorGlow.material.opacity = open ? 0.95 + Math.sin(t * 3) * 0.05 : 0.3 + Math.sin(t * 2) * 0.08;
   doorLight.intensity = open ? 22 + Math.sin(t * 4) * 4 : 5;
@@ -2962,13 +3156,13 @@ function updateSubway(dt) {
       heat = 0; lastStars = 0; clearPolice();
       msg(down.station.toUpperCase(), 2);
       feed(L('mapTip'), '#cfd2d6');
-      if (!open) feed(L('safeRumor', { n: DOOR_CAPS }), '#c08bff');
+      if (!open) feed(L('safeRumor'), '#c08bff');
     });
   } else if (zone === 'subway' && p.x < -26.2) {
     fadeThen(() => { zone = 'street'; placePlayer(curStation.x, 0.25, curStation.z - 3.4, 0); });
   } else if (zone === 'subway' && p.x > 28.4 && Math.abs(p.z - ZC) < 1.3) {
     if (open) enterPortal();
-    else if (lockMsgT <= 0) { lockMsgT = 3; msg('🔒 LOCKED', 1.5); feed(L('locked', { n: DOOR_CAPS }), '#ff7ad9'); }
+    else if (lockMsgT <= 0) { lockMsgT = 3; msg(L('doorStuck'), 1.8); scratch(); questDoor(); }
   }
 }
 function enterPortal() {
@@ -2988,8 +3182,10 @@ function renderCrew() {
     const btn = a ? `<div class="btn off">${a.up ? L('withYou') : L('healing', { s: Math.ceil(a.downT) })}</div>`
       : rep >= T.cost ? `<div class="btn" data-recruit="${k}">${L('recruit', { c: T.cost })}</div>`
       : `<div class="btn off">${L('needRep', { c: T.cost })}</div>`;
-    return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">${L('hpLabel', { h: T.hp })}</span>${btn}</div>`;
+    const mood = a ? `<div style="margin-top:6px;font-size:12px;opacity:.8">${L('mood')} ${Math.round(a.mood)}%</div><div class="mood"><i style="width:${a.mood}%"></i></div>` : '';
+    return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">${L('hpLabel', { h: T.hp })}</span>${mood}${btn}</div>`;
   }).join('');
+  renderQuestLog();
   $('terr').innerHTML = DISTRICTS.map(d => `<div style="background:${ownerCss(d.owner)}">${d.name}<br><span style="font-weight:600">${ownerName(d.owner)}</span></div>`).join('');
 }
 function openCrew() {
@@ -3030,6 +3226,472 @@ $('portalBack').addEventListener('click', () => {
   if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
 });
 
+// ---------- quests & story (see STORY.md) ----------
+const Q = {
+  pizza: { s: 'offer', declineT: 0, bossDead: false },              // 1. The Pizza Shop's Favor
+  coach: { s: 'offer', step: 0, timer: 0, i: 0, n: 0, k: 0 },        // 2. Coach's Drills (max HP)
+  bike: { s: 'locked', b: null, guarded: false },                   // 3. The Stolen Bike
+  lou: { s: 'locked' },                                              // 4. Pink Light Below
+  milo: { s: 'locked', warned: false },                              // 5. The Mason of the Docks
+};
+const QKEYS = ['pizza', 'coach', 'bike', 'lou', 'milo'];
+const MICHELLE = { x: 125, z: -25 }, RONNIE = { x: -9, z: 44 }, LOU = { x: 10, z: 60 };
+const STOLEN = { x: 25, z: -165 }, MILO = { x: -150, z: -226 }, HATCH = { x: -150, z: -231 };
+const RUN_FLAGS = [[-75, 25], [-75, -75], [25, -75], [25, -25], [-25, 25]];
+const qBosses = {}, qTargets = [];
+const near = (o, r) => Math.hypot(o.x - player.pos.x, o.z - player.pos.z) < r;
+const homeBodega = () => DISTRICTS[4].bodega;
+const questNew = k => { feed(L('qNew', { q: L('qt_' + k) }), '#ffd23f'); beep(660, 0.08, 0.08, 'triangle'); };
+const questDone = k => {
+  msg(L('qDone', { q: L('qt_' + k) }), 2.6);
+  beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(659, 0.15, 0.1, 'triangle'), 150); setTimeout(() => beep(1047, 0.4, 0.1, 'triangle'), 300);
+};
+
+// dialogue box with choices (1-9 keys, or tap)
+let dlgOpts = [];
+function ask(who, line, opts) {
+  if (state !== 'play') return;
+  state = 'dialog'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  dlgOpts = opts;
+  $('dlgWho').textContent = who; $('dlgLine').textContent = line;
+  $('dlgOpts').innerHTML = opts.map((o, i) => `<div class="opt" data-opt="${i}"><kbd>${i + 1}</kbd>${o.label}</div>`).join('');
+  $('dlg').classList.remove('hidden');
+  beep(520, 0.05, 0.05, 'triangle'); setTimeout(() => beep(640, 0.05, 0.05, 'triangle'), 70);
+}
+function closeDlg() {
+  if (state !== 'dialog') return;
+  $('dlg').classList.add('hidden'); state = 'play';
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+function pickOpt(i) { const o = dlgOpts[i]; closeDlg(); if (o && o.go) o.go(); }
+$('dlgOpts').addEventListener('click', e => { const i = e.target.closest('[data-opt]')?.dataset.opt; if (i !== undefined) pickOpt(+i); });
+
+// something scratching behind a wall
+function scratch() {
+  if (!actx) return;
+  for (let k = 0; k < 4; k++) {
+    const now = actx.currentTime + k * 0.3 + Math.random() * 0.12, src = actx.createBufferSource(); src.buffer = noiseBuf;
+    const f = actx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 900 + Math.random() * 900; f.Q.value = 6;
+    const g = actx.createGain(); g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(0.25, now + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    src.connect(f).connect(g).connect(master); src.start(now); src.stop(now + 0.3);
+  }
+}
+
+let prologueShown = false;
+function showPrologue() {
+  if (prologueShown) return; prologueShown = true;
+  const el = $('prologue'), lines = L('prologue', { a: CREWS.red.name, b: CREWS.iron.name, c: CREWS.teal.name }).split('|');
+  el.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  [...el.children].forEach((d, i) => setTimeout(() => d.classList.add('on'), 500 + i * 1300));
+  setTimeout(() => [...el.children].forEach(d => d.classList.remove('on')), 500 + lines.length * 1300 + 1800);
+}
+
+// ---- block bosses: one lieutenant per crew, each guards a spot ----
+class BlockBoss extends Enemy {
+  constructor(key, x, z, crew, o) {
+    super(x, z, crew, districtAt(x, z));
+    this.block = true; this.key = key; this.nameKey = o.name; this.spot = { x, z }; this.leash = o.leash || 28;
+    this.g.scale.setScalar(1.2);
+    this.maxHp = this.hp = o.hp; this.speed = 3.6; this.pref = 14;
+    this.dash = !!o.dash; this.mode = 'normal'; this.chargeT = rand(5, 7); this.windT = 0; this.dashT = 0; this.dir = new THREE.Vector2();
+    if (o.scarf) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.14, 0.38), std(0xff7ad9)); m.position.set(0, 1.55, 0); this.g.add(m); }
+    if (o.hammer) {
+      const h = new THREE.Group(); h.position.set(-0.42, 1.0, 0.25); h.rotation.x = -0.6; this.g.add(h);
+      const handle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.8), std(0x6b4a2a)); handle.position.z = 0.2; h.add(handle);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.16, 0.16), std(0x3a3a3a, { metalness: 0.6 })); head.position.z = 0.6; h.add(head);
+    }
+  }
+  get name() { return L(this.nameKey); }
+  damage(dmg, head, byUs = true) {
+    if (this.dead) return;
+    if (head) dmg = Math.min(dmg, 110);
+    super.damage(dmg, head, byUs);
+    if (!this.dead && this.onHurt) this.onHurt();
+  }
+  die(head, byUs = true) {
+    super.die(head, byUs);
+    rep += 80; score += 800;
+    feed(L('blockDown', { n: this.name }), '#d4af37');
+    questBossDown(this.key);
+  }
+  update(dt) {
+    if (this.fled) return true;
+    if (this.dead) return super.update(dt);
+    const p = this.g.position;
+    if (Math.hypot(p.x - this.spot.x, p.z - this.spot.z) > this.leash && this.mode === 'normal') { this.los = false; this.foe = null; this.losT = 0.5; }
+    if (!this.los) {   // pace around the spot it guards
+      if (!this.pace || Math.hypot(p.x - this.pace.x, p.z - this.pace.z) < 1.5) this.pace = { x: this.spot.x + (this.pace && this.pace.x > this.spot.x ? -5 : 5), z: this.spot.z };
+      this.wp = this.pace; this.target.set(this.spot.x, this.spot.z); this.retargetT = 1;
+    }
+    if (this.dash) {   // the hammer charge
+      const dx = player.pos.x - p.x, dz = player.pos.z - p.z, dist = Math.hypot(dx, dz);
+      if (this.mode === 'wind') {
+        this.windT -= dt; this.hood.emissive.setHex(Math.sin(t * 40) > 0 ? 0xffffff : 0); this.g.rotation.y = Math.atan2(dx, dz);
+        if (this.windT <= 0) { this.mode = 'dash'; this.dashT = 0.9; this.dir.set(dx, dz).normalize(); this.hood.emissive.setHex(0); }
+        return false;
+      }
+      if (this.mode === 'dash') {
+        this.dashT -= dt; p.x += this.dir.x * 18 * dt; p.z += this.dir.y * 18 * dt; collide(p, 0.55);
+        animateHuman(this, dt, Math.atan2(this.dir.x, this.dir.y));
+        if (zone === 'street' && Math.hypot(player.pos.x - p.x, player.pos.z - p.z) < 2.4) { hurtPlayer(22, p); player.vel.x += this.dir.x * 12; player.vel.z += this.dir.y * 12; this.dashT = 0; }
+        if (this.dashT <= 0) { this.mode = 'normal'; this.chargeT = rand(6, 9); }
+        return false;
+      }
+      if ((this.chargeT -= dt) <= 0 && this.los && this.foe && !this.foe.ally && !this.foe.enemy && dist > 5 && dist < 35) {
+        this.mode = 'wind'; this.windT = 0.8; feed(L('bossCharge'), '#ff6b5a'); beep(220, 0.5, 0.15, 'sawtooth');
+        return false;
+      }
+    }
+    return super.update(dt);
+  }
+}
+function spawnBlock(key, x, z, crew, o) {
+  const b = new BlockBoss(key, x, z, crew, o);
+  enemies.push(b); qBosses[key] = b; rebuildParts();
+  msg(L('blockAppear', { n: b.name }), 2.2);
+  beep(196, 0.4, 0.12, 'sawtooth'); setTimeout(() => beep(147, 0.6, 0.12, 'sawtooth'), 300);
+  return b;
+}
+function spawnMinions(crew, x, z, n, hunter = false) {
+  for (let k = 0; k < n; k++) {
+    const e = new Enemy(x + rand(-4, 4), z + rand(-4, 4), crew, districtAt(x, z)); e.hunter = hunter; enemies.push(e);
+  }
+  rebuildParts();
+}
+const MICHELLE_O = { name: 'nm_michelle', hp: 400, leash: 26 };
+const LOU_O = { name: 'nm_lou', hp: 400, leash: 26, scarf: true };
+const MILO_O = { name: 'nm_milo', hp: 500, leash: 24, hammer: true, dash: true };
+function questBossDown(key) {
+  delete qBosses[key];
+  if (key === 'michelle') { Q.pizza.bossDead = true; if (Q.pizza.s === 'raid') Q.pizza.s = 'active'; }
+  if (key === 'lou') {
+    Q.lou.s = 'done'; rep += 200; questDone('lou');
+    setTimeout(() => { talk(L('nm_note'), L('q4Note')); Q.milo.s = 'find'; questNew('milo'); }, 1800);
+  }
+  if (key === 'milo') Q.milo.s = 'hatch';
+}
+
+// ---- quest props: "!" over quest givers, a yellow beam on the objective, flags, bottles, the warehouse ----
+const markTex = (() => {
+  const c = mkCanvas(64, 64), g = c.getContext('2d');
+  g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(32, 32, 28, 0, 7); g.fill();
+  g.fillStyle = '#111'; g.font = 'bold 44px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('!', 32, 35);
+  return texOf(c, false);
+})();
+const qBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 60, 16, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+qBeam.visible = false; scene.add(qBeam);
+const qFlag = new THREE.Group(); qFlag.visible = false; scene.add(qFlag);
+{
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 8), std(0xcccccc, { metalness: 0.6 })); pole.position.y = 1.6; qFlag.add(pole);
+  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.65), new THREE.MeshStandardMaterial({ color: 0xffd23f, emissive: 0xffaa00, emissiveIntensity: 0.6, side: THREE.DoubleSide }));
+  cloth.position.set(0.56, 2.85, 0); qFlag.add(cloth);
+}
+const bottleGeo = new THREE.CylinderGeometry(0.06, 0.07, 0.26, 10), bottleMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 });
+function placeBottles() {
+  clearBottles();
+  for (let k = 0; k < 10; k++) {
+    const a = k / 10 * Math.PI * 2, m = new THREE.Mesh(bottleGeo, bottleMat);
+    m.position.set(Math.cos(a) * 3.85, 1.18, 50 + Math.sin(a) * 3.85); m.userData.bottle = true;
+    scene.add(m); qTargets.push(m);
+  }
+}
+function clearBottles() { for (const m of qTargets) scene.remove(m); qTargets.length = 0; }
+function hitBottle(m) {
+  spark(m.position, 0x9fe8b5, 6, 0.3);
+  if (Q.coach.s !== 'shoot' || weapon !== 'rifle') return;
+  scene.remove(m); qTargets.splice(qTargets.indexOf(m), 1); Q.coach.n++;
+  beep(1800, 0.05, 0.06, 'triangle');
+}
+// Anchor Yard: bricks, cement and a freshly sealed hatch in front of the warehouse
+{
+  const brick = std(0x8a3b28), cement = std(0xbdb6aa);
+  for (const [dx, n] of [[-4.5, 6], [4, 4]]) for (let k = 0; k < n; k++) prop(box1, 0x8a3b28, MILO.x + dx + (k % 3) * 0.5, 0.4 + Math.floor(k / 3) * 0.25, HATCH.z - 0.2, 0.45, 0.22, 0.9);
+  for (let k = 0; k < 3; k++) prop(box1, 0xbdb6aa, MILO.x + 6.5, 0.4 + k * 0.22, HATCH.z + 0.2, 0.9, 0.2, 0.6);
+  const hatch = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.06, 1.4), std(0x2b2d30, { metalness: 0.7, roughness: 0.4 }));
+  hatch.position.set(HATCH.x, 0.28, HATCH.z); hatch.receiveShadow = true; scene.add(hatch);
+  const rim = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 1.8), std(0xc9c2b4)); rim.position.set(HATCH.x, 0.26, HATCH.z); scene.add(rim);
+  void brick; void cement;
+}
+
+// ---- quest givers ----
+const ronnie = addNPC(RONNIE.x, RONNIE.z, { hood: 0x8a1e1e, cap: 0xf2f2f2, jeans: 0x1b1b1b },
+  () => ['offer', 'ready'].includes(Q.coach.s) ? L('qTalk') : L('qTalkTo', { n: L('nm_ronnie') }), () => coachTalk());
+let louNPC = null, louCol = null;
+function spawnLou() {
+  louNPC = addNPC(LOU.x, LOU.z, { hood: 0x1f2a33, cap: 0x1f8a8a, jeans: 0x222222, apron: 0xff7ad9 },
+    () => ['offer', 'report'].includes(Q.lou.s) ? L('qTalk') : L('qTalkTo', { n: L('nm_lou') }), () => louTalk());
+  louCol = colliders[colliders.length - 1];
+}
+const npcAt = o => npcs.find(n => n.o && Math.abs(n.pos.x - o.x) < 0.1 && Math.abs(n.pos.z - o.z) < 0.1);
+const GIVERS = [
+  { n: () => npcAt(PIZZA_SHOP), on: () => ['offer', 'declined', 'return'].includes(Q.pizza.s) },
+  { n: () => npcAt(RONNIE), on: () => ['offer', 'ready'].includes(Q.coach.s) },
+  { n: () => npcAt(homeBodega()), on: () => Q.bike.s === 'offer' },
+  { n: () => louNPC && npcAt(LOU), on: () => ['offer', 'report'].includes(Q.lou.s) },
+];
+for (const gv of GIVERS) { gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false; scene.add(gv.sp); }
+
+// 1. The Pizza Shop's Favor
+function pizzaJob() {
+  if (Q.pizza.s === 'raid') return talk(L('pizzaWho'), L('pizzaClosed'));
+  if (delivery) talk(L('pizzaWho'), L('pizzaHurry')); else startDelivery();
+}
+function pizzaTalk() {
+  const q = Q.pizza;
+  if (q.s === 'raid') return talk(L('pizzaWho'), L('q1RaidHelp'));
+  if (q.s === 'return') return q1Reward();
+  if (q.s === 'offer' || q.s === 'declined') return ask(L('pizzaWho'), L(q.s === 'offer' ? 'q1Ask' : 'q1AskAgain'), [
+    { label: L('accept'), go: () => { q.s = 'active'; talk(L('pizzaWho'), L('q1Accepted')); questNew('pizza'); } },
+    { label: L('decline'), go: () => { if (q.s === 'offer') { q.s = 'declined'; q.declineT = t; } talk(L('pizzaWho'), L('q1Declined')); } },
+    { label: L('q1Deliver'), go: pizzaJob },
+  ]);
+  pizzaJob();
+}
+function q1Reward() {
+  Q.pizza.s = 'done'; owned.revolver = true; mags.revolver = 6; rep += 150;
+  talk(L('pizzaWho'), L('q1Thanks')); feed(L('gotRevolver'), '#ffd23f');
+  switchWeapon('revolver'); feed(L(TOUCH ? 'swapTipTouch' : 'swapTip'), '#ffd23f');
+  questDone('pizza');
+  Q.bike.s = 'offer'; Q.lou.s = 'offer'; spawnLou();
+}
+function michelleFlee(b) {
+  b.fled = true; b.g.visible = false; enemyParts = enemyParts.filter(m => m.userData.enemy !== b);
+  delete qBosses.michelle;
+  talk(L('nm_michelle'), L('q1Flee'));
+  Q.pizza.s = 'active'; questNew('pizza');
+}
+
+// 2. Coach's Drills
+function coachTalk() {
+  const q = Q.coach;
+  if (q.s === 'offer') return ask(L('nm_ronnie'), L('q2Ask'), [
+    { label: L('accept'), go: () => { q.s = 'ready'; questNew('coach'); coachTalk(); } },
+    { label: L('later'), go: () => {} },
+  ]);
+  if (q.s === 'ready') return ask(L('nm_ronnie'), L('q2Stage' + q.step), [{ label: L('startIt'), go: coachStart }, { label: L('later'), go: () => {} }]);
+  if (q.s === 'done') return talk(L('nm_ronnie'), L('q2Final'));
+  talk(L('nm_ronnie'), L('q2Stage' + q.step));
+}
+function coachStart() {
+  const q = Q.coach;
+  if (q.step === 0) { q.s = 'run'; q.i = 0; q.timer = 70; qFlag.position.set(RUN_FLAGS[0][0], 0, RUN_FLAGS[0][1]); qFlag.visible = true; }
+  else if (q.step === 1) { q.s = 'shoot'; q.n = 0; q.timer = 25; placeBottles(); if (weapon !== 'rifle') switchWeapon('rifle'); }
+  else { q.s = 'fight'; q.k = 0; }
+  msg(L('startIt'), 1.2); beep(880, 0.1, 0.1, 'square');
+}
+function coachEnd(ok, why) {
+  const q = Q.coach;
+  qFlag.visible = false; clearBottles();
+  if (!ok) { q.s = 'ready'; talk(L('nm_ronnie'), why || L('q2Fail')); beep(160, 0.3, 0.1, 'sawtooth'); return; }
+  q.step++; player.maxHp += 20; player.hp = player.maxHp;
+  msg(L('q2Pass'), 2); talk(L('nm_ronnie'), q.step === 3 ? L('q2Final') : L('q2Pass'));
+  if (q.step === 3) { q.s = 'done'; rep += 100; questDone('coach'); }
+  else { q.s = 'ready'; beep(880, 0.12, 0.1, 'triangle'); }
+}
+function questKill(e) {
+  if (Q.coach.s === 'fight' && e.crew !== 'police') Q.coach.k++;
+  for (const a of allies) if (a.up) a.mood = Math.max(0, a.mood - 1);   // winning together keeps the crew happy
+}
+
+// 3. The Stolen Bike
+function bodegaQuest(d) {
+  if (Q.bike.s !== 'offer') return false;
+  ask(L('bodegaWho'), L('q3Ask'), [
+    { label: L('accept'), go: () => { Q.bike.s = 'find'; talk(L('bodegaWho'), L('q3Accepted')); questNew('bike'); Q.bike.b = makeBike(STOLEN.x, STOLEN.z, 0, 0xff2d2d); Q.bike.b.stolen = true; } },
+    { label: L('q3Shop'), go: () => openShop(d) },
+  ]);
+  return true;
+}
+function questMount(b) {
+  if (!b.stolen || Q.bike.s !== 'find') return;
+  Q.bike.s = 'ride'; msg(L('q3Obj_ride'), 2); feed(L('q3Chase'), CREWS.iron.css);
+  const ns = [];
+  for (const x of NODES) for (const z of NODES) { const d = Math.hypot(x - player.pos.x, z - player.pos.z); if (d > 25 && d < 60) ns.push({ x, z }); }
+  for (let k = 0; k < 2 && ns.length; k++) { const n = ns.splice(Math.floor(Math.random() * ns.length), 1)[0]; spawnMinions('iron', n.x, n.z, 1, true); }
+}
+
+// 4. Pink Light Below
+function louTalk() {
+  const q = Q.lou;
+  if (q.s === 'offer') return ask(L('nm_lou'), L('q4Ask'), [
+    { label: L('accept'), go: () => { q.s = 'look'; talk(L('nm_lou'), L('q4Accepted')); questNew('lou'); } },
+    { label: L('decline'), go: () => talk(L('nm_lou'), L('q4Later')) },
+  ]);
+  if (q.s === 'look') return talk(L('nm_lou'), L('q4Remind'));
+  if (q.s === 'report') return ask(L('nm_lou'), L('q4AskReport'), [{ label: L('q4Angry'), go: louTwist }]);
+}
+function questDoor() {
+  if (Q.lou.s !== 'look') return;
+  Q.lou.s = 'report'; feed(L('q4Door'), '#ff7ad9');
+}
+function louTwist() {
+  Q.lou.s = 'fight';
+  talk(L('nm_lou'), L('q4Lie'));
+  // the informant drops the act: the NPC is replaced by the boss in the same spot
+  scene.remove(louNPC.g);
+  const i = npcs.findIndex(n => n.o === louNPC); if (i >= 0) npcs.splice(i, 1);
+  const c = colliders.indexOf(louCol); if (c >= 0) colliders.splice(c, 1);
+  spawnBlock('lou', LOU.x, LOU.z, 'teal', LOU_O);
+  spawnMinions('teal', LOU.x + 16, LOU.z + 12, 1, true); spawnMinions('teal', LOU.x - 16, LOU.z + 12, 1, true);
+}
+
+// what to show in the HUD: the most urgent running quest
+function questObjective() {
+  const P1 = Q.pizza, C = Q.coach, B = Q.bike, LQ = Q.lou, M = Q.milo, bp = k => qBosses[k] && qBosses[k].g.position;
+  if (P1.s === 'raid') return { k: 'pizza', text: L('q1Obj_raid'), at: bp('michelle') || PIZZA_SHOP };
+  if (C.s === 'run') return { k: 'coach', text: L('q2Obj_run', { i: C.i + 1, s: Math.ceil(C.timer) }), at: qFlag.position };
+  if (C.s === 'shoot') return { k: 'coach', text: L('q2Obj_shoot', { n: C.n, s: Math.ceil(C.timer) }), at: { x: 0, z: 50 } };
+  if (C.s === 'fight') return { k: 'coach', text: L('q2Obj_fight', { k: C.k }) };
+  if (B.s === 'find') return { k: 'bike', text: L('q3Obj_find'), at: B.b.g.position };
+  if (B.s === 'ride') return { k: 'bike', text: L('q3Obj_ride'), at: riding === B.b ? homeBodega() : B.b.g.position };
+  if (P1.s === 'active') return P1.bossDead ? { k: 'pizza', text: L('q1Obj_take'), at: { x: 125, z: 0 } } : { k: 'pizza', text: L('q1Obj_find'), at: bp('michelle') || MICHELLE };
+  if (P1.s === 'return') return { k: 'pizza', text: L('q1Obj_back'), at: PIZZA_SHOP };
+  if (LQ.s === 'look') return { k: 'lou', text: L('q4Obj_look'), at: zone === 'street' ? ENTRANCE : null };
+  if (LQ.s === 'report') return { k: 'lou', text: L('q4Obj_report'), at: LOU };
+  if (LQ.s === 'fight') return { k: 'lou', text: L('q4Obj_fight'), at: bp('lou') || LOU };
+  if (M.s === 'find') return { k: 'milo', text: L('q5Obj_find'), at: MILO };
+  if (M.s === 'fight') return { k: 'milo', text: L('q5Obj_fight'), at: bp('milo') || MILO };
+  if (M.s === 'hatch') return { k: 'milo', text: L('q5Obj_hatch'), at: HATCH };
+  if (C.s === 'ready') return { k: 'coach', text: L('q2Obj_ready', { i: C.step + 1 }), at: RONNIE };
+  return null;
+}
+let qObj = null, qlineHtml = '';
+function updateQuests(dt) {
+  const P1 = Q.pizza, C = Q.coach, B = Q.bike, M = Q.milo;
+  for (const k in qBosses) if (!enemies.includes(qBosses[k])) delete qBosses[k];   // cleared away (e.g. a lost district): comes back later
+  const street = zone === 'street' && !busy;
+
+  // 1. pizza shop: the raid if you said no and let a day go by; Michelle waits in Ember Hill
+  if (P1.s === 'declined' && street && !war && t - P1.declineT > 24 * HOUR_SECS) {
+    P1.s = 'raid';
+    const b = spawnBlock('michelle', PIZZA_SHOP.x, PIZZA_SHOP.z + 5, 'red', { ...MICHELLE_O, leash: 16 });
+    b.onHurt = () => { if (Q.pizza.s === 'raid' && b.hp <= b.maxHp / 2) michelleFlee(b); };
+    spawnMinions('red', PIZZA_SHOP.x, PIZZA_SHOP.z + 9, 2, true);
+    feed(L('q1Raid'), CREWS.red.css);
+  }
+  if (P1.s === 'active' && !P1.bossDead && !qBosses.michelle && street && near(MICHELLE, 90)) {
+    spawnBlock('michelle', MICHELLE.x, MICHELLE.z, 'red', MICHELLE_O); spawnMinions('red', MICHELLE.x, MICHELLE.z, 2);
+  }
+  if (P1.s === 'active' && P1.bossDead && DISTRICTS[5].owner === 'me') { P1.s = 'return'; msg(L('q1Obj_back'), 2); }
+
+  // 2. coach's drills
+  if (C.s === 'run') {
+    C.timer -= dt;
+    if (riding) coachEnd(false, L('q2FailBike'));
+    else if (C.timer <= 0) coachEnd(false);
+    else if (zone === 'street' && near(qFlag.position, 3)) {
+      C.i++; beep(990, 0.08, 0.08, 'triangle');
+      if (C.i >= RUN_FLAGS.length) coachEnd(true);
+      else qFlag.position.set(RUN_FLAGS[C.i][0], 0, RUN_FLAGS[C.i][1]);
+    }
+    qFlag.rotation.y += dt * 2;
+  }
+  if (C.s === 'shoot') { C.timer -= dt; if (C.n >= 10) coachEnd(true); else if (C.timer <= 0) coachEnd(false); }
+  if (C.s === 'fight') { if (player.hp < 20) coachEnd(false); else if (C.k >= 10) coachEnd(true); }
+
+  // 3. the stolen bike
+  if (B.s === 'find' && !B.guarded && street && near(STOLEN, 90)) { B.guarded = true; spawnMinions('iron', STOLEN.x, STOLEN.z + 6, 3); }
+  if (B.s === 'ride' && riding === B.b && near(homeBodega(), 6)) {
+    B.s = 'done'; B.b.stolen = false; BIKE_SPEED_MUL = 1.2; rep += 120;
+    talk(L('nm_nephew'), L('q3Thanks')); feed(L('q3Reward'), '#5fd4ff'); questDone('bike');
+  }
+
+  // 4. Lou comes back if the fight got interrupted
+  if (Q.lou.s === 'fight' && !qBosses.lou && street && near(LOU, 90)) spawnBlock('lou', LOU.x, LOU.z, 'teal', LOU_O);
+
+  // 5. Milo only works the warehouse at night
+  if (M.s === 'find' && street) {
+    if (near(MILO, 70)) {
+      if (night < 0.6) { if (!M.warned) { M.warned = true; msg(L('q5Day'), 2.2); } }
+      else { M.s = 'fight'; spawnBlock('milo', MILO.x, MILO.z, 'iron', MILO_O); spawnMinions('iron', MILO.x, MILO.z + 4, 2); talk(L('nm_milo'), L('q5Line')); }
+    } else if (!near(MILO, 110)) M.warned = false;
+  }
+  if (M.s === 'fight' && !qBosses.milo && street && near(MILO, 90)) spawnBlock('milo', MILO.x, MILO.z, 'iron', MILO_O);
+  if (M.s === 'hatch' && zone === 'street' && near(HATCH, 2.8)) {
+    M.s = 'done'; scratch(); talk('🕳️', L('q5Hatch'));
+    rep += 250; armorMax = 100; player.armor = 100; feed(L('q5Reward'), '#ffd23f'); questDone('milo');
+  }
+
+  // crew gets bored (and grumpy) when nothing happens for a while
+  if (war || boss) boredT = 0;
+  else if (allies.length && zone === 'street' && (boredT += dt) > 120) { boredT = 100; moodAll(3); }
+
+  // "!" over givers, beam on the objective, HUD line
+  for (const gv of GIVERS) {
+    const n = gv.n(), on = !!n && gv.on() && zone === 'street';
+    gv.sp.visible = on;
+    if (on) gv.sp.position.set(n.pos.x, n.pos.y + 2.55 + Math.sin(t * 3) * 0.08, n.pos.z);
+  }
+  qObj = questObjective();
+  const at = qObj && qObj.at && zone === 'street' ? qObj.at : null;
+  qBeam.visible = !!at && !near(at, 6);
+  if (at) { qBeam.position.set(at.x, 30, at.z); qBeam.material.opacity = 0.2 + Math.sin(t * 4) * 0.08; }
+  let html = '';
+  if (qObj) {
+    html = `📜 ${qObj.text}`;
+    if (at) {
+      const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw)), r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+      const v = new THREE.Vector3(at.x - player.pos.x, 0, at.z - player.pos.z);
+      const ang = Math.round(Math.atan2(v.dot(r), v.dot(f)) * 20) / 20;
+      html += ` · <span class="arw" style="transform:rotate(${ang}rad)">▲</span> ${Math.round(v.length())}m`;
+    }
+  }
+  if (html !== qlineHtml) { qlineHtml = html; $('qline').innerHTML = html; }
+}
+function drawQuestMarks(mx, mz) {
+  mctx.font = 'bold 11px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle';
+  for (const gv of GIVERS) {
+    const n = gv.n(); if (!n || !gv.on()) continue;
+    mctx.fillStyle = '#111'; mctx.beginPath(); mctx.arc(mx(n.pos.x), mz(n.pos.z), 5, 0, 7); mctx.fill();
+    mctx.fillStyle = '#ffd23f'; mctx.fillText('!', mx(n.pos.x), mz(n.pos.z) + 0.5);
+  }
+  if (qObj && qObj.at) {
+    const x = mx(qObj.at.x), z = mz(qObj.at.z), s = 4 + Math.sin(t * 6) * 1.2;
+    mctx.fillStyle = '#ffd23f'; mctx.strokeStyle = '#111'; mctx.lineWidth = 1.5;
+    mctx.beginPath(); mctx.moveTo(x, z - s); mctx.lineTo(x + s, z); mctx.lineTo(x, z + s); mctx.lineTo(x - s, z); mctx.closePath(); mctx.fill(); mctx.stroke();
+  }
+}
+function renderQuestLog() {
+  const st = k => { const s = Q[k].s; return s === 'offer' ? 'q_avail' : s === 'locked' ? 'q_locked' : s === 'done' ? 'q_done' : s === 'declined' ? 'q_declined' : 'q_active'; };
+  $('qlog').innerHTML = `<b>📜 ${L('qLog')}</b>` + QKEYS.map(k => `<div><span>${L('qt_' + k)}</span><span>${L(st(k))}</span></div>`).join('');
+}
+
+// ---------- crew discontent: fills up when things go badly, at 100% they defect to a rival ----------
+const ALLY_ICON = { artist: '🎨', boxer: '🥊', hacker: '💻' };
+const defectors = [];
+let boredT = 0, moodHtml = '';
+function addMood(a, d) {
+  if (!allies.includes(a)) return;
+  a.mood = clamp(a.mood + d, 0, 100);
+  if (a.mood >= 50 && a.warned < 1) { a.warned = 1; feed(L('moodWarn50', { n: a.T.name }), '#ffb35a'); }
+  if (a.mood >= 80 && a.warned < 2) { a.warned = 2; feed(L('moodWarn80', { n: a.T.name }), '#ff5a4a'); beep(330, 0.2, 0.08, 'sawtooth'); }
+  if (a.mood < 40) a.warned = 0;
+  if (a.mood >= 100) allyLeave(a);
+}
+function moodAll(d) { for (const a of [...allies]) addMood(a, d); }
+function allyLeave(a) {
+  const alive = RIVALS.filter(c => DISTRICTS.some(d => d.owner === c));
+  const crew = alive.length ? alive[Math.floor(Math.random() * alive.length)] : RIVALS[Math.floor(Math.random() * 3)];
+  scene.remove(a.g); allies.splice(allies.indexOf(a), 1);
+  msg('💔', 1.5); feed(L('allyLeft', { n: a.T.name, c: CREWS[crew].name }), '#ff5a4a');
+  defectors.push({ crew, name: a.T.name });
+  beep(220, 0.3, 0.1, 'sawtooth'); setTimeout(() => beep(165, 0.5, 0.1, 'sawtooth'), 250);
+}
+function applyTraitor(e, crew) {
+  const i = defectors.findIndex(x => x.crew === crew); if (i < 0) return;
+  const tr = defectors.splice(i, 1)[0];
+  e.hp = e.C.hp * 2.5; e.hunter = true;
+  feed(L('traitor', { n: tr.name, c: CREWS[crew].name }), CREWS[crew].css);
+}
+function updateMoodHud() {
+  const html = allies.map(a => `<span class="${a.mood >= 80 ? 'hot' : ''}">${ALLY_ICON[a.key] || '🧑'}${a.mood >= 80 ? '🤬' : a.mood >= 50 ? '😠' : '🙂'} ${Math.round(a.mood)}%</span>`).join('');
+  if (html !== moodHtml) { moodHtml = html; $('moods').innerHTML = html; }
+}
+
 // ---------- main loop ----------
 const fwd = new THREE.Vector3(), right = new THREE.Vector3(), wish = new THREE.Vector3();
 function update(dt) {
@@ -3043,7 +3705,7 @@ function update(dt) {
   const joySprint = Math.hypot(joy.x, joy.y) > 0.95 && -joy.y > 0.7;
   const sprint = !riding && (keys.ShiftLeft || keys.ShiftRight || joySprint) && !aiming && wish.dot(fwd) > 0.3;
   const wl = wish.length();
-  if (wl > 0) wish.multiplyScalar(Math.min(wl, 1) / wl * (riding ? BIKE_SPEED : aiming ? 3.5 : sprint ? 9.5 : 6) * (riding ? 1 : cls.speed));
+  if (wl > 0) wish.multiplyScalar(Math.min(wl, 1) / wl * (riding ? BIKE_SPEED * BIKE_SPEED_MUL : aiming ? 3.5 : sprint ? 9.5 : 6) * (riding ? 1 : cls.speed));
   const acc = riding ? 3.2 : player.onGround ? 12 : 2.5;
   player.vel.x += (wish.x - player.vel.x) * Math.min(1, acc * dt);
   player.vel.z += (wish.z - player.vel.z) * Math.min(1, acc * dt);
@@ -3099,6 +3761,7 @@ function update(dt) {
   updateDelivery(dt);
   updateBoss(dt);
   updateNPCs(dt);
+  updateQuests(dt);
   updateSubway(dt);
 
   for (let i = pickups.length - 1; i >= 0; i--) {
@@ -3136,10 +3799,12 @@ function update(dt) {
   $('hpf').classList.toggle('low', low);
   $('hpt').textContent = Math.max(0, Math.ceil(player.hp));
   $('armor').textContent = player.armor > 0 ? `🦺${Math.ceil(player.armor)}` : '';
-  $('mag').textContent = ammo; $('res').textContent = '/ ' + reserve;
-  $('mag').style.color = ammo <= Math.ceil(W().mag / 6) ? '#ff3b30' : '#fff';
-  $('wname').textContent = owned.shotgun ? `${W().icon} ${W().name}` : '';
-  $('bSwap').classList.toggle('hidden', !owned.shotgun);
+  const melee = !!W().melee, many = Object.keys(owned).length > 1;
+  $('mag').textContent = melee ? '🔪' : ammo; $('res').textContent = melee ? '' : '/ ' + reserve;
+  $('mag').style.color = !melee && ammo <= Math.ceil(W().mag / 6) ? '#ff3b30' : '#fff';
+  $('wname').textContent = many ? `${W().icon} ${W().name}` : '';
+  $('bSwap').classList.toggle('hidden', !many);
+  updateMoodHud();
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
   $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
@@ -3314,7 +3979,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
