@@ -150,6 +150,14 @@
   .ch { flex:1; min-width:0; padding:8px 6px; border-radius:10px; background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.18); cursor:pointer; font-family:system-ui,sans-serif; }
   .ch .ic { font-size:26px; } .ch b { display:block; font-size:16px; margin:2px 0; } .ch small { display:block; font-size:11.5px; font-weight:600; opacity:.85; line-height:1.4; }
   .ch.on { border-color:var(--yellow); background:rgba(242,183,5,.18); }
+  .ch img { display:block; width:100%; aspect-ratio:300/258; object-fit:cover; border-radius:6px; margin-bottom:4px; filter:grayscale(.35); }
+  .ch.on img { filter:none; }
+  #charInfo { width:min(520px,92vw); margin:-8px auto 16px; padding:10px 12px; border-radius:10px; background:rgba(0,0,0,.4); text-align:left; font:13px/1.5 system-ui,sans-serif; cursor:default; }
+  #charInfo .tag { font-weight:900; color:var(--yellow); margin-bottom:4px; }
+  #charInfo p { margin:4px 0; } #charInfo .cf { opacity:.75; } #charInfo .pv { color:#9ae6ff; font-weight:700; }
+  #charInfo q { display:block; margin-top:6px; font-style:italic; opacity:.85; quotes:none; }
+  #saveInfo { margin-top:10px; font:700 13px system-ui,sans-serif; opacity:.85; }
+  #newGame { display:inline-block; margin-top:8px; padding:6px 14px; border-radius:16px; background:rgba(255,255,255,.12); font:700 13px system-ui,sans-serif; cursor:pointer; }
   #prompt { position:absolute; left:50%; bottom:90px; transform:translateX(-50%); padding:8px 16px; border-radius:20px; background:rgba(0,0,0,.65); font:800 15px system-ui,sans-serif; white-space:nowrap; }
   #prompt kbd { background:#fff; color:#111; border-radius:4px; padding:0 6px; margin-right:6px; }
   body.touch #prompt { bottom:auto; top:100px; pointer-events:auto; z-index:5; padding:12px 20px; background:rgba(30,132,73,.9); }
@@ -234,6 +242,7 @@
     #stage { height:130px; }
     #chars { margin-bottom:10px; gap:6px; }
     .ch { padding:5px 6px; } .ch .ic { font-size:18px; } .ch b { font-size:14px; margin:0; } .ch small { font-size:10.5px; }
+    #charInfo { font-size:12px; } #charInfo .cf { display:none; }
   }
   /* phone held upright: info on top, controls along the bottom */
   @media (orientation: portrait) {
@@ -369,7 +378,10 @@
     </ul>
     <div id="stage"></div>
     <div id="chars"></div>
+    <div id="charInfo"></div>
     <div><span class="go" id="go">클릭해서 시작</span></div>
+    <div id="saveInfo" class="hidden"></div>
+    <div id="newGame" class="hidden" data-i18n="newGame"></div>
     <div class="credit">🎵 BGM “8-Bit Drop” · Music © 2026 -MAID¥$AMA- · All rights reserved</div>
     <div class="credit" data-i18n="fiction"></div>
   </div>
@@ -470,11 +482,11 @@ const STR = {
   nightTip: ['적의 시야가 짧아졌다 · 손전등은 들키기 쉽다 (F)', "Enemies can't see as far · your flashlight gives you away (F)", '敵の視界が狭くなった・懐中電灯は見つかりやすい (F)'],
   morning: ['☀️ 아침이 밝았다', '☀️ Morning has come', '☀️ 朝になった'],
   cls_runner: ['러너', 'Runner', 'ランナー'],
-  cls_runner_d: ['이동 속도 +25%<br>체력 80', 'Move speed +25%<br>HP 80', '移動速度 +25%<br>体力 80'],
-  cls_tank: ['탱크', 'Tank', 'タンク'],
-  cls_tank_d: ['체력 160<br>이동 속도 -15%', 'HP 160<br>Move speed -15%', '体力 160<br>移動速度 -15%'],
-  cls_sniper: ['스나이퍼', 'Sniper', 'スナイパー'],
-  cls_sniper_d: ['정조준 확대 · 피해 +45%<br>연사 느림', 'Scope zoom · Damage +45%<br>Slow fire rate', 'スコープ拡大・ダメージ +45%<br>連射が遅い'],
+  cls_runner_d: ['기동 · 영입<br>속도 +25% · 체력 80', 'Mobility · Recruiter<br>Speed +25% · HP 80', '機動・勧誘<br>速度 +25%・体力 80'],
+  cls_tank: ['빅맨', 'Big Man', 'ビッグマン'],
+  cls_tank_d: ['지구력 · 몸빵<br>체력 160 · 속도 -15%', 'Endurance · Tank<br>HP 160 · Speed -15%', '持久力・タンク<br>体力 160・速度 -15%'],
+  cls_sniper: ['미스터 조', 'Mr. Cho', 'ミスター・チョ'],
+  cls_sniper_d: ['정밀 사격<br>피해 +45% · 반동 -35%', 'Marksman<br>Damage +45% · Recoil -35%', '精密射撃<br>ダメージ +45%・反動 -35%'],
   startMsg: ['구역을 점령하라', 'Take the districts', '地区を制圧せよ'],
   startTip: ['주변 라이벌 구역에 들어가면 영역 전쟁이 시작돼요', 'Step into a rival district to start a turf war', 'ライバル地区に入るとナワバリ戦争が始まります'],
   startTipTouch: ['크루 버튼: 크루 이름·색 · 동료 영입', 'CREW button: crew name, color & recruits', 'クルーボタン：名前・色・仲間の勧誘'],
@@ -549,7 +561,7 @@ const STR = {
   qt_milo: ['부두의 벽돌공', 'The Mason of the Docks', '波止場のレンガ職人'],
   nm_michelle: ['미쉘', 'Michelle', 'ミシェル'],
   nm_lou: ['루 "핑키" 마로', 'Lou "Pinky" Marrow', 'ルー・"ピンキー"・マロウ'],
-  nm_ronnie: ['빅 로니', 'Big Ronnie', 'ビッグ・ロニー'],
+  nm_ronnie: ['미스터 로니', 'Mr. Ronnie', 'ミスター・ロニー'],
   nm_milo: ['"모르타르" 마일로', 'Milo "Mortar"', '"モルタル"マイロ'],
   nm_nephew: ['보데가 조카', 'Bodega nephew', 'ボデガの甥っ子'],
   nm_note: ['📜 낡은 쪽지', '📜 Old note', '📜 古いメモ'],
@@ -577,7 +589,7 @@ const STR = {
   q2Fail: ['다시! 준비되면 말해.', 'Again! Tell me when you\'re ready.', 'もう一回！準備ができたら言え。'],
   q2FailBike: ['자전거는 반칙이라고 했지!', 'I said no bikes!', '自転車は反則だと言っただろ！'],
   q2Final: ['이제 넌 이 동네 사람이다.', 'Now you belong to this neighborhood.', 'これでお前もこの街の人間だ。'],
-  q2Obj_ready: ['빅 로니에게 말 걸기 ({i}/3단계)', 'Talk to Big Ronnie (drill {i}/3)', 'ビッグ・ロニーに話しかける（第{i}/3段階）'],
+  q2Obj_ready: ['미스터 로니에게 말 걸기 ({i}/3단계)', 'Talk to Mr. Ronnie (drill {i}/3)', 'ミスター・ロニーに話しかける（第{i}/3段階）'],
   q2Obj_run: ['깃발 {i}/5 · {s}초', 'Flag {i}/5 · {s}s', '旗 {i}/5・{s}秒'],
   q2Obj_shoot: ['병 {n}/10 · {s}초 · 소총만', 'Bottles {n}/10 · {s}s · rifle only', '瓶 {n}/10・{s}秒・ライフルのみ'],
   q2Obj_fight: ['라이벌 처치 {k}/10 · 체력 20 아래로 떨어지면 실패', 'Rivals down {k}/10 · fail under 20 HP', 'ライバル撃破 {k}/10・体力20未満で失敗'],
@@ -609,13 +621,79 @@ const STR = {
   q5Obj_hatch: ['창고 앞 바닥 철문 살펴보기', 'Inspect the steel hatch by the warehouse', '倉庫前の床の鉄扉を調べる'],
   q5Hatch: ['새로 시멘트를 바른 철문이다. 밑에서 긁는 소리가 들린다… 이 밑에 뭐가 있는 거지? (다음 이야기에서 계속)', 'A steel hatch sealed with fresh cement. Something is scratching underneath… what\'s down there? (To be continued)', '塗りたてのセメントで塞がれた鉄扉だ。下から引っかく音がする…この下に何があるんだ？（次の物語へ続く）'],
   q5Reward: ['🦺 철판 조끼 · 방탄 최대치 100 · 평판 +250', '🦺 Steel-plate vest · max armor 100 · Rep +250', '🦺 鉄板ベスト・防弾上限 100・評判 +250'],
-  prologue: ['킹스 스트리트엔 블록마다 주인이 있다.|{a}, {b}, {c}.|그리고 오늘 밤부터 — 너.', 'Every block on Kings St. has an owner.|{a}. {b}. {c}.|And starting tonight — you.', 'キングス・ストリートには、ブロックごとに主がいる。|{a}、{b}、{c}。|そして今夜から——お前だ。'],
+  prologue: ['킹스 스트리트엔 블록마다 주인이 있다.|{a}, {b}, {c}.|그리고 오늘 밤, 세 사람이 새 크루를 세운다.', 'Every block on Kings St. has an owner.|{a}. {b}. {c}.|And tonight, three men start a crew of their own.', 'キングス・ストリートには、ブロックごとに主がいる。|{a}、{b}、{c}。|そして今夜、三人の男が新しいクルーを立ち上げる。'],
   ending: ['축하의 밤. 모두가 잠든 뒤, 지하철역 끝의 핑크 문이 한 번 크게 빛났다.<br>그리고 문 너머에서 — 누군가 문을 두드렸다.<br><b>TO BE CONTINUED…</b>', 'A night of celebration. When everyone was asleep, the pink door at the end of the platform flared once.<br>And from the other side — someone knocked.<br><b>TO BE CONTINUED…</b>', '祝いの夜。皆が眠ったあと、ホームの端のピンクのドアが一度大きく光った。<br>そしてドアの向こうから——誰かがノックした。<br><b>TO BE CONTINUED…</b>'],
   mood: ['불만', 'Discontent', '不満'],
   moodWarn50: ['😠 {n}의 불만이 쌓이고 있다', '😠 {n} is getting fed up', '😠 {n}の不満がたまっている'],
   moodWarn80: ['🤬 {n}이(가) 떠나기 직전이다! 보데가에서 간식이라도 사 주자', '🤬 {n} is about to quit! Buy some snacks at a bodega', '🤬 {n}が辞める寸前だ！ボデガでおやつでも買ってやろう'],
   allyLeft: ['💔 {n}이(가) 크루를 떠나 {c}(으)로 갔다!', '💔 {n} left your crew for the {c}!', '💔 {n}がクルーを抜けて{c}に移った！'],
   traitor: ['🗡️ 배신자 {n}이(가) {c} 편으로 나타났다!', '🗡️ The traitor {n} shows up with the {c}!', '🗡️ 裏切り者の{n}が{c}側で現れた！'],
+  chi_sniper: ['🇰🇷 한국계 미국인 · 베테랑 / 명사수 · "The Last Shopkeeper"|베트남전 특수임무에서 살아 돌아와 총을 내려놓고, 가족과 브루클린의 작은 보데가를 꾸렸다. 그러나 범죄조직과 얽힌 사건으로 가족과 가게를 모두 잃었다.|목표: 가족의 원수에게 복수하고 킹스 스트리트를 장악한다.|갈등: 거리를 지키려다, 자신이 증오하던 지배자가 되어 간다.|패시브 Veteran\'s Discipline · 반동 -35% · 조준 흔들림 감소 · 동료 명중률 +10%|"I came home from a war, but lost everything on my own street."', '🇰🇷 Korean-American · Veteran / Marksman · "The Last Shopkeeper"|He came back alive from special missions in Vietnam, put the gun down and ran a small Brooklyn bodega with his family. Then a crime-linked attack took his family and burned the store.|Goal: avenge his family and take control of Kings St.|Conflict: to protect the street, he may become the kind of ruler he hated.|Passive Veteran\'s Discipline · Recoil -35% · steadier aim · crew accuracy +10%|"I came home from a war, but lost everything on my own street."', '🇰🇷 韓国系アメリカ人・ベテラン／狙撃手・"The Last Shopkeeper"|ベトナム戦争の特殊任務から生還し、銃を置いて家族とブルックリンの小さなボデガを営んでいた。だが犯罪組織絡みの事件で、家族も店も失った。|目標：家族の仇を討ち、キングス・ストリートを掌握する。|葛藤：街を守るつもりが、憎んでいた支配者になっていく。|パッシブ Veteran\'s Discipline・反動 -35%・照準のブレ軽減・仲間の命中率 +10%|"I came home from a war, but lost everything on my own street."'],
+  chi_tank: ['🇺🇸 브루클린 · 지구력 / 뮤지션|작곡·작사·랩·비트메이킹·프로듀싱까지 다 하는 언더그라운드 천재. 함께 음악을 만들던 절친은 유명해진 뒤 음모에 휘말려 살해당했다.|목표: 친구의 원수를 갚고, 둘의 앨범을 낸 뒤 조용히 사는 것.|갈등: 복수에 가까워질수록 꿈꾸던 평온한 삶에서 멀어진다.|패시브 Heavy Endurance · 체력 160(최고) · 크루 불만 상승 -30%|"I\'m not trying to be a gangster. I just want to finish the album... for him."', '🇺🇸 Brooklyn · Endurance / Musician|An underground genius who writes, raps, makes beats and produces. His best friend made it big, got caught up in a conspiracy, and was murdered.|Goal: avenge his friend, release their album, then live quietly.|Conflict: the closer he gets to revenge, the further he drifts from the quiet life he wanted.|Passive Heavy Endurance · HP 160 (highest) · crew discontent rises 30% slower|"I\'m not trying to be a gangster. I just want to finish the album... for him."', '🇺🇸 ブルックリン・持久力／ミュージシャン|作曲・作詞・ラップ・ビートメイク・プロデュースまでこなすアンダーグラウンドの天才。共に音楽を作った親友は有名になった後、陰謀に巻き込まれて殺された。|目標：親友の仇を討ち、二人のアルバムを出して静かに暮らすこと。|葛藤：復讐に近づくほど、夢見た穏やかな暮らしから遠ざかる。|パッシブ Heavy Endurance・体力 160（最高）・クルーの不満の上昇 -30%|"I\'m not trying to be a gangster. I just want to finish the album... for him."'],
+  chi_runner: ['🇯🇵 일본인 · 기동력 / 영입가|어릴 때 입양되어 자랐다. 친아버지는 국제 범죄조직의 두목이자 천재 해커였고, 범죄세계의 싸움 속에서 살해당했다.|목표: 직접 고른 동료들과 자신만의 크루를 세우고, 아버지의 그림자에서 벗어난다.|갈등: 아버지와 다른 사람이 되고 싶지만, 같은 길을 걷고 있을지도 모른다.|패시브 Underground Connections · 해커 영입 30% 할인 (250 → 175)|"My father was a hacker, a boss... and a criminal. I\'m not him. I\'m building my own crew."', '🇯🇵 Japanese · Mobility / Recruiter|Adopted as a child. His birth father led an international crime ring and was a brilliant hacker, until he was killed in a turf war of the underworld.|Goal: build a crew of his own choosing and step out of his father\'s shadow.|Conflict: he wants to be nothing like his father, but may be walking the same road.|Passive Underground Connections · Hackers cost 30% less (250 → 175)|"My father was a hacker, a boss... and a criminal. I\'m not him. I\'m building my own crew."', '🇯🇵 日本人・機動力／スカウト|幼い頃に養子に出された。実の父は国際犯罪組織のボスであり天才ハッカーだったが、裏社会の抗争の中で殺された。|目標：自分で選んだ仲間と自分だけのクルーを作り、父の影から抜け出す。|葛藤：父とは違う人間になりたいが、同じ道を歩いているのかもしれない。|パッシブ Underground Connections・ハッカーの勧誘 30%割引（250 → 175）|"My father was a hacker, a boss... and a criminal. I\'m not him. I\'m building my own crew."'],
+  nm_bigman: ['빅맨', 'Big Man', 'ビッグマン'],
+  nm_runner: ['러너', 'Runner', 'ランナー'],
+  nm_cho: ['미스터 조', 'Mr. Cho', 'ミスター・チョ'],
+  nm_ghost: ['고스트', 'Ghost', 'ゴースト'],
+  nm_landlord: ['더 랜드로드', 'The Landlord', 'ザ・ランドロード'],
+  qt_legs: ['OLD MAN, FAST LEGS', 'OLD MAN, FAST LEGS', 'OLD MAN, FAST LEGS'],
+  qt_demo: ['THE LOST DEMO', 'THE LOST DEMO', 'THE LOST DEMO'],
+  qt_ghost: ['GHOST IN THE NETWORK', 'GHOST IN THE NETWORK', 'GHOST IN THE NETWORK'],
+  qt_landlord: ['더 랜드로드', 'The Landlord', 'ザ・ランドロード'],
+  cb1: ['체력 좀 길러야겠어, 조. 한 바퀴 뛰고 와.', 'You need more stamina, Cho. Go run a lap.', 'スタミナが足りないな、チョ。一周走ってこい。'],
+  cb2: ['내가 너보다 빨라.', 'I\'m faster than you.', 'お前より速い。'],
+  cb3: ['진심이야? 대체 몇 살인데?', 'Seriously? How old are you anyway?', 'マジかよ？そもそも何歳なんだ？'],
+  cb4: ['네가 말이 많다는 걸 알 만큼.', 'Old enough to know you talk too much.', 'お前が喋りすぎだと分かる程度にはな。'],
+  legsWin: ['{s}초?! …알았어, 당신이 더 빨라. 아무한테도 말하지 마.', '{s} seconds?! …Fine. You ARE faster. Don\'t tell anyone.', '{s}秒!? …わかったよ、あんたの方が速い。誰にも言うなよ。'],
+  legsLose: ['하! 내 기록은 {r}초야, 영감님. 다시 붙어 볼래?', 'Ha! My record\'s {r} seconds, old man. Wanna go again?', 'はっ！俺の記録は{r}秒だぜ、じいさん。もう一回やるか？'],
+  legsAsk: ['또 뛰어 보게? 내 기록은 {r}초야.', 'Back for more? My record\'s {r} seconds.', 'また走るのか？俺の記録は{r}秒だ。'],
+  legsGo: ['기록 깨러 간다', 'Let\'s break it', '記録を破る'],
+  legsNext: ['다음 훈련', 'Next drill', '次の特訓'],
+  legsReward: ['🏃 최대 체력 +10 · 평판 +80', '🏃 Max HP +10 · Rep +80', '🏃 最大体力 +10・評判 +80'],
+  legsObj1: ['공원의 미스터 로니에게 가기', 'Go see Mr. Ronnie in the park', '公園のミスター・ロニーに会いに行く'],
+  legsObj2: ['로니의 달리기 기록 {r}초 깨기 · 로니에게 말 걸기', 'Beat Ronnie\'s {r}s run record · talk to Ronnie', 'ロニーのラン記録{r}秒を破る・ロニーに話しかける'],
+  intro_sniper: ['…로니가 또 날 찾는군. 공원에 가 봐야겠다.', '…Ronnie\'s looking for me again. Better check the park.', '…ロニーがまた俺を探してる。公園に行くか。'],
+  intro_tank: ['그 녀석이랑 만든 데모 테이프… 조각들이 동네 어딘가에 흩어졌대. 찾아야 해.', 'The demo tape we made… word is the pieces got scattered around the neighborhood. I have to find them.', 'あいつと作ったデモテープ…欠片が街のどこかに散らばったらしい。見つけないと。'],
+  intro_runner: ['공중전화 앞에서 누가 날 기다린대. 아버지를 알던 사람이라고.', 'Someone\'s waiting for me by a payphone. Says they knew my father.', '公衆電話の前で誰かが俺を待ってるらしい。父を知っていた人だって。'],
+  demoObj: ['데모 테이프 조각 찾기 {n}/3', 'Find the demo tape pieces {n}/3', 'デモテープの欠片を探す {n}/3'],
+  demoTape1: ['첫 번째 조각… 이 비트, 우리 지하실에서 밤새 만든 거야.', 'First piece… this beat, we made it all night in my basement.', '一つ目…このビート、地下室で一晩中作ったやつだ。'],
+  demoTape2: ['두 번째. 녀석 목소리다. 아직도 소름 돋네.', 'Second. That\'s his voice. Still gives me chills.', '二つ目。あいつの声だ。今でも鳥肌が立つ。'],
+  demoTape3: ['마지막 조각. 마지막 벌스에… 누군가의 이름이 있어.', 'Last piece. In the last verse… there\'s a name.', '最後の欠片。最後のヴァースに…誰かの名前がある。'],
+  demoDone: ['"더 랜드로드." 녀석은 이 이름을 랩으로 불렀고, 그래서 죽었어. 이 앨범은 꼭 끝낸다.', '"The Landlord." He rapped that name, and that\'s why he died. I\'m finishing this album.', '「ザ・ランドロード」。あいつはその名をラップにして、殺された。このアルバムは必ず完成させる。'],
+  gh1: ['그 눈… 네 아버지랑 똑같구나.', 'Those eyes… you\'ve got your father\'s eyes.', 'その目…親父さんにそっくりだ。'],
+  gh1a: ['우리 아버지를 알아요?', 'You knew my father?', '父を知ってるのか？'],
+  gh2: ['전화선 깔린 곳이면 다들 알았지. 사람을 보내 줄게. 해커들. 그 사람 아들한테는 싸게.', 'Everyone on the wires knew him. I can send you people — hackers. Cheap, for his son.', '回線の向こうじゃ皆が知ってた。人を回してやる。ハッカーだ。あの人の息子なら安くな。'],
+  gh2a: ['그럼 한 명 보내 줘요.', 'Then send me one.', 'じゃあ一人頼む。'],
+  gh3: ['크루 화면(C)을 열어 봐. 이제 해커는 너한테 싸게 와.', 'Open your crew book (C). Hackers come cheap for you now.', 'クルー画面（C）を開け。ハッカーはお前には安く来る。'],
+  gh4: ['…네 아버지의 마지막 동업자가 이 거리 절반을 갖고 있어. 다들 "더 랜드로드"라고 부르지.', '…Your father\'s last partner owns half this street. They call him The Landlord.', '…親父さんの最後の相棒が、この通りの半分を持ってる。皆「ザ・ランドロード」と呼ぶ。'],
+  gh5: ['아버지 얘기가 더 듣고 싶으면… 나중에. 지금은 네 크루를 키워.', 'If you want more about your father… later. Build your crew first.', '親父さんの話はまた今度だ。まずはクルーを育てろ。'],
+  ghostObj1: ['공중전화 앞의 고스트 만나기', 'Meet Ghost by the payphone', '公衆電話の前でゴーストに会う'],
+  ghostObj2: ['크루 화면(C)에서 해커 영입 · 평판 {c}', 'Recruit a hacker in the crew menu (C) · Rep {c}', 'クルー画面（C）でハッカーを勧誘・評判 {c}'],
+  rb1: ['해커들이 왜 너한테만 그렇게 싸게 붙어?', 'How come hackers work for you so cheap?', 'なんでハッカーはお前にだけそんなに安いんだ？'],
+  rb2: ['우리 아버지를 알았대.', 'They knew my father.', '親父を知ってたんだ。'],
+  rb3: ['너희 아버지를 아는 사람이 대체 몇 명이야?', 'How many people knew your father?', 'お前の親父を知ってるやつは何人いるんだ？'],
+  rb4: ['보아하니 나만 빼고 다.', 'Apparently, everybody except me.', 'どうやら、俺以外の全員だ。'],
+  bb1: ['이 거리를 다 먹으면 넌 뭐 할 건데?', 'What are you gonna do when we own this street?', 'この通りを手に入れたら、お前は何をする？'],
+  bb2: ['앨범 낼 거야.', 'Drop my album.', 'アルバムを出す。'],
+  bb3: ['그다음엔?', 'And then?', 'その後は？'],
+  bb4: ['조용한 집 하나 사서 음악 만들고. 그게 다야.', 'Buy a quiet house. Make music. That\'s it.', '静かな家を買って、音楽を作る。それだけだ。'],
+  bb5: ['그게 네 거창한 갱스터 꿈이냐?', 'That\'s your big gangster dream?', 'それがお前のでっかいギャングの夢か？'],
+  bb6: ['갱스터가 되고 싶었던 적은 없어.', 'Never wanted to be a gangster.', 'ギャングになりたかったことなんて一度もない。'],
+  llTitle: ['👑 더 랜드로드', '👑 THE LANDLORD', '👑 ザ・ランドロード'],
+  llReveal1: ['레드 후드, 아이언 재킷, 틸 킹스… 세 크루 모두 한 사람에게서 돈을 받고 있었다.', 'Red Hoods, Iron Jackets, Teal Kings… all three crews were on one man\'s payroll.', 'レッドフッズ、アイアンジャケッツ、ティールキングス…三つのクルーは皆、一人の男から金をもらっていた。'],
+  llReveal2: ['건물에 불을 질러 땅을 쓸어 담던 남자, 더 랜드로드. "KINGS ST." 간판이 걸린 창고에서 기다리고 있다.', 'The man who burned buildings to buy up the land — The Landlord. He\'s waiting at the warehouse under the "KINGS ST." sign.', 'ビルに火を放ち土地を買い漁った男、ザ・ランドロード。「KINGS ST.」の看板の倉庫で待っている。'],
+  llLine: ['너희가 태어나기 전부터 이 거리는 내 것이었다. 블록마다 값이 있지 — 그리고 나는 전부 값을 치렀어.', 'This street was mine before you were born. Every block has a price — and I paid for all of them.', 'お前らが生まれる前から、この通りは俺のものだ。どのブロックにも値段がある——俺は全部払ってきた。'],
+  llObj_find: ['"KINGS ST." 간판 창고 앞에서 더 랜드로드 찾기', 'Find The Landlord at the "KINGS ST." sign warehouse', '「KINGS ST.」看板の倉庫前でザ・ランドロードを探す'],
+  llObj_fight: ['더 랜드로드를 쓰러뜨려라', 'Take down The Landlord', 'ザ・ランドロードを倒せ'],
+  llNeedAll: ['남은 구역을 모두 차지하면 킹스 스트리트 통일', 'Take every remaining district to unite Kings St.', '残りの地区をすべて取ればキングス・ストリート統一'],
+  llEnd_sniper: ['…이걸로 끝이다. 가족들아, 이제 이 거리는 안전하다.', '…It\'s over. My family — this street is safe now.', '…これで終わりだ。家族よ、この通りはもう安全だ。'],
+  llEnd_tank: ['이건 너를 위한 마지막 벌스였어. 이제 앨범을 끝내러 가자.', 'That was the last verse, for you. Now let\'s go finish the album.', 'これはお前への最後のヴァースだ。さあ、アルバムを仕上げに行こう。'],
+  llEnd_runner: ['아버지, 당신의 원수는 끝났어요. 이제 이건 내 크루예요.', 'Father, your enemy is finished. This crew is mine now.', '父さん、あんたの仇は終わった。このクルーは俺のものだ。'],
+  continueBtn: ['▶ 이어하기', '▶ CONTINUE', '▶ つづきから'],
+  newGame: ['새 게임', 'New game', 'はじめから'],
+  newSure: ['한 번 더 누르면 저장이 지워져요', 'Press again to erase the save', 'もう一度押すとセーブが消えます'],
+  saveInfo: ['💾 {c} · 구역 {o}/9 · 평판 {r}', '💾 {c} · Districts {o}/9 · Rep {r}', '💾 {c}・地区 {o}/9・評判 {r}'],
+  loaded: ['💾 마지막 저장 지점에서 이어해요', '💾 Continuing from your last save', '💾 前回のセーブから再開します'],
   bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
   bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
   bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
@@ -1728,16 +1806,18 @@ const player = { pos: new THREE.Vector3(25, 0, 25), vel: new THREE.Vector3(), y:
 
 // ---------- playable characters ----------
 const CLASSES = {
-  runner: { get name() { return L('cls_runner'); }, icon: '🏃', hp: 80, speed: 1.25, dmg: 1, rate: 0.085, fov: 52, get desc() { return L('cls_runner_d'); } },
-  tank: { get name() { return L('cls_tank'); }, icon: '🛡️', hp: 160, speed: 0.85, dmg: 1, rate: 0.095, fov: 52, get desc() { return L('cls_tank_d'); } },
-  sniper: { get name() { return L('cls_sniper'); }, icon: '🎯', hp: 100, speed: 1, dmg: 1.45, rate: 0.16, fov: 28, get desc() { return L('cls_sniper_d'); } },
+  runner: { get name() { return L('cls_runner'); }, icon: '🏃', hp: 80, speed: 1.25, dmg: 1, rate: 0.085, fov: 52, get desc() { return L('cls_runner_d'); }, hackerDiscount: 0.3, img: 'founder-runner.webp' },
+  tank: { get name() { return L('cls_tank'); }, icon: '🛡️', hp: 160, speed: 0.85, dmg: 1, rate: 0.095, fov: 52, get desc() { return L('cls_tank_d'); }, moodMul: 0.7, img: 'founder-bigman.webp' },
+  sniper: { get name() { return L('cls_sniper'); }, icon: '🎯', hp: 100, speed: 1, dmg: 1.45, rate: 0.16, fov: 28, get desc() { return L('cls_sniper_d'); }, recoil: 0.65, steady: 0.75, allyAcc: 0.1, img: 'founder-cho.webp' },
 };
 let clsKey = 'runner';
 try { if (CLASSES[localStorage.getItem('bk-class')]) clsKey = localStorage.getItem('bk-class'); } catch {}
 let cls = CLASSES[clsKey];
 function renderChars() {
   document.getElementById('chars').innerHTML = Object.entries(CLASSES).map(([k, c]) =>
-    `<div class="ch${k === clsKey ? ' on' : ''}" data-ch="${k}"><div class="ic">${c.icon}</div><b>${c.name}</b><small>${c.desc}</small></div>`).join('');
+    `<div class="ch${k === clsKey ? ' on' : ''}" data-ch="${k}"><img src="${c.img}" alt=""><b>${c.name}</b><small>${c.desc}</small></div>`).join('');
+  const i = L('chi_' + clsKey).split('|');
+  document.getElementById('charInfo').innerHTML = `<div class="tag">${i[0]}</div><p>${i[1]}</p><p><b>${i[2]}</b></p><p class="cf">${i[3]}</p><p class="pv">${i[4]}</p><q>${i[5]}</q>`;
 }
 renderChars();
 document.getElementById('chars').addEventListener('click', e => {
@@ -1757,6 +1837,7 @@ function applyClass() {
   document.getElementById('hpl').textContent = cls.icon;
   document.getElementById('chars').classList.add('hidden');
   document.getElementById('stage').classList.add('hidden');
+  document.getElementById('charInfo').classList.add('hidden');
 }
 let yaw = Math.PI * 0.75, pitch = 0, recoil = 0;
 let ammo = 30, reserve = 150, fireT = 0, reloading = false, reloadT = 0, firing = false, aiming = false, kick = 0;
@@ -1832,14 +1913,17 @@ $('menu').addEventListener('click', () => {
   audio();
   if (state === 'dead') { location.reload(); return; }
   playBgm();
+  const fromMenu = state === 'menu', save = fromMenu ? hasSave() : null;
+  if (save && CLASSES[save.cls]) { clsKey = save.cls; cls = CLASSES[clsKey]; }
   if (state === 'menu') applyClass();
-  if (state === 'menu') showPrologue();
+  if (state === 'menu' && !save) showPrologue();
   if (state === 'menu') setTimeout(() => {
     msg(L('startMsg'), 2.5);
     feed(L('startTip'), '#fff');
     feed(L(TOUCH ? 'startTipTouch' : 'startTipKey'), myCrew.color);
   }, 5600);   // after the prologue
   state = 'play';
+  if (fromMenu) { if (save) loadGame(save); else personalSetup(true); updateSaveUi(); }
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
   if (TOUCH) {
     const fs = document.documentElement.requestFullscreen?.();
@@ -2293,7 +2377,7 @@ class Ally {
       if ((this.shootT -= dt) <= 0) {
         this.shootT = rand(...this.T.rate);
         const tip = this.tip.getWorldPosition(new THREE.Vector3());
-        const hit = Math.random() < clamp(this.T.acc - d / 220, 0.15, 0.7);
+        const hit = Math.random() < clamp(this.T.acc + (cls.allyAcc || 0) - d / 220, 0.15, 0.75);
         const to = ep.clone().setY(ep.y + 1.2);
         if (!hit) to.add(new THREE.Vector3(rand(-1.2, 1.2), rand(-0.5, 1.2), rand(-1.2, 1.2)));
         tracer(tip, to, 0xfff3b0);
@@ -2484,7 +2568,7 @@ class Boss extends Enemy {
   die(head, byUs = true) {
     super.die(head, byUs);
     bossDone[this.crew] = true;
-    rep += 300; score += 2000;
+    rep += 300; score += 2000; setTimeout(saveGame, 0);
     msg(L('crewDisband', { c: CREWS[this.crew].name }), 3);
     feed(L('bossBeat', { n: this.name }), '#d4af37');
     for (let k = 0; k < 4; k++) spawnPickup({ x: this.g.position.x + rand(-2, 2), z: this.g.position.z + rand(-2, 2) }, k % 2 ? 'hp' : 'ammo');
@@ -2546,7 +2630,8 @@ function checkBossTrigger() {
 }
 function checkVictory() {
   if (ownedCount() !== 9) return;
-  if (RIVALS.every(c => bossDone[c])) setTimeout(() => gameOver(true), 1800);
+  if (RIVALS.every(c => bossDone[c]) && Q.landlord.s === 'done') setTimeout(() => gameOver(true), 1800);
+  else if (RIVALS.every(c => bossDone[c])) return;
   else { if (!boss && !bossQueue.length) checkBossTrigger(); feed(L('allNineBoss'), '#d4af37'); }
 }
 function updateBoss(dt) {
@@ -2738,7 +2823,7 @@ document.getElementById('items').addEventListener('click', e => {
   if (!it || rep < it.cost || !it.ok()) return;
   rep -= it.cost; it.buy();
   beep(880, 0.08, 0.1, 'triangle'); feed(L('bought', { i: it.icon, c: it.cost }), '#3ddc84');
-  renderShop();
+  renderShop(); saveGame();
 });
 document.getElementById('prompt').addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useNPC(); }, { passive: false });
 const hackerUp = () => allies.some(a => a.key === 'hacker' && a.up);
@@ -2773,7 +2858,7 @@ function startWar(d, kind, crew) {
 function endWar(won) {
   const { d, kind, crew } = war;
   if (kind === 'attack' && won) {
-    d.owner = 'me'; captured++; wave = 1 + captured; rep += 100; moodAll(-15);
+    d.owner = 'me'; captured++; wave = 1 + captured; rep += 100; moodAll(-15); questCapture();
     msg(L('captured', { d: d.name }), 2.5); feed(L('captureRep'), myCrew.color);
     beep(660, 0.15, 0.1, 'triangle'); setTimeout(() => beep(990, 0.3, 0.1, 'triangle'), 150);
   } else if (kind === 'defend' && won) {
@@ -2783,7 +2868,7 @@ function endWar(won) {
     msg(L('lost', { d: d.name }), 2.5); feed(L('lostTo', { c: CREWS[crew].name }), CREWS[crew].css);
     clearEnemies();
   }
-  war = null; counterT = rand(70, 100);
+  war = null; counterT = rand(70, 100); setTimeout(saveGame, 0);
   checkBossTrigger();
   checkVictory();
 }
@@ -2948,7 +3033,8 @@ function gameOver(won = false) {
   document.exitPointerLock?.();
   $('sub').textContent = won ? L('won', { c: myCrew.name }) : L('died');
   const st = $('stat'); st.classList.remove('hidden');
-  st.innerHTML = L('endStat', { o: ownedCount(), k: kills, r: rep, s: score }) + (won ? `<div class="ending">${L('ending')}</div>` : '');
+  st.innerHTML = L('endStat', { o: ownedCount(), k: kills, r: rep, s: score }) + (won ? `<div class="ending"><b>${cls.name}:</b> ${L('llEnd_' + clsKey)}<br><br>${L('ending')}</div>` : '');
+  if (won) try { localStorage.removeItem(SAVE_KEY); } catch {}
   $('keys').classList.add('hidden'); $('go').textContent = L('restart');
   setTimeout(() => $('menu').classList.remove('hidden'), 900);
 }
@@ -2987,6 +3073,7 @@ function fire() {
   else {
     spread = (rev ? 0.003 : 0.006) + Math.min(sp, 10) * 0.003 + air;
     if (aiming) spread *= cls.fov < 40 ? 0.12 : 0.3;
+    spread *= cls.steady || 1;
   }
   const targets = enemyParts.concat(staticHit, qTargets), dealt = new Map();
   for (let k = 0; k < W().pellets; k++) {
@@ -3018,7 +3105,7 @@ function fire() {
     clearTimeout(fire.t); fire.t = setTimeout(() => hm.style.opacity = 0, 90);
     beep(headAny ? 1400 : 900, 0.05, 0.08);
   }
-  recoil += shot ? 0.05 : rev ? 0.035 : aiming ? 0.008 : 0.014;
+  recoil += (shot ? 0.05 : rev ? 0.035 : aiming ? 0.008 : 0.014) * (cls.recoil || 1);
   yaw += rand(-0.003, 0.003) * (shot ? 3 : 1);
   flash.visible = true; flash.material.rotation = Math.random() * 6; flash.scale.setScalar(shot ? rand(0.5, 0.7) : rev ? rand(0.35, 0.5) : rand(0.25, 0.4));
   flashLight.position.copy(camera.position); flashLight.intensity = shot ? 55 : 30;
@@ -3153,6 +3240,7 @@ function updateSubway(dt) {
       zone = 'subway'; curStation = down; setStationName(down.station);
       placePlayer(-25.4, SY, ZC, -Math.PI / 2);
       if (heat >= STAR_AT[0]) feed(L('subwayEscape'), '#9ae6ff');
+      saveGame();
       heat = 0; lastStars = 0; clearPolice();
       msg(down.station.toUpperCase(), 2);
       feed(L('mapTip'), '#cfd2d6');
@@ -3180,8 +3268,8 @@ function renderCrew() {
   $('cards').innerHTML = Object.entries(ALLY_TYPES).map(([k, T]) => {
     const a = allies.find(x => x.key === k);
     const btn = a ? `<div class="btn off">${a.up ? L('withYou') : L('healing', { s: Math.ceil(a.downT) })}</div>`
-      : rep >= T.cost ? `<div class="btn" data-recruit="${k}">${L('recruit', { c: T.cost })}</div>`
-      : `<div class="btn off">${L('needRep', { c: T.cost })}</div>`;
+      : rep >= ALLY_COST(k) ? `<div class="btn" data-recruit="${k}">${L('recruit', { c: costLabel(k) })}</div>`
+      : `<div class="btn off">${L('needRep', { c: costLabel(k) })}</div>`;
     const mood = a ? `<div style="margin-top:6px;font-size:12px;opacity:.8">${L('mood')} ${Math.round(a.mood)}%</div><div class="mood"><i style="width:${a.mood}%"></i></div>` : '';
     return `<div class="card"><b>${T.name}</b>${T.desc}<br><span style="opacity:.6">${L('hpLabel', { h: T.hp })}</span>${mood}${btn}</div>`;
   }).join('');
@@ -3211,8 +3299,8 @@ $('swatches').addEventListener('click', e => {
 });
 $('cards').addEventListener('click', e => {
   const k = e.target.dataset?.recruit; if (!k || allies.some(a => a.key === k)) return;
-  const T = ALLY_TYPES[k]; if (rep < T.cost) return;
-  rep -= T.cost; allies.push(new Ally(k));
+  const T = ALLY_TYPES[k]; if (rep < ALLY_COST(k)) return;
+  rep -= ALLY_COST(k); allies.push(new Ally(k)); questRecruit(k); saveGame();
   feed(L('recruited', { n: T.name }), myCrew.color); beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(880, 0.15, 0.1, 'triangle'), 120);
   renderCrew();
 });
@@ -3241,9 +3329,9 @@ const RUN_FLAGS = [[-75, 25], [-75, -75], [25, -75], [25, -25], [-25, 25]];
 const qBosses = {}, qTargets = [];
 const near = (o, r) => Math.hypot(o.x - player.pos.x, o.z - player.pos.z) < r;
 const homeBodega = () => DISTRICTS[4].bodega;
-const questNew = k => { feed(L('qNew', { q: L('qt_' + k) }), '#ffd23f'); beep(660, 0.08, 0.08, 'triangle'); };
+const questNew = k => { feed(L('qNew', { q: L('qt_' + k) }), '#ffd23f'); beep(660, 0.08, 0.08, 'triangle'); saveGame(); };
 const questDone = k => {
-  msg(L('qDone', { q: L('qt_' + k) }), 2.6);
+  msg(L('qDone', { q: L('qt_' + k) }), 2.6); saveGame();
   beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(659, 0.15, 0.1, 'triangle'), 150); setTimeout(() => beep(1047, 0.4, 0.1, 'triangle'), 300);
 };
 
@@ -3297,6 +3385,13 @@ class BlockBoss extends Enemy {
     this.g.scale.setScalar(1.2);
     this.maxHp = this.hp = o.hp; this.speed = 3.6; this.pref = 14;
     this.dash = !!o.dash; this.mode = 'normal'; this.chargeT = rand(5, 7); this.windT = 0; this.dashT = 0; this.dir = new THREE.Vector2();
+    if (o.suit) {
+      this.g.scale.setScalar(1.5); this.hood.color.setHex(0xefe9dc);
+      const chain = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 6, 18), std(0xd4af37, { metalness: 0.9, roughness: 0.3 })); chain.position.set(0, 1.4, 0.17); this.g.add(chain);
+      const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.16, 12), std(0xefe9dc)); hat.position.set(0, 2.02, 0); this.g.add(hat);
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.02, 16), std(0xefe9dc)); brim.position.set(0, 1.95, 0); this.g.add(brim);
+    }
+    this.summons = o.summon ? 2 : 0;
     if (o.scarf) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.14, 0.38), std(0xff7ad9)); m.position.set(0, 1.55, 0); this.g.add(m); }
     if (o.hammer) {
       const h = new THREE.Group(); h.position.set(-0.42, 1.0, 0.25); h.rotation.x = -0.6; this.g.add(h);
@@ -3310,6 +3405,11 @@ class BlockBoss extends Enemy {
     if (head) dmg = Math.min(dmg, 110);
     super.damage(dmg, head, byUs);
     if (!this.dead && this.onHurt) this.onHurt();
+    if (!this.dead && this.summons > 0 && this.hp / this.maxHp < [0.33, 0.66][this.summons - 1]) {
+      this.summons--; msg(L('bossCall'), 1.6);
+      const p = this.g.position;
+      for (const c of ['red', 'iron', 'teal']) spawnMinions(c, p.x + rand(-8, 8), Math.max(SHORE + 4, p.z + rand(4, 10)), 1, true);
+    }
   }
   die(head, byUs = true) {
     super.die(head, byUs);
@@ -3372,6 +3472,7 @@ function questBossDown(key) {
     setTimeout(() => { talk(L('nm_note'), L('q4Note')); Q.milo.s = 'find'; questNew('milo'); }, 1800);
   }
   if (key === 'milo') Q.milo.s = 'hatch';
+  if (key === 'landlord') landlordDown();
 }
 
 // ---- quest props: "!" over quest givers, a yellow beam on the objective, flags, bottles, the warehouse ----
@@ -3432,6 +3533,7 @@ const GIVERS = [
   { n: () => npcAt(RONNIE), on: () => ['offer', 'ready'].includes(Q.coach.s) },
   { n: () => npcAt(homeBodega()), on: () => Q.bike.s === 'offer' },
   { n: () => louNPC && npcAt(LOU), on: () => ['offer', 'report'].includes(Q.lou.s) },
+  { n: () => ghostNPC && npcAt(GHOST), on: () => Q.ghost.s === 'active' },
 ];
 for (const gv of GIVERS) { gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false; scene.add(gv.sp); }
 
@@ -3468,6 +3570,12 @@ function michelleFlee(b) {
 // 2. Coach's Drills
 function coachTalk() {
   const q = Q.coach;
+  if (clsKey === 'sniper' && q.s === 'offer') return choBanter();
+  if (clsKey === 'sniper' && Q.legs.s === 'race' && q.step >= 1 && (q.s === 'ready' || q.s === 'done')) return ask(L('nm_ronnie'), L('legsAsk', { r: RONNIE_RECORD }), [
+    { label: L('legsGo'), go: legsRematch },
+    ...(q.s === 'ready' ? [{ label: L('legsNext'), go: () => ask(L('nm_ronnie'), L('q2Stage' + q.step), [{ label: L('startIt'), go: coachStart }, { label: L('later'), go: () => {} }]) }] : []),
+    { label: L('later'), go: () => {} },
+  ]);
   if (q.s === 'offer') return ask(L('nm_ronnie'), L('q2Ask'), [
     { label: L('accept'), go: () => { q.s = 'ready'; questNew('coach'); coachTalk(); } },
     { label: L('later'), go: () => {} },
@@ -3485,12 +3593,19 @@ function coachStart() {
 }
 function coachEnd(ok, why) {
   const q = Q.coach;
+  const runTime = q.s === 'run' ? 70 - q.timer : null;
   qFlag.visible = false; clearBottles();
+  if (q.rematch) {   // Mr. Cho racing Ronnie's record again: no drill credit, just the record
+    q.rematch = false; q.s = q.step >= 3 ? 'done' : 'ready';
+    if (!ok) talk(L('nm_ronnie'), why || L('q2Fail'));
+    legsResult(ok ? runTime : null); return;
+  }
   if (!ok) { q.s = 'ready'; talk(L('nm_ronnie'), why || L('q2Fail')); beep(160, 0.3, 0.1, 'sawtooth'); return; }
   q.step++; player.maxHp += 20; player.hp = player.maxHp;
   msg(L('q2Pass'), 2); talk(L('nm_ronnie'), q.step === 3 ? L('q2Final') : L('q2Pass'));
   if (q.step === 3) { q.s = 'done'; rep += 100; questDone('coach'); }
   else { q.s = 'ready'; beep(880, 0.12, 0.1, 'triangle'); }
+  if (runTime !== null) legsResult(runTime);
 }
 function questKill(e) {
   if (Q.coach.s === 'fight' && e.crew !== 'police') Q.coach.k++;
@@ -3540,7 +3655,7 @@ function louTwist() {
 }
 
 // what to show in the HUD: the most urgent running quest
-function questObjective() {
+function questObjectiveBase() {
   const P1 = Q.pizza, C = Q.coach, B = Q.bike, LQ = Q.lou, M = Q.milo, bp = k => qBosses[k] && qBosses[k].g.position;
   if (P1.s === 'raid') return { k: 'pizza', text: L('q1Obj_raid'), at: bp('michelle') || PIZZA_SHOP };
   if (C.s === 'run') return { k: 'coach', text: L('q2Obj_run', { i: C.i + 1, s: Math.ceil(C.timer) }), at: qFlag.position };
@@ -3616,6 +3731,9 @@ function updateQuests(dt) {
     rep += 250; armorMax = 100; player.armor = 100; feed(L('q5Reward'), '#ffd23f'); questDone('milo');
   }
 
+  updatePersonal(dt);
+  if (state === 'play' && (saveT += dt) > 30) saveGame();
+
   // crew gets bored (and grumpy) when nothing happens for a while
   if (war || boss) boredT = 0;
   else if (allies.length && zone === 'street' && (boredT += dt) > 120) { boredT = 100; moodAll(3); }
@@ -3657,8 +3775,220 @@ function drawQuestMarks(mx, mz) {
 }
 function renderQuestLog() {
   const st = k => { const s = Q[k].s; return s === 'offer' ? 'q_avail' : s === 'locked' ? 'q_locked' : s === 'done' ? 'q_done' : s === 'declined' ? 'q_declined' : 'q_active'; };
-  $('qlog').innerHTML = `<b>📜 ${L('qLog')}</b>` + QKEYS.map(k => `<div><span>${L('qt_' + k)}</span><span>${L(st(k))}</span></div>`).join('');
+  $('qlog').innerHTML = `<b>📜 ${L('qLog')}</b>` + questKeys().map(k => `<div><span>${L('qt_' + k)}</span><span>${L(st(k))}</span></div>`).join('');
 }
+
+// ---------- founders: personal quests (CHARACTERS.md) and the final boss ----------
+Object.assign(Q, {
+  legs: { s: 'locked' },                 // Mr. Cho: OLD MAN, FAST LEGS
+  demo: { s: 'locked', got: [] },        // Big Man: THE LOST DEMO
+  ghost: { s: 'locked' },                // Runner: GHOST IN THE NETWORK
+  landlord: { s: 'locked' },             // everyone: The Landlord
+});
+const PERSONAL = { sniper: 'legs', tank: 'demo', runner: 'ghost' };
+const RONNIE_RECORD = 50;   // seconds for the 5-flag course
+const TAPES = [[-119, 31], [131, 131], [-19, -119]];   // sidewalk corners in Copper Heights, Marlow Flats, Saltworks
+const GHOST = { x: -40, z: -19.8 }, LANDLORD = { x: 50, z: -226 };
+const questKeys = () => [...QKEYS, PERSONAL[clsKey], ...(Q.landlord.s !== 'locked' ? ['landlord'] : [])];
+const founderName = () => cls.name;
+// a few lines in a row, like a crew radio chat
+function talkSeq(lines, gap = 3200) {
+  lines.forEach(([who, line], i) => setTimeout(() => { if (state !== 'dead') talk(L(who), L(line)); }, i * gap));
+}
+const ALLY_COST = k => {
+  const T = ALLY_TYPES[k], off = k === 'hacker' ? (cls.hackerDiscount || 0) : 0;
+  return Math.max(0, Math.round(T.cost * (1 - off)));
+};
+const costLabel = k => ALLY_COST(k) < ALLY_TYPES[k].cost ? `${ALLY_COST(k)} <s style="opacity:.55">${ALLY_TYPES[k].cost}</s>` : ALLY_COST(k);
+
+// Mr. Cho vs Mr. Ronnie
+function choBanter() {
+  ask(L('nm_ronnie'), L('cb1'), [{ label: L('cb2'), go: () => ask(L('nm_ronnie'), L('cb3'), [{ label: L('cb4'), go: () => {
+    Q.coach.s = 'ready'; questNew('coach');
+    if (Q.legs.s === 'active') Q.legs.s = 'race';
+    coachTalk();
+  } }]) }]);
+}
+function legsRematch() {
+  const C = Q.coach;
+  C.rematch = true; C.s = 'run'; C.i = 0; C.timer = 70;
+  qFlag.position.set(RUN_FLAGS[0][0], 0, RUN_FLAGS[0][1]); qFlag.visible = true;
+  msg(L('startIt'), 1.2); beep(880, 0.1, 0.1, 'square');
+}
+function legsResult(time) {
+  if (clsKey !== 'sniper' || Q.legs.s !== 'race') return;
+  setTimeout(() => {
+    if (time && time < RONNIE_RECORD) {
+      Q.legs.s = 'done'; player.maxHp += 10; player.hp = Math.min(player.maxHp, player.hp + 10); rep += 80;
+      talk(L('nm_ronnie'), L('legsWin', { s: time.toFixed(1) })); feed(L('legsReward'), '#ffd23f'); questDone('legs');
+    } else talk(L('nm_ronnie'), L('legsLose', { r: RONNIE_RECORD }));
+  }, 2600);
+}
+
+// Big Man: three pieces of the demo tape
+const tapeMeshes = [];
+function placeTapes() {
+  for (const m of tapeMeshes) scene.remove(m);
+  tapeMeshes.length = 0;
+  TAPES.forEach(([x, z], i) => {
+    if (Q.demo.got.includes(i)) return;
+    const g = new THREE.Group(); g.position.set(x, 1.0, z); g.userData.i = i;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.05), std(0x151515)); g.add(body);
+    const label = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.09, 0.052), new THREE.MeshStandardMaterial({ color: 0xf2e6c8, emissive: 0xffd23f, emissiveIntensity: 0.35 })); label.position.y = 0.04; g.add(label);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffd23f, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.6 })); glow.scale.setScalar(1.2); g.add(glow);
+    scene.add(g); tapeMeshes.push(g);
+  });
+}
+// Runner: an old hacker waiting by a payphone
+let ghostNPC = null;
+function spawnGhost() {
+  if (ghostNPC) return;
+  prop(box1, 0x2a6fb0, GHOST.x + 1.3, 1.25, GHOST.z + 0.3, 0.7, 2.0, 0.5);
+  prop(box1, 0x111111, GHOST.x + 1.3, 1.5, GHOST.z + 0.56, 0.3, 0.4, 0.05);
+  ghostNPC = addNPC(GHOST.x, GHOST.z, { hood: 0x2b2b2b, cap: 0x555555, jeans: 0x111111 },
+    () => ['active', 'recruit'].includes(Q.ghost.s) ? L('qTalk') : L('qTalkTo', { n: L('nm_ghost') }), () => ghostTalk());
+}
+function ghostTalk() {
+  const q = Q.ghost;
+  if (q.s === 'active') return ask(L('nm_ghost'), L('gh1'), [{ label: L('gh1a'), go: () => ask(L('nm_ghost'), L('gh2'), [{ label: L('gh2a'), go: () => {
+    q.s = 'recruit'; talk(L('nm_ghost'), L('gh3'));
+    if (allies.some(a => a.key === 'hacker')) questRecruit('hacker');
+  } }]) }]);
+  talk(L('nm_ghost'), L(q.s === 'recruit' ? 'gh3' : 'gh5'));
+}
+function questRecruit(k) {
+  if (k !== 'hacker' || Q.ghost.s !== 'recruit') return;
+  Q.ghost.s = 'done'; rep += 100; questDone('ghost');
+  talkSeq([['nm_bigman', 'rb1'], ['nm_runner', 'rb2'], ['nm_cho', 'rb3'], ['nm_runner', 'rb4'], ['nm_ghost', 'gh4']]);
+}
+// Big Man and Ronnie, after the first district falls
+function questCapture() {
+  if (clsKey === 'tank' && captured === 1) talkSeq([['nm_ronnie', 'bb1'], ['nm_bigman', 'bb2'], ['nm_ronnie', 'bb3'], ['nm_bigman', 'bb4'], ['nm_ronnie', 'bb5'], ['nm_bigman', 'bb6']], 2800);
+}
+// start your founder's own story (new game) or put its props back (loaded game)
+function personalSetup(fresh) {
+  const k = PERSONAL[clsKey];
+  if (fresh && Q[k].s === 'locked') { Q[k].s = 'active'; setTimeout(() => { questNew(k); talk(founderName(), L('intro_' + clsKey)); }, 7000); }
+  if (k === 'demo' && Q.demo.s === 'active') placeTapes();
+  if (k === 'ghost' && Q.ghost.s !== 'locked') spawnGhost();
+}
+function updatePersonal(dt) {
+  if (Q.demo.s === 'active' && zone === 'street') for (const g of [...tapeMeshes]) {
+    g.rotation.y += dt * 2; g.position.y = 1.0 + Math.sin(t * 3 + g.userData.i) * 0.08;
+    if (near(g.position, 2)) {
+      Q.demo.got.push(g.userData.i); scene.remove(g); tapeMeshes.splice(tapeMeshes.indexOf(g), 1);
+      beep(1200, 0.08, 0.08, 'triangle');
+      talk(L('nm_bigman'), L('demoTape' + Q.demo.got.length));
+      if (Q.demo.got.length >= TAPES.length) {
+        Q.demo.s = 'done'; rep += 150; for (const a of allies) a.mood = 0;
+        questDone('demo'); setTimeout(() => talk(L('nm_bigman'), L('demoDone')), 3800);
+      }
+      saveGame();
+    }
+  }
+  // The Landlord: once the three bridge bosses are gone, the man who paid them steps out
+  const L1 = Q.landlord;
+  if (L1.s === 'locked' && RIVALS.every(c => bossDone[c])) {
+    L1.s = 'find'; msg(L('llTitle'), 3); questNew('landlord');
+    talkSeq([['nm_note', 'llReveal1'], ['nm_note', 'llReveal2']], 3600);
+    saveGame();
+  }
+  if (L1.s === 'find' && zone === 'street' && !busy && near(LANDLORD, 90)) {
+    L1.s = 'fight';
+    const b = spawnBlock('landlord', LANDLORD.x, LANDLORD.z, 'iron', { name: 'nm_landlord', hp: 2500, leash: 34, dash: true, suit: true, summon: true });
+    spawnMinions('red', LANDLORD.x - 6, LANDLORD.z + 4, 1); spawnMinions('teal', LANDLORD.x + 6, LANDLORD.z + 4, 1);
+    talk(L('nm_landlord'), L('llLine'));
+    void b;
+  }
+  if (L1.s === 'fight' && !qBosses.landlord && zone === 'street' && !busy && near(LANDLORD, 90)) spawnBlock('landlord', LANDLORD.x, LANDLORD.z, 'iron', { name: 'nm_landlord', hp: 2500, leash: 34, dash: true, suit: true, summon: true });
+}
+function landlordDown() {
+  Q.landlord.s = 'done'; rep += 500; score += 5000;
+  questDone('landlord');
+  setTimeout(() => talk(founderName(), L('llEnd_' + clsKey)), 2000);
+  if (ownedCount() !== 9) setTimeout(() => feed(L('llNeedAll'), '#d4af37'), 2600);
+  setTimeout(checkVictory, 3000);
+  saveGame();
+}
+function personalObjective() {
+  const k = PERSONAL[clsKey], s = Q[k] && Q[k].s;
+  if (Q.landlord.s === 'find') return { k: 'landlord', text: L('llObj_find'), at: LANDLORD };
+  if (Q.landlord.s === 'fight') return { k: 'landlord', text: L('llObj_fight'), at: (qBosses.landlord && qBosses.landlord.g.position) || LANDLORD };
+  if (k === 'legs' && s === 'active') return { k, text: L('legsObj1'), at: RONNIE };
+  if (k === 'legs' && s === 'race' && Q.coach.s !== 'run' && Q.coach.step >= 1) return { k, text: L('legsObj2', { r: RONNIE_RECORD }), at: RONNIE };
+  if (k === 'demo' && s === 'active') {
+    const left = tapeMeshes.map(g => g.position).sort((a, b) => Math.hypot(a.x - player.pos.x, a.z - player.pos.z) - Math.hypot(b.x - player.pos.x, b.z - player.pos.z));
+    return { k, text: L('demoObj', { n: Q.demo.got.length }), at: left[0] };
+  }
+  if (k === 'ghost' && s === 'active') return { k, text: L('ghostObj1'), at: GHOST };
+  if (k === 'ghost' && s === 'recruit') return { k, text: L('ghostObj2', { c: ALLY_COST('hacker') }) };
+  return null;
+}
+function questObjective() {
+  const ll = Q.landlord.s === 'find' || Q.landlord.s === 'fight';
+  return (ll && personalObjective()) || questObjectiveBase() || personalObjective();
+}
+
+// ---------- save / continue (this browser; moves to the Supabase account later) ----------
+const SAVE_KEY = 'mw-save';
+function hasSave() { try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return d && d.v === 1 ? d : null; } catch { return null; } }
+let saveT = 0;
+function saveGame() {
+  if (!['play', 'shop', 'dialog', 'crew', 'metro'].includes(state)) return;
+  const q = {};
+  for (const k in Q) { const o = {}; for (const [f, v] of Object.entries(Q[k])) if (v === null || typeof v !== 'object' || Array.isArray(v)) o[f] = v; q[k] = o; }
+  if (['run', 'shoot', 'fight'].includes(q.coach.s)) q.coach.s = q.coach.step >= 3 ? 'done' : 'ready';
+  q.coach.rematch = false;
+  if (q.pizza.s === 'raid') q.pizza.s = 'declined';
+  q.pizza.declineAgo = t - Q.pizza.declineT;
+  if (q.bike.s === 'ride') q.bike.s = 'find';
+  q.bike.guarded = false;
+  const data = {
+    v: 1, cls: clsKey, rep, score, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
+    owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
+    armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
+  };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch {}
+  saveT = 0;
+}
+function loadGame(d) {
+  rep = d.rep; score = d.score; kills = d.kills; captured = d.captured; wave = 1 + captured; tod = d.tod;
+  d.owners.forEach((o, i) => { DISTRICTS[i].owner = o; });
+  Object.assign(bossDone, d.bossDone); Object.assign(owned, d.owned); Object.assign(mags, d.mags);
+  reserve = d.reserve; armorMax = d.armorMax; BIKE_SPEED_MUL = d.bikeMul;
+  player.maxHp = d.maxHp; player.hp = Math.min(d.maxHp, Math.max(d.hp, d.maxHp * 0.5)); player.armor = d.armor;
+  for (const k in d.q) if (Q[k]) Object.assign(Q[k], d.q[k]);
+  Q.pizza.declineT = t - (d.q.pizza.declineAgo || 0);
+  if (Q.bike.s === 'find') { Q.bike.b = makeBike(STOLEN.x, STOLEN.z, 0, 0xff2d2d); Q.bike.b.stolen = true; }
+  if (['offer', 'look', 'report'].includes(Q.lou.s)) spawnLou();
+  for (const a of d.allies) { const al = new Ally(a.key); al.mood = a.mood; allies.push(al); }
+  defectors.push(...(d.defectors || []));
+  ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
+  personalSetup(false);
+  checkBossTrigger();
+  applyTime();
+  feed(L('loaded'), '#9ae6ff');
+}
+function updateSaveUi() {
+  const d = hasSave();
+  $('newGame').classList.toggle('hidden', !d || state !== 'menu');
+  $('saveInfo').classList.toggle('hidden', !d || state !== 'menu');
+  if (d && CLASSES[d.cls]) $('saveInfo').textContent = L('saveInfo', { c: CLASSES[d.cls].name, o: d.owners.filter(o => o === 'me').length, r: d.rep });
+  if (state !== 'menu') return;
+  // continuing plays the saved founder: show who that is, and pick a new one only after "New game"
+  $('chars').classList.toggle('hidden', !!d); $('stage').classList.toggle('hidden', !!d);
+  if (d && CLASSES[d.cls] && clsKey !== d.cls) { clsKey = d.cls; cls = CLASSES[clsKey]; renderChars(); }
+}
+$('newGame').addEventListener('click', e => {
+  e.stopPropagation();
+  const b = $('newGame');
+  if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = L('newSure'); return; }
+  try { localStorage.removeItem(SAVE_KEY); } catch {}
+  delete b.dataset.sure; b.textContent = L('newGame');
+  applyLang(); updateSaveUi(); stage.fit();
+});
+addEventListener('pagehide', () => saveGame());
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
 
 // ---------- crew discontent: fills up when things go badly, at 100% they defect to a rival ----------
 const ALLY_ICON = { artist: '🎨', boxer: '🥊', hacker: '💻' };
@@ -3666,6 +3996,7 @@ const defectors = [];
 let boredT = 0, moodHtml = '';
 function addMood(a, d) {
   if (!allies.includes(a)) return;
+  if (d > 0) d *= cls.moodMul || 1;
   a.mood = clamp(a.mood + d, 0, 100);
   if (a.mood >= 50 && a.warned < 1) { a.warned = 1; feed(L('moodWarn50', { n: a.T.name }), '#ffb35a'); }
   if (a.mood >= 80 && a.warned < 2) { a.warned = 2; feed(L('moodWarn80', { n: a.T.name }), '#ff5a4a'); beep(330, 0.2, 0.08, 'sawtooth'); }
@@ -3845,7 +4176,7 @@ function applyLang() {
   // "your crew VS the three rival crews" strip on the title
   $('titleVs').innerHTML = `<span style="background:${myCrew.color}">${myCrew.name}</span><b>VS</b>` +
     ['red', 'iron', 'teal'].map(c => `<span style="background:${CREWS[c].css}">${CREWS[c].name}</span>`).join('');
-  if (state === 'menu') { $('sub').textContent = L('subtitle'); $('go').textContent = L(TOUCH ? 'tapStart' : 'clickStart'); }
+  if (state === 'menu') { $('sub').textContent = L('subtitle'); $('go').textContent = hasSave() ? L('continueBtn') : L(TOUCH ? 'tapStart' : 'clickStart'); updateSaveUi(); }
   else if (state === 'pause') { $('sub').textContent = L('paused'); $('go').textContent = L(TOUCH ? 'resumeTap' : 'resumeClick'); }
   // the default crew name follows the language until you pick your own
   if (STR.crew_me.includes(myCrew.name)) myCrew.name = L('crew_me');
@@ -3878,8 +4209,8 @@ const stage = (() => {
   const floor = new THREE.Mesh(new THREE.CircleGeometry(3.6, 40).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x1a1612, transparent: true, opacity: 0.55 }));
   sc.add(floor);
   const LOOK = {
-    runner: { hood: 0xff7a1a, cap: 0xffffff, jeans: 0x3a3f47 },
-    tank: { hood: 0x4b5a3a, cap: 0x2f3a28, jeans: 0x2b2b2b },
+    runner: { hood: 0x1d1d22, cap: 0x2a2a2a, jeans: 0x3a3f47 },
+    tank: { hood: 0x2b2b2b, cap: 0x0d0d0d, jeans: 0x262626 },
     sniper: { hood: 0x1c1f26, cap: 0x111111, jeans: 0x1c1f26 },
   };
   const X = { runner: -1.6, tank: 0, sniper: 1.6 };
@@ -3892,13 +4223,14 @@ const stage = (() => {
     buildHuman(o, 0, 0, LOOK[k], false);
     sc.add(o.g); o.g.position.set(X[k], 0, 0);
     if (k === 'runner') {   // headband and sneakers
-      extra(o, new THREE.BoxGeometry(0.32, 0.06, 0.32), 0xe63b2e, 0, 1.8, 0);
+      extra(o, new THREE.BoxGeometry(0.32, 0.06, 0.32), 0x7b3fe4, 0, 1.8, 0);
       for (const s of [-1, 1]) extra(o, new THREE.BoxGeometry(0.24, 0.1, 0.32), 0xffffff, s * 0.14, 0.05, 0.03);
     }
     if (k === 'tank') {     // bulkier, plate vest and helmet
       o.g.scale.set(1.18, 1.06, 1.18);
-      extra(o, new THREE.BoxGeometry(0.62, 0.55, 0.38), 0x5d6168, 0, 1.24, 0, { metalness: 0.4, roughness: 0.6 });
-      extra(o, new THREE.BoxGeometry(0.38, 0.16, 0.4), 0x3c4433, 0, 1.95, 0);
+      for (const s of [-1, 1]) extra(o, new THREE.BoxGeometry(0.07, 0.15, 0.15), 0x111111, s * 0.18, 1.74, 0);   // headphones
+      extra(o, new THREE.BoxGeometry(0.4, 0.04, 0.06), 0x111111, 0, 2.0, 0);
+      extra(o, new THREE.TorusGeometry(0.17, 0.03, 6, 18), 0xd4af37, 0, 1.42, 0.17, { metalness: 0.9, roughness: 0.3 });   // chain
     }
     if (k === 'sniper') {   // long rifle with a scope
       extra(o, new THREE.BoxGeometry(0.06, 0.09, 0.75), 0x151515, 0.2, 1.46, 0.95, { metalness: 0.5 });
@@ -3979,7 +4311,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
