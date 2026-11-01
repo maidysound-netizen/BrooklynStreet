@@ -766,6 +766,56 @@ const STR = {
   ken_hook: ['저기요! 혹시… 모퉁이 가게 얘기 들었어요?', 'Hey! Have you… heard about the corner store?', 'あの！もしかして…角の店の話、聞きました？'],
   waitNight: ['🌙 불이 켜질 때까지 기다리기', '🌙 Wait for the light to come on', '🌙 明かりがつくまで待つ'],
   hoursLater: ['몇 시간 뒤…', 'A few hours later…', '数時間後…'],
+  nm_sato: ['사토 할머니', 'Mrs. Sato', '佐藤さん'],
+  nm_dez: ['데즈', 'Dez', 'デズ'],
+  nm_weiss: ['바이스 할아버지', 'Mr. Weiss', 'ワイスさん'],
+  nm_arcadekid: ['아케이드의 청년', 'The Kid at the Arcade', 'ゲームセンターの青年'],
+  sato_hook: ['조 씨? 어머, 오랜만이에요… 잠깐만요. 요즘 이 동네에 이상한 청년이 하나 있어요.', 'Mr. Cho? Oh, it\'s been so long… Wait. There\'s a strange young man around here lately.', 'チョさん？まあ、お久しぶり…ちょっと待って。最近この辺に変わった青年がいるのよ。'],
+  sato_1: ['그 일본 청년 말이에요. 이름은 아무도 몰라요. 그런데 아버지가 누구였는지는… 아는 사람들이 있더라고요.', 'That Japanese boy. Nobody knows his name. But who his father was… some people know.', 'あの日本人の青年ね。名前は誰も知らないの。でも父親が誰だったかは…知ってる人たちがいるのよ。'],
+  sato_r: ['가게 다시 안 여세요? …아, 미안해요. 괜한 걸 물었네.', 'Won\'t you open the store again? …Oh, I\'m sorry. I shouldn\'t have asked.', 'お店、もう開けないの？…ああ、ごめんなさい。余計なことを聞いたわね。'],
+  sato_d: ['성이 두 개요? …그 아이, 자기 이름을 누가 지어 줬는지도 모르겠네요. 우리 켄지 이름은 내가 지었는데.', 'Two surnames? …That child may not even know who gave him his name. I named our Kenji myself.', '名字が二つ？…あの子、自分の名前を誰がつけたのかも知らないのかもしれないわね。うちのケンジの名前は私がつけたのよ。'],
+  dez_1: ['그 형? 돈은 칼같이 줘. 근데 같이 밥 먹자고 하면… 사라져.', 'Him? Pays us on the dot. But ask him to eat with us and… he\'s gone.', 'あの兄さん？金はきっちり払う。でも一緒に飯食おうって言うと…消える。'],
+  dez_r: ['틸 킹스 그만둔 거요? 그 형이 나가라고 했어요. 돈까지 쥐여 주면서.', 'Why I quit the Teal Kings? He told me to go. Put money in my hand, too.', 'ティールキングスを辞めた理由？あの兄さんが出てけって言ったんだ。金まで握らせて。'],
+  dez_d: ['내 생일이라고 하니까 돈 봉투를 주더라. 웃기지? 그냥 축하한다고 하면 되는데.', 'When I told him it was my birthday, he handed me an envelope of cash. Funny, right? He could\'ve just said happy birthday.', '誕生日だって言ったら、金の入った封筒をくれたんだ。笑えるだろ？おめでとうって言えばいいだけなのに。'],
+  weiss_1: ['그 애 아버지? 죽었다고들 하지. 그런데 아직 살아서 전화선으로 이 동네를 다 지켜본다는 말도 있어.', 'His father? They say he\'s dead. But some say he\'s alive, watching this whole neighborhood through the phone lines.', 'あの子の父親？死んだと言われてる。だが、まだ生きていて電話線でこの街を見張ってるという話もある。'],
+  weiss_r: ['기록실에서 40년을 일했어. 사람들은 잊어도 서류는 안 잊지.', 'Forty years in the records office. People forget. Paper doesn\'t.', '記録室で40年働いた。人は忘れても、書類は忘れない。'],
+  weiss_d: ['지운 성이 아버지 쪽이라면… 그 사람은 정말로 죽었어. 사망 기록에 도장을 찍은 게 나였으니까.', 'If the crossed-out name is his father\'s… then the man really is dead. I stamped the death record myself.', '消された名字が父親のなら…その男は本当に死んでいる。死亡記録に判を押したのは私だからね。'],
+  phone: ['📞 공중전화 살펴보기', '📞 Check the payphone', '📞 公衆電話を調べる'],
+  phoneText: ['수화기 받침대 아래에 접힌 종이. 입양 서류 사본이다. 성이 두 개 — 하나는 볼펜으로 여러 번 그어져 있다.', 'Under the receiver cradle, a folded sheet. A copy of adoption papers. Two surnames — one scratched out again and again in ballpoint.', '受話器の台の下に折りたたまれた紙。養子縁組の書類の写しだ。名字が二つ——一つはボールペンで何度も消されている。'],
+  cl_run_father: ['그 청년의 이름은 아무도 모른다. 하지만 아버지가 누구였는지는 아는 사람들이 있다.', 'Nobody knows the kid\'s name. But some people know who his father was.', 'あの青年の名前は誰も知らない。だが、父親が誰だったかを知る者はいる。'],
+  cl_run_money: ['그는 크루에게 돈은 칼같이 주지만, 같이 밥을 먹자고 하면 사라진다.', 'He pays his crew on the dot, but disappears when they ask him to eat with them.', '彼はクルーに金はきっちり払うが、一緒に飯を食おうと言うと消える。'],
+  cl_run_alive: ['그의 아버지가 아직 살아서 전화선으로 동네를 지켜본다는 소문.', 'A rumor that his father is still alive, watching the neighborhood through the phone lines.', '父親がまだ生きていて、電話線で街を見張っているという噂。'],
+  cl_run_paper: ['입양 서류 사본. 성이 두 개, 하나는 여러 번 지워져 있다.', 'A copy of adoption papers. Two surnames, one scratched out over and over.', '養子縁組の書類の写し。名字が二つ、一つは何度も消されている。'],
+  inf_run_1: ['그 청년은 아버지의 이름에 쫓기면서, 누구에게도 빚지지 않으려 한다.', 'The kid is chased by his father\'s name — and won\'t owe anyone anything.', 'あの青年は父親の名に追われながら、誰にも借りを作るまいとしている。'],
+  inf_run_2: ['서류 속 아버지는 이미 세상에 없다. 소문은 틀렸다.', 'The father on that paper is gone. The rumor was wrong.', '書類の中の父親はもうこの世にいない。噂は間違いだった。'],
+  place_arcade: ['아케이드 앞 공중전화', 'Payphone outside the arcade', 'ゲームセンター前の公衆電話'],
+  run_meet: ['…계속 따라다니던 거, 다 알아. 할아버지.', '…I know you\'ve been following me, old man.', '…ずっとつけてたの、知ってるよ。じいさん。'],
+  runCall: ['📟 틸 킹스 해커들이 몰려온다!', '📟 Teal Kings hackers are swarming in!', '📟 ティールキングスのハッカーが押し寄せる！'],
+  run_subdued: ['…얼마면 돼? 그만 따라다니는 값.', '…How much? To stop following me.', '…いくらだ？もうつけ回さない代金。'],
+  run_r0: ['말해. 원하는 게 뭐야.', 'Say it. What do you want?', '言えよ。何が望みだ。'],
+  run_r1: ['또 왔네. 할아버지도 참 끈질기다.', 'You again. You really don\'t quit, old man.', 'また来た。じいさんもしつこいな。'],
+  run_o_fight: ['돈 받으러 온 거 아니다.', 'I\'m not here for money.', '金をもらいに来たんじゃない。'],
+  run_a_fight: ['그럼 뭔데. 세상에 공짜는 없어.', 'Then what? Nothing\'s free.', 'じゃあ何だよ。タダのものなんてない。'],
+  run_o_money: ['애들한테 돈은 주면서 밥은 안 먹는다더군.', 'I hear you pay the kids but never eat with them.', 'ガキどもに金は払うが、飯は一緒に食わないそうだな。'],
+  run_a_money: ['…밥은 빚이야. 돈은 아니고.', '…A meal is a debt. Money isn\'t.', '…飯は借りだ。金は違う。'],
+  run_o_alive: ['네 아버지가 살아 있다는 소문이 있더군.', 'Word is your father\'s still alive.', 'お前の父親が生きているという噂がある。'],
+  run_a_alive: ['…죽었어. 서류로 봤어. 그게 다야.', '…He\'s dead. I saw it on paper. That\'s all.', '…死んだよ。書類で見た。それだけだ。'],
+  run_o_paper: ['서류 봤다. 성이 두 개더군.', 'I saw the papers. Two surnames.', '書類を見た。名字が二つだったな。'],
+  run_a_paper: ['…지운 쪽이 아버지 거야. 남은 쪽은… 나도 누군지 몰라.', '…The crossed-out one is my father\'s. The other one… I don\'t even know whose it is.', '…消した方が親父のだ。残った方は…誰のか俺も知らない。'],
+  run_o_join: ['그럼 이제부터 네가 정해라. 어느 쪽으로 살지.', 'Then you decide from now on. Which one to live by.', 'なら、これからはお前が決めろ。どっちとして生きるか。'],
+  run_join: ['…좋아. 대신 밥은 내가 사. 빚지기 싫으니까.', '…Fine. But I\'m buying the food. I don\'t like owing people.', '…いいよ。その代わり飯は俺がおごる。借りを作るのは嫌だから。'],
+  runJoined: ['🏃 러너가 크루에 합류했다', '🏃 Runner joined your crew', '🏃 ランナーがクルーに加わった'],
+  r_obj2: ['아케이드 앞 공중전화로 가 보기', 'Go to the payphone outside the arcade', 'ゲームセンター前の公衆電話へ行ってみる'],
+  r_obj3: ['아케이드의 청년을 제압하라 · 죽이지 않는다', 'Subdue the kid at the arcade · don\'t kill him', 'ゲームセンターの青年を制圧せよ・殺さない'],
+  r_obj4: ['청년과 이야기하기', 'Talk to the kid', '青年と話す'],
+  r_obj5: ['아케이드 앞 공중전화를 다시 살펴보기', 'Check the payphone outside the arcade again', 'ゲームセンター前の公衆電話をもう一度調べる'],
+  r_obj6: ['러너에게 돌아가기', 'Go back to Runner', 'ランナーのところへ戻る'],
+  qt_rivalRun: ['끊긴 전화', 'The Dead Line', '切れた電話'],
+  ally_runA_d: ['기동 · 창립자', 'Mobility · founder', '機動・創設者'],
+  ken_hook_b: ['어? 혹시… 그 비트 만든 사람 맞죠?! 그 테이프, 늘어날 때까지 들었어요!', 'Wait— are you the guy who made that beat?! I played that tape till it stretched!', 'え？もしかして…あのビート作った人ですよね？！あのテープ、伸びるまで聴きました！'],
+  ken_1b: ['아, 그리고요… 저 모퉁이 가게, 몇 년째 비어 있는데 밤마다 불이 켜져요. 할머니는 유령이래요.', 'Oh, and… that corner store\'s been empty for years, but a light comes on every night. Grandma says it\'s a ghost.', 'あ、それと…あの角の店、何年も空き家なのに毎晩明かりがつくんです。おばあちゃんは幽霊だって。'],
+  ken_r_b: ['다들 래퍼 이름만 기억하잖아요. 저는 비트 만든 사람이 더 궁금했어요.', 'Everyone only remembers the rapper\'s name. I always wanted to know who made the beat.', 'みんなラッパーの名前しか覚えてないでしょ。僕はビートを作った人の方が気になってた。'],
+  cho_join_b: ['…시끄러운 음악은 질색이다. 그래도… 사람 모으는 재주는 있군. 총은 내가 든다.', '…I hate loud music. Still… you\'ve got a way of bringing people together. I\'ll carry the gun.', '…うるさい音楽は嫌いだ。だが…人を集める才はあるな。銃は俺が持つ。'],
   bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
   bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
   bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
@@ -2385,6 +2435,7 @@ const ALLY_TYPES = {
   boxer:  { get name() { return L('ally_boxer'); }, get desc() { return L('ally_boxer_d'); }, cost: 200, hp: 220, dmg: [26, 34], acc: 0.45, rate: [0.7, 1.1], cap: 0x8a1e1e },
   hacker: { get name() { return L('ally_hacker'); }, get desc() { return L('ally_hacker_d'); }, cost: 250, hp: 90, dmg: [16, 22], acc: 0.6, rate: [0.6, 0.9], cap: 0x14532d },
 };
+ALLY_TYPES.runnerA = { get name() { return L('nm_runner'); }, get desc() { return L('ally_runA_d'); }, cost: 0, hp: 120, dmg: [22, 30], acc: 0.62, rate: [0.4, 0.7], cap: 0x2a2a2a, hidden: true };
 ALLY_TYPES.cho = { get name() { return L('nm_cho'); }, get desc() { return L('ally_cho_d'); }, cost: 0, hp: 180, dmg: [32, 42], acc: 0.7, rate: [0.8, 1.2], cap: 0x0d0d0d, hidden: true };   // joins through the story, not the crew menu
 const hexOf = css => parseInt(css.slice(1), 16);
 class Ally {
@@ -3867,7 +3918,7 @@ const PERSONAL = { sniper: 'legs', tank: 'demo', runner: 'ghost' };
 const RONNIE_RECORD = 50;   // seconds for the 5-flag course
 const TAPES = [[-119, 31], [131, 131], [-19, -119]];   // sidewalk corners in Copper Heights, Marlow Flats, Saltworks
 const GHOST = { x: -40, z: -19.8 }, LANDLORD = { x: 50, z: -226 };
-const questKeys = () => [...(CAMPAIGN() ? ['rivalCho'] : []), ...QKEYS, PERSONAL[clsKey], ...(Q.landlord.s !== 'locked' ? ['landlord'] : [])];
+const questKeys = () => [...(CAMPAIGN() ? [rivalKey()] : []), ...QKEYS, PERSONAL[clsKey], ...(Q.landlord.s !== 'locked' ? ['landlord'] : [])];
 const founderName = () => cls.name;
 // a few lines in a row, like a crew radio chat
 function talkSeq(lines, gap = 3200) {
@@ -3951,7 +4002,7 @@ function personalSetup(fresh) {
   if (k === 'demo' && Q.demo.s === 'active') placeTapes();
   if (k === 'ghost' && Q.ghost.s !== 'locked') spawnGhost();
   campaignSetup();
-  if (fresh && CAMPAIGN()) { setTimeout(() => { if (!hasClue('cho_light')) talk(L('nm_kenji'), L('ken_hook')); }, 7200); setTimeout(() => feed(L('intelTip'), '#9ae6ff'), 11000); }
+  if (fresh && CAMPAIGN()) { setTimeout(campaignHook, 7200); setTimeout(() => feed(L('intelTip'), '#9ae6ff'), 11000); }
 }
 function updatePersonal(dt) {
   if (Q.demo.s === 'active' && zone === 'street') for (const g of [...tapeMeshes]) {
@@ -4075,37 +4126,64 @@ addEventListener('pagehide', () => saveGame());
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
 
 // ---------- campaign (CAMPAIGN_DESIGN.md): show, don't tell ----------
-// Vertical slice: playing Runner, the first rival is Mr. Cho. Neighbours remember him; the closed store
-// on the corner holds the rest. Beat him without killing him, then talk.
-const CAMPAIGN = () => clsKey === 'runner';
+// Chapter 1 depends on who you play: the rival you track down is one of the other two founders.
+// Neighbours remember a piece of them, a place holds the rest; beat them without killing them, then talk.
+const CH1 = { runner: 'cho', tank: 'cho', sniper: 'run' };
+const chapter = () => CH1[clsKey];
+const CAMPAIGN = () => !!chapter();
 Q.rivalCho = { s: 'unknown' };   // unknown → rumored → identified → confront → subdued → (needs_trust) → recruited
+Q.rivalRun = { s: 'unknown' };
+const rivalKey = () => chapter() === 'cho' ? 'rivalCho' : 'rivalRun';
+const rivalQ = () => Q[rivalKey()];
 const CHOS = { x: -50, z: -131 }, CHO_MEET = { x: -50, z: -126 };
 const CHO_COVER = [[-58, -126.5], [-42.5, -125.5], [-50.5, -121]];
-// residents: each one remembers a piece of the street
-const STREET_NPCS = [
+const ARC = { x: -150, z: 68.6 }, RUN_MEET = { x: -150, z: 74 }, PHONE = { x: -144.5, z: 68.8 };
+// residents: each one remembers a piece of the street (lines can differ by who is asking)
+const CHO_NPCS = [
   { npc_id: 'alvarez', district: 'Saltworks', occupation: 'laundromat_owner', pos: { x: -36, z: -131.2 },
     look: { hood: 0x7a4e8a, cap: 0xdcdcdc, jeans: 0x3a2f2a, apron: 0xe8d9c0 }, sign: ['LAVANDERÍA', '#5a3d7a', '#fff', -36, -132.4, 0],
     related_characters: ['mr_cho'], information_reliability: 'reliable', known_rumors: ['cho_candy'],
     dialogue_variants: { first: 'alv_1', repeat: 'alv_r', deep: 'alv_d', deepNeeds: ['cho_photo'] } },
   { npc_id: 'kenji', district: 'Kings Commons', occupation: 'bento_shop_son', pos: { x: 36, z: 31 },
     look: { hood: 0x1f3f7a, cap: 0xf2f2f2, jeans: 0x2c3b57 }, sign: ['SATO BENTO', '#b3221b', '#fff', 36, 32.4, Math.PI],
-    related_characters: ['mr_cho'], information_reliability: 'rumor', known_rumors: ['cho_light'],
-    dialogue_variants: { first: 'ken_1', repeat: 'ken_r', deep: 'ken_d', deepNeeds: ['cho_photo', 'cho_light'] } },
+    related_characters: ['mr_cho', 'big_man'], information_reliability: 'rumor', known_rumors: ['cho_light'],
+    dialogue_variants: { first: 'ken_1', firstBy: { tank: 'ken_1b' }, repeat: 'ken_r', repeatBy: { tank: 'ken_r_b' }, deep: 'ken_d', deepNeeds: ['cho_photo', 'cho_light'] } },
   { npc_id: 'sal', district: 'Kings Commons', occupation: 'retired_firefighter', pos: { x: 40, z: -19.4 },
     look: { hood: 0x2a2a2a, cap: 0x8e1414, jeans: 0x1b2a4a }, sign: ['ENGINE 217', '#8e1414', '#fff', 40, -17.6, Math.PI],
     related_characters: ['mr_cho'], information_reliability: 'partial', known_rumors: ['cho_fire'],
     dialogue_variants: { first: 'sal_1', repeat: 'sal_r', deep: 'sal_d', deepNeeds: ['cho_fire', 'cho_photo'] } },
+];
+const RUN_NPCS = [
+  { npc_id: 'sato', district: 'Kings Commons', occupation: 'bento_shop_owner', pos: { x: 36, z: 31 },
+    look: { hood: 0x5a4a6a, cap: 0xcfcfcf, jeans: 0x3a3a3a, apron: 0xb3221b }, sign: ['SATO BENTO', '#b3221b', '#fff', 36, 32.4, Math.PI],
+    related_characters: ['runner', 'mr_cho'], information_reliability: 'partial', known_rumors: ['run_father'],
+    dialogue_variants: { first: 'sato_1', repeat: 'sato_r', deep: 'sato_d', deepNeeds: ['run_paper'] } },
+  { npc_id: 'dez', district: 'Copper Heights', occupation: 'ex_crew_kid', pos: { x: -100, z: -30.6 },
+    look: { hood: 0x1f8a8a, cap: 0x111111, jeans: 0x2c3b57 }, sign: null,
+    related_characters: ['runner'], information_reliability: 'reliable', known_rumors: ['run_money'],
+    dialogue_variants: { first: 'dez_1', repeat: 'dez_r', deep: 'dez_d', deepNeeds: ['run_money', 'run_paper'] } },
+  { npc_id: 'weiss', district: 'Kings Commons', occupation: 'retired_records_clerk', pos: { x: -19.6, z: 62 },
+    look: { hood: 0x3a3226, cap: 0x222222, jeans: 0x2b2b2b }, sign: null,
+    related_characters: ['runner'], information_reliability: 'rumor', known_rumors: ['run_alive'],
+    dialogue_variants: { first: 'weiss_1', repeat: 'weiss_r', deep: 'weiss_d', deepNeeds: ['run_paper', 'run_alive'] } },
 ];
 const CLUES = {
   cho_candy: { subject: 'mr_cho', src: 'alvarez', type: 'testimony', rel: 'fact', related: ['cho_photo'] },
   cho_light: { subject: 'mr_cho', src: 'kenji', type: 'testimony', rel: 'rumor', related: ['cho_photo'] },
   cho_fire: { subject: 'mr_cho', src: 'sal', type: 'testimony', rel: 'partial', related: ['cho_photo'] },
   cho_photo: { subject: 'mr_cho', src: null, place: 'chos', type: 'object', rel: 'fact', related: ['cho_candy', 'cho_fire'] },
+  run_father: { subject: 'runner', src: 'sato', type: 'testimony', rel: 'partial', related: ['run_paper'] },
+  run_money: { subject: 'runner', src: 'dez', type: 'testimony', rel: 'fact', related: ['run_paper'] },
+  run_alive: { subject: 'runner', src: 'weiss', type: 'testimony', rel: 'rumor', related: ['run_paper'] },
+  run_paper: { subject: 'runner', src: null, place: 'arcade', type: 'record', rel: 'fact', related: ['run_father', 'run_alive'] },
 };
 const INFERENCES = [
   { id: 'inf_cho_1', needs: ['cho_candy', 'cho_light'] },   // the "ghost" is the owner
   { id: 'inf_cho_2', needs: ['cho_fire', 'cho_photo'] },    // the store didn't close by accident
+  { id: 'inf_run_1', needs: ['run_father', 'run_money'] },  // chased by his father's name, owes nobody
+  { id: 'inf_run_2', needs: ['run_paper', 'run_alive'] },   // the rumor was wrong
 ];
+const IDENTIFY = { mr_cho: ['rivalCho', 'inf_cho_1'], runner: ['rivalRun', 'inf_run_1'] };
 const intel = {};      // clue_id -> { t: hour, d: district }
 const npcState = {};   // npc_id -> { trust, deepSeen }
 const hasClue = id => !!intel[id];
@@ -4117,12 +4195,14 @@ function addClue(id) {
     intel[inf.id] = { t: intel[id].t, d: intel[id].d, inference: true };
     setTimeout(() => feed('💡 ' + L(inf.id), '#ffd23f'), 1400);
   }
-  if (Q.rivalCho.s === 'unknown') Q.rivalCho.s = 'rumored';
-  if (Q.rivalCho.s === 'rumored' && intel.inf_cho_1) Q.rivalCho.s = 'identified';
+  const [qk, infId] = IDENTIFY[CLUES[id].subject], q = Q[qk];
+  if (q.s === 'unknown') q.s = 'rumored';
+  if (q.s === 'rumored' && intel[infId]) q.s = 'identified';
   saveGame();
 }
 
-// ---- the closed store on the corner ----
+// ---- places ----
+// the closed store on the corner (Mr. Cho)
 const chosLight = new THREE.PointLight(0xffb060, 0, 14, 1.6); chosLight.position.set(CHOS.x, 2.2, CHOS.z - 0.2); scene.add(chosLight);
 const chosWindow = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 2.0), new THREE.MeshStandardMaterial({ color: 0x1a140e, emissive: 0xffa040, emissiveIntensity: 0 }));
 chosWindow.position.set(CHOS.x, 1.8, -132.42); scene.add(chosWindow);
@@ -4138,25 +4218,35 @@ chosWindow.position.set(CHOS.x, 1.8, -132.42); scene.add(chosWindow);
     addCol(x - 1.1, x + 1.1, z - 0.55, z + 0.55);
   }
 }
-// the storefront is something you can look at, not a door you can open
-const waitSpot = { pos: { x: CHO_MEET.x + 2.5, z: CHO_MEET.z }, on: () => CAMPAIGN() && ['rumored', 'identified'].includes(Q.rivalCho.s) && night < 0.55,
-  label: () => L('waitNight'), use: () => fadeThen(() => { tod = 21.5; applyTime(); msg(L('hoursLater'), 2); }) };
-const peekSpot = { campaign: true, pos: { x: CHOS.x, z: CHOS.z + 0.2 }, label: () => L('peek'), use: () => peekStore() };
-function peekStore() {
-  talk('🔍', L('peekText'));
-  addClue('cho_photo');
-  if (Q.rivalCho.s === 'needs_trust') feed(L('c_obj6'), '#ffd23f');
+// the arcade and its payphone (Runner)
+{
+  signBoard('GALAXY ARCADE', '#2a0f4a', '#c08bff', ARC.x, 4.3, 67.6, 0, 3.8);
+  const neon = new THREE.Mesh(new THREE.PlaneGeometry(6, 2.2), new THREE.MeshStandardMaterial({ color: 0x120820, emissive: 0x8a5cff, emissiveIntensity: 0.9 }));
+  neon.position.set(ARC.x - 2, 1.6, 67.56); scene.add(neon);
+  prop(box1, 0x2a6fb0, PHONE.x, 1.25, PHONE.z - 0.4, 0.7, 2.0, 0.5);
+  prop(box1, 0x111111, PHONE.x, 1.5, PHONE.z - 0.14, 0.3, 0.4, 0.05);
 }
+const waitSpot = { pos: { x: CHO_MEET.x + 2.5, z: CHO_MEET.z }, on: () => chapter() === 'cho' && ['rumored', 'identified'].includes(Q.rivalCho.s) && night < 0.55,
+  label: () => L('waitNight'), use: () => fadeThen(() => { tod = 21.5; applyTime(); msg(L('hoursLater'), 2); }) };
+const peekSpot = { pos: { x: CHOS.x, z: CHOS.z + 0.2 }, on: () => chapter() === 'cho', label: () => L('peek'), use: () => {
+  talk('🔍', L('peekText')); addClue('cho_photo');
+  if (Q.rivalCho.s === 'needs_trust') feed(L('c_obj6'), '#ffd23f');
+} };
+let paperSeenT = -99;   // give the paper a moment before he shows up
+const phoneSpot = { pos: { x: PHONE.x, z: PHONE.z + 0.4 }, on: () => chapter() === 'run', label: () => L('phone'), use: () => {
+  talk('📞', L('phoneText')); if (!hasClue('run_paper')) paperSeenT = t; addClue('run_paper');
+  if (Q.rivalRun.s === 'needs_trust') feed(L('r_obj6'), '#ffd23f');
+} };
 
 // ---- residents ----
 const streetNPCs = {};
 let campaignReady = false;
+const chapterNPCs = () => chapter() === 'cho' ? CHO_NPCS : RUN_NPCS;
 function campaignSetup() {
   if (!CAMPAIGN() || campaignReady) return;
   campaignReady = true;
-  for (const n of STREET_NPCS) {
-    const [text, bg, fg, sx, sz, ry] = n.sign;
-    signBoard(text, bg, fg, sx, 4.3, sz, ry);
+  for (const n of chapterNPCs()) {
+    if (n.sign) { const [text, bg, fg, sx, sz, ry] = n.sign; signBoard(text, bg, fg, sx, 4.3, sz, ry); }
     npcState[n.npc_id] = npcState[n.npc_id] || { trust: 0, deepSeen: false };
     streetNPCs[n.npc_id] = addNPC(n.pos.x, n.pos.z, n.look,
       () => hasClue(n.known_rumors[0]) ? L('qTalkTo', { n: L('nm_' + n.npc_id) }) : L('listenTo', { n: L('nm_' + n.npc_id) }),
@@ -4165,20 +4255,26 @@ function campaignSetup() {
     gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false;
     scene.add(gv.sp); GIVERS.push(gv);
   }
-  npcs.push(peekSpot, waitSpot);
-  if (['subdued', 'needs_trust'].includes(Q.rivalCho.s)) spawnChoNPC();
-  if (Q.rivalCho.s === 'confront') Q.rivalCho.s = 'identified';
+  npcs.push(peekSpot, waitSpot, phoneSpot);
+  const q = rivalQ();
+  if (['subdued', 'needs_trust'].includes(q.s)) spawnRivalNPC();
+  if (q.s === 'confront') q.s = 'identified';
+}
+// the first thing that happens after the prologue: a neighbour calls out to you
+function campaignHook() {
+  if (chapter() === 'cho' && !hasClue('cho_light')) talk(L('nm_kenji'), L(clsKey === 'tank' ? 'ken_hook_b' : 'ken_hook'));
+  if (chapter() === 'run' && !hasClue('run_father')) talk(L('nm_sato'), L('sato_hook'));
 }
 function streetTalk(n) {
   const st = npcState[n.npc_id], v = n.dialogue_variants, who = L('nm_' + n.npc_id);
   st.trust++;
-  if (!hasClue(n.known_rumors[0])) { talk(who, L(v.first)); addClue(n.known_rumors[0]); return; }
+  if (!hasClue(n.known_rumors[0])) { talk(who, L((v.firstBy && v.firstBy[clsKey]) || v.first)); addClue(n.known_rumors[0]); return; }
   if (!st.deepSeen && v.deepNeeds.every(hasClue)) { st.deepSeen = true; talk(who, L(v.deep)); saveGame(); return; }
-  talk(who, L(v.repeat));
+  talk(who, L((v.repeatBy && v.repeatBy[clsKey]) || v.repeat));
 }
 
-// ---- rival: Mr. Cho ----
-let choBoss = null, choGuards = [], choNPC = null;
+// ---- rivals: subdued at 15%, never killed ----
+let rivalBoss = null, rivalGuards = [], rivalNPC = null;
 class RivalCho extends BlockBoss {
   constructor(x, z) {
     super('rivalCho', x, z, 'iron', { name: 'nm_storeman', hp: 900, leash: 18 });
@@ -4187,8 +4283,7 @@ class RivalCho extends BlockBoss {
   }
   damage(dmg, head, byUs = true) {
     if (this.dead || this.subdued) return;
-    const floor = this.maxHp * 0.15;
-    if (this.hp - dmg <= floor) { this.hp = floor; this.flashT = 0.1; return subdueCho(this); }
+    if (this.hp - dmg <= this.maxHp * 0.15) { this.hp = this.maxHp * 0.15; return subdueRival(this); }
     super.damage(dmg, head, byUs);
     this.coverT = Math.min(this.coverT, 0.4);   // hit: change cover soon
   }
@@ -4202,89 +4297,132 @@ class RivalCho extends BlockBoss {
     return super.update(dt);
   }
 }
-function confrontCho() {
-  Q.rivalCho.s = 'confront';
-  choBoss = new RivalCho(CHO_MEET.x, CHO_MEET.z);
-  enemies.push(choBoss); qBosses.rivalCho = choBoss;
-  choGuards = [];
-  for (const [dx, dz] of [[-9, 4], [9, 4]]) { const e = new Enemy(CHO_MEET.x + dx, CHO_MEET.z + dz, 'iron', districtAt(CHO_MEET.x, CHO_MEET.z)); e.rival = true; choGuards.push(e); enemies.push(e); }
+class RivalRunner extends BlockBoss {
+  constructor(x, z) {
+    super('rivalRun', x, z, 'teal', { name: 'nm_arcadekid', hp: 700, leash: 24 });
+    this.rival = true; this.accBonus = 0.08; this.speed = 6.4; this.dodgeT = 1; this.called = false;
+    this.hood.color.setHex(0x1d1d22);
+  }
+  damage(dmg, head, byUs = true) {
+    if (this.dead || this.subdued) return;
+    if (this.hp - dmg <= this.maxHp * 0.15) { this.hp = this.maxHp * 0.15; return subdueRival(this); }
+    super.damage(dmg, head, byUs);
+    this.dodgeT = Math.min(this.dodgeT, 0.25);   // hit: slip sideways
+    if (!this.called && this.hp < this.maxHp * 0.5) {   // calls in his network
+      this.called = true; feed(L('runCall'), CREWS.teal.css);
+      for (const s of [-1, 1]) { const e = new Enemy(RUN_MEET.x + s * 14, RUN_MEET.z + 8, 'teal', districtAt(RUN_MEET.x, RUN_MEET.z)); e.rival = true; e.hunter = true; rivalGuards.push(e); enemies.push(e); }
+      rebuildParts();
+    }
+  }
+  update(dt) {
+    if (this.fled) return true;
+    if ((this.dodgeT -= dt) <= 0) {   // never where you aimed a second ago
+      this.dodgeT = rand(0.8, 1.5);
+      const p = this.g.position, a = Math.atan2(player.pos.x - p.x, player.pos.z - p.z) + (Math.random() < 0.5 ? 1 : -1) * Math.PI / 2;
+      this.spot = { x: clamp(p.x + Math.sin(a) * 7, RUN_MEET.x - 16, RUN_MEET.x + 16), z: clamp(p.z + Math.cos(a) * 7, RUN_MEET.z - 3, RUN_MEET.z + 10) };
+      this.pace = null; this.strafe = Math.random() < 0.5 ? 1 : -1; this.strafeT = 1.2;
+    }
+    return super.update(dt);
+  }
+}
+const RIVAL = {
+  cho: { meet: CHO_MEET, make: (x, z) => new RivalCho(x, z), crew: 'iron', who: 'nm_storeman', name: 'nm_cho', line: 'cho_meet', down: 'cho_subdued',
+    look: { hood: 0x15171b, cap: 0x0d0d0d, jeans: 0x1c1f26 }, ally: 'cho', key: 'cho_photo' },
+  run: { meet: RUN_MEET, make: (x, z) => new RivalRunner(x, z), crew: 'teal', who: 'nm_arcadekid', name: 'nm_runner', line: 'run_meet', down: 'run_subdued',
+    look: { hood: 0x1d1d22, cap: 0x2a2a2a, jeans: 0x3a3f47 }, ally: 'runnerA', key: 'run_paper' },
+};
+const R = () => RIVAL[chapter()];
+function confrontRival() {
+  const r = R(), q = rivalQ();
+  q.s = 'confront';
+  rivalBoss = r.make(r.meet.x, r.meet.z);
+  enemies.push(rivalBoss); qBosses[rivalKey()] = rivalBoss;
+  rivalGuards = [];
+  for (const [dx, dz] of [[-9, 4], [9, 4]]) { const e = new Enemy(r.meet.x + dx, r.meet.z + dz, r.crew, districtAt(r.meet.x, r.meet.z)); e.rival = true; rivalGuards.push(e); enemies.push(e); }
   rebuildParts();
-  talk(L('nm_storeman'), L('cho_meet'));
+  talk(L(r.who), L(r.line));
   beep(196, 0.4, 0.12, 'sawtooth');
 }
-function subdueCho(b) {
+function subdueRival(b) {
   b.subdued = true; b.fled = true; b.g.visible = false;
-  for (const e of choGuards) if (!e.dead) { e.fled = true; e.g.visible = false; e.update = () => true; }
-  rebuildParts(); delete qBosses.rivalCho; choBoss = null;
-  Q.rivalCho.s = 'subdued';
-  spawnChoNPC();
+  for (const e of rivalGuards) if (!e.dead) { e.fled = true; e.g.visible = false; e.update = () => true; }
+  rebuildParts(); delete qBosses[rivalKey()]; rivalBoss = null;
+  rivalQ().s = 'subdued';
+  spawnRivalNPC();
   msg(L('choDown'), 2.2);
-  setTimeout(() => talk(L('nm_storeman'), L('cho_subdued')), 600);
+  setTimeout(() => talk(L(R().who), L(R().down)), 600);
   saveGame();
 }
-function spawnChoNPC() {
-  if (choNPC) return;
-  choNPC = addNPC(CHO_MEET.x, CHO_MEET.z, { hood: 0x15171b, cap: 0x0d0d0d, jeans: 0x1c1f26 },
-    () => L('qTalkTo', { n: L('nm_cho') }), () => choTalk());
+function spawnRivalNPC() {
+  if (rivalNPC) return;
+  const r = R();
+  rivalNPC = addNPC(r.meet.x, r.meet.z, r.look, () => L('qTalkTo', { n: L(r.name) }), () => rivalTalk());
 }
 // the recruit talk: what you found decides what you can say
-function choTalk() {
-  const opts = [];
-  const used = Q.rivalCho.used || '';
-  opts.push({ label: L('cho_o_fight'), go: () => {
-    talk(L('nm_cho'), L('cho_a_fight'));
-    if (!hasClue('cho_photo')) { Q.rivalCho.s = 'needs_trust'; feed(L('c_obj5'), '#ffd23f'); saveGame(); }
-  } });
-  if (hasClue('cho_candy') && !used.includes('c')) opts.push({ label: L('cho_o_candy'), go: () => { Q.rivalCho.used = used + 'c'; talk(L('nm_cho'), L('cho_a_candy')); } });
-  if (hasClue('cho_fire') && !used.includes('f')) opts.push({ label: L('cho_o_fire'), go: () => { Q.rivalCho.used = used + 'f'; talk(L('nm_cho'), L('cho_a_fire')); } });
-  if (hasClue('cho_photo')) opts.push({ label: L('cho_o_photo'), go: () => ask(L('nm_cho'), L('cho_a_photo'), [{ label: L('cho_o_join'), go: recruitCho }]) });
-  ask(L('nm_cho'), L(Q.rivalCho.s === 'needs_trust' ? 'cho_r1' : 'cho_r0'), opts);
+function rivalTalk() {
+  const q = rivalQ(), used = q.used || '', P = chapter() === 'cho' ? 'cho' : 'run', r = R();
+  const side = chapter() === 'cho' ? [['c', 'cho_candy', 'candy'], ['f', 'cho_fire', 'fire']] : [['m', 'run_money', 'money'], ['a', 'run_alive', 'alive']];
+  const opts = [{ label: L(P + '_o_fight'), go: () => {
+    talk(L(r.name), L(P + '_a_fight'));
+    if (!hasClue(r.key)) { q.s = 'needs_trust'; feed(L(P === 'cho' ? 'c_obj5' : 'r_obj5'), '#ffd23f'); saveGame(); }
+  } }];
+  for (const [tag, clue, opt] of side) if (hasClue(clue) && !used.includes(tag)) opts.push({ label: L(`${P}_o_${opt}`), go: () => { q.used = used + tag; talk(L(r.name), L(`${P}_a_${opt}`)); } });
+  const keyOpt = P === 'cho' ? 'photo' : 'paper';
+  if (hasClue(r.key)) opts.push({ label: L(`${P}_o_${keyOpt}`), go: () => ask(L(r.name), L(`${P}_a_${keyOpt}`), [{ label: L(P + '_o_join'), go: recruitRival }]) });
+  ask(L(r.name), L(q.s === 'needs_trust' ? P + '_r1' : P + '_r0'), opts);
 }
-function recruitCho() {
-  Q.rivalCho.s = 'recruited';
-  scene.remove(choNPC.g);
-  const i = npcs.findIndex(n => n.o === choNPC); if (i >= 0) npcs.splice(i, 1);
-  choNPC = null;
-  allies.push(new Ally('cho'));
-  talk(L('nm_cho'), L('cho_join'));
-  questDone('rivalCho');
-  feed(L('choJoined'), myCrew.color);
+function recruitRival() {
+  const r = R(), P = chapter() === 'cho' ? 'cho' : 'run';
+  rivalQ().s = 'recruited';
+  scene.remove(rivalNPC.g);
+  const i = npcs.findIndex(n => n.o === rivalNPC); if (i >= 0) npcs.splice(i, 1);
+  rivalNPC = null;
+  allies.push(new Ally(r.ally));
+  talk(L(r.name), L(P === 'cho' && clsKey === 'tank' ? 'cho_join_b' : P + '_join'));
+  questDone(rivalKey());
+  feed(L(P === 'cho' ? 'choJoined' : 'runJoined'), myCrew.color);
 }
 function updateCampaign(dt) {
   if (!CAMPAIGN()) return;
-  const lit = night > 0.55 && Q.rivalCho.s !== 'recruited';   // somebody still turns the lights on at night
+  // somebody still turns the store's lights on at night
+  const lit = chapter() === 'cho' && night > 0.55 && Q.rivalCho.s !== 'recruited';
   chosLight.intensity += ((lit ? 9 : 0) - chosLight.intensity) * Math.min(1, dt * 2);
   chosWindow.material.emissiveIntensity = chosLight.intensity / 9 * (0.75 + Math.sin(t * 7) * 0.05);
-  const rc = Q.rivalCho;
-  if (['rumored', 'identified'].includes(rc.s) && night > 0.55 && zone === 'street' && !busy && near(CHO_MEET, 22)) confrontCho();
-  if (rc.s === 'confront' && !choBoss && zone === 'street' && near(CHO_MEET, 60)) confrontCho();
+  const q = rivalQ(), r = R(), ready = zone === 'street' && !busy;
+  if (chapter() === 'cho' && ['rumored', 'identified'].includes(q.s) && night > 0.55 && ready && near(r.meet, 22)) confrontRival();
+  if (chapter() === 'run' && ['rumored', 'identified'].includes(q.s) && ready && near(r.meet, 18) && hasClue('run_paper') && t - paperSeenT > 3.5) confrontRival();
+  if (q.s === 'confront' && !rivalBoss && ready && near(r.meet, 60)) confrontRival();
 }
 function campaignObjective() {
   if (!CAMPAIGN()) return null;
-  const s = Q.rivalCho.s;
-  if (s === 'unknown' || s === 'rumored') {
-    const next = STREET_NPCS.filter(n => !hasClue(n.known_rumors[0])).sort((a, b) => Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z) - Math.hypot(b.pos.x - player.pos.x, b.pos.z - player.pos.z))[0];
-    return { k: 'rivalCho', text: L('c_obj1'), at: next ? next.pos : CHOS };
+  const q = rivalQ(), s = q.s, k = rivalKey(), r = R(), cho = chapter() === 'cho';
+  if (s === 'unknown' || (s === 'rumored' && chapterNPCs().some(n => !hasClue(n.known_rumors[0])))) {
+    const next = chapterNPCs().filter(n => !hasClue(n.known_rumors[0])).sort((a, b) => Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z) - Math.hypot(b.pos.x - player.pos.x, b.pos.z - player.pos.z))[0];
+    if (next) return { k, text: L('c_obj1'), at: next.pos };
   }
-  if (s === 'identified') return { k: 'rivalCho', text: L(night > 0.55 ? 'c_obj2n' : 'c_obj2'), at: CHO_MEET };
-  if (s === 'confront') return { k: 'rivalCho', text: L('c_obj3'), at: choBoss ? choBoss.g.position : CHO_MEET };
-  if (s === 'subdued') return { k: 'rivalCho', text: L('c_obj4'), at: CHO_MEET };
-  if (s === 'needs_trust') return hasClue('cho_photo') ? { k: 'rivalCho', text: L('c_obj6'), at: CHO_MEET } : { k: 'rivalCho', text: L('c_obj5'), at: CHOS };
+  if (s === 'rumored' || s === 'identified') {
+    if (cho) return { k, text: L(night > 0.55 ? 'c_obj2n' : 'c_obj2'), at: CHO_MEET };
+    return { k, text: L('r_obj2'), at: PHONE };
+  }
+  if (s === 'confront') return { k, text: L(cho ? 'c_obj3' : 'r_obj3'), at: rivalBoss ? rivalBoss.g.position : r.meet };
+  if (s === 'subdued') return { k, text: L(cho ? 'c_obj4' : 'r_obj4'), at: r.meet };
+  if (s === 'needs_trust') return hasClue(r.key) ? { k, text: L(cho ? 'c_obj6' : 'r_obj6'), at: r.meet } : { k, text: L(cho ? 'c_obj5' : 'r_obj5'), at: cho ? CHOS : PHONE };
   return null;
 }
 
 // ---- Street Intel notebook (J / 📓) ----
 function renderIntel() {
   const rel = { fact: '✅', partial: '◐', rumor: '❓' };
-  const known = Object.keys(CLUES).filter(hasClue);
-  const name = ['subdued', 'needs_trust', 'recruited'].includes(Q.rivalCho.s) ? L('nm_cho') : L('nm_storeman');
-  let h = `<div class="who">${name}</div>`;
+  const subj = chapter() === 'cho' ? 'mr_cho' : 'runner';
+  const known = Object.keys(CLUES).filter(id => CLUES[id].subject === subj && hasClue(id));
+  const named = ['subdued', 'needs_trust', 'recruited'].includes(rivalQ().s);
+  let h = `<div class="who">${L(named ? R().name : R().who)}</div>`;
   if (!known.length) h += `<p class="empty">${L('intelEmpty')}</p>`;
   for (const id of known) {
     const c = CLUES[id], src = c.src ? L('nm_' + c.src) : L('place_' + c.place);
     h += `<div class="clue"><span class="rel">${rel[c.rel]}</span><div><b>${L('cl_' + id)}</b><small>${src} · ${intel[id].d} · ${L('relName_' + c.rel)}</small></div></div>`;
   }
-  for (const inf of INFERENCES) if (intel[inf.id]) h += `<div class="inf">💡 ${L(inf.id)}</div>`;
+  for (const inf of INFERENCES) if (intel[inf.id] && CLUES[inf.needs[0]].subject === subj) h += `<div class="inf">💡 ${L(inf.id)}</div>`;
   $('intelBody').innerHTML = h;
 }
 function openIntel() {
@@ -4303,7 +4441,7 @@ function closeIntel() {
 $('intelClose').addEventListener('click', closeIntel);
 
 // ---------- crew discontent: fills up when things go badly, at 100% they defect to a rival ----------
-const ALLY_ICON = { artist: '🎨', boxer: '🥊', hacker: '💻', cho: '🎖️' };
+const ALLY_ICON = { artist: '🎨', boxer: '🥊', hacker: '💻', cho: '🎖️', runnerA: '🏃' };
 const defectors = [];
 let boredT = 0, moodHtml = '';
 function addMood(a, d) {
@@ -4624,7 +4762,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return choBoss; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
