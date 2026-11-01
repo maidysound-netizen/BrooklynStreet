@@ -763,6 +763,9 @@ const STR = {
   c_obj6: ['미스터 조에게 돌아가기', 'Go back to Mr. Cho', 'ミスター・チョのところへ戻る'],
   qt_rivalCho: ['밤의 가게', 'The Store at Night', '夜の店'],
   ally_cho_d: ['명사수 · 창립자', 'Marksman · founder', '狙撃手・創設者'],
+  ken_hook: ['저기요! 혹시… 모퉁이 가게 얘기 들었어요?', 'Hey! Have you… heard about the corner store?', 'あの！もしかして…角の店の話、聞きました？'],
+  waitNight: ['🌙 불이 켜질 때까지 기다리기', '🌙 Wait for the light to come on', '🌙 明かりがつくまで待つ'],
+  hoursLater: ['몇 시간 뒤…', 'A few hours later…', '数時間後…'],
   bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
   bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
   bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
@@ -2845,6 +2848,7 @@ function updateNPCs(dt) {
   nearNPC = riding ? rideNPC : null; let bd = riding ? -1 : 2.6;
   for (const n of npcs) {
     if ((n.zone || 'street') !== zone) continue;
+    if (n.on && !n.on()) continue;
     if (n.bike && riding) continue;
     const d = Math.hypot(n.pos.x - player.pos.x, n.pos.z - player.pos.z);
     if (d < bd) { bd = d; nearNPC = n; }
@@ -3943,11 +3947,11 @@ function questCapture() {
 // start your founder's own story (new game) or put its props back (loaded game)
 function personalSetup(fresh) {
   const k = PERSONAL[clsKey];
-  if (fresh && Q[k].s === 'locked') { Q[k].s = 'active'; setTimeout(() => { questNew(k); talk(founderName(), L('intro_' + clsKey)); }, 7000); }
+  if (fresh && Q[k].s === 'locked') { Q[k].s = 'active'; setTimeout(() => { questNew(k); talk(founderName(), L('intro_' + clsKey)); }, CAMPAIGN() ? 26000 : 7000); }
   if (k === 'demo' && Q.demo.s === 'active') placeTapes();
   if (k === 'ghost' && Q.ghost.s !== 'locked') spawnGhost();
   campaignSetup();
-  if (fresh && CAMPAIGN()) setTimeout(() => feed(L('intelTip'), '#9ae6ff'), 9500);
+  if (fresh && CAMPAIGN()) { setTimeout(() => { if (!hasClue('cho_light')) talk(L('nm_kenji'), L('ken_hook')); }, 7200); setTimeout(() => feed(L('intelTip'), '#9ae6ff'), 11000); }
 }
 function updatePersonal(dt) {
   if (Q.demo.s === 'active' && zone === 'street') for (const g of [...tapeMeshes]) {
@@ -4083,8 +4087,8 @@ const STREET_NPCS = [
     look: { hood: 0x7a4e8a, cap: 0xdcdcdc, jeans: 0x3a2f2a, apron: 0xe8d9c0 }, sign: ['LAVANDERÍA', '#5a3d7a', '#fff', -36, -132.4, 0],
     related_characters: ['mr_cho'], information_reliability: 'reliable', known_rumors: ['cho_candy'],
     dialogue_variants: { first: 'alv_1', repeat: 'alv_r', deep: 'alv_d', deepNeeds: ['cho_photo'] } },
-  { npc_id: 'kenji', district: 'Kings Commons', occupation: 'bento_shop_son', pos: { x: -10, z: -69.2 },
-    look: { hood: 0x1f3f7a, cap: 0xf2f2f2, jeans: 0x2c3b57 }, sign: ['SATO BENTO', '#b3221b', '#fff', -10, -67.6, Math.PI],
+  { npc_id: 'kenji', district: 'Kings Commons', occupation: 'bento_shop_son', pos: { x: 36, z: 31 },
+    look: { hood: 0x1f3f7a, cap: 0xf2f2f2, jeans: 0x2c3b57 }, sign: ['SATO BENTO', '#b3221b', '#fff', 36, 32.4, Math.PI],
     related_characters: ['mr_cho'], information_reliability: 'rumor', known_rumors: ['cho_light'],
     dialogue_variants: { first: 'ken_1', repeat: 'ken_r', deep: 'ken_d', deepNeeds: ['cho_photo', 'cho_light'] } },
   { npc_id: 'sal', district: 'Kings Commons', occupation: 'retired_firefighter', pos: { x: 40, z: -19.4 },
@@ -4135,6 +4139,8 @@ chosWindow.position.set(CHOS.x, 1.8, -132.42); scene.add(chosWindow);
   }
 }
 // the storefront is something you can look at, not a door you can open
+const waitSpot = { pos: { x: CHO_MEET.x + 2.5, z: CHO_MEET.z }, on: () => CAMPAIGN() && ['rumored', 'identified'].includes(Q.rivalCho.s) && night < 0.55,
+  label: () => L('waitNight'), use: () => fadeThen(() => { tod = 21.5; applyTime(); msg(L('hoursLater'), 2); }) };
 const peekSpot = { campaign: true, pos: { x: CHOS.x, z: CHOS.z + 0.2 }, label: () => L('peek'), use: () => peekStore() };
 function peekStore() {
   talk('🔍', L('peekText'));
@@ -4159,7 +4165,7 @@ function campaignSetup() {
     gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false;
     scene.add(gv.sp); GIVERS.push(gv);
   }
-  npcs.push(peekSpot);
+  npcs.push(peekSpot, waitSpot);
   if (['subdued', 'needs_trust'].includes(Q.rivalCho.s)) spawnChoNPC();
   if (Q.rivalCho.s === 'confront') Q.rivalCho.s = 'identified';
 }
@@ -4257,7 +4263,7 @@ function campaignObjective() {
   if (!CAMPAIGN()) return null;
   const s = Q.rivalCho.s;
   if (s === 'unknown' || s === 'rumored') {
-    const next = STREET_NPCS.find(n => !hasClue(n.known_rumors[0]));
+    const next = STREET_NPCS.filter(n => !hasClue(n.known_rumors[0])).sort((a, b) => Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z) - Math.hypot(b.pos.x - player.pos.x, b.pos.z - player.pos.z))[0];
     return { k: 'rivalCho', text: L('c_obj1'), at: next ? next.pos : CHOS };
   }
   if (s === 'identified') return { k: 'rivalCho', text: L(night > 0.55 ? 'c_obj2n' : 'c_obj2'), at: CHO_MEET };
