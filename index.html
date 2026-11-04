@@ -196,6 +196,18 @@
   #qlog { margin-top:14px; font-size:13px; }
   #qlog div { display:flex; justify-content:space-between; padding:5px 2px; border-bottom:1px solid rgba(255,255,255,.08); }
   .ending { margin-top:14px; font-size:15px; line-height:1.6; color:#ffb3e6; }
+  #board { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:20; }
+  #board .cbox { width:min(520px,94vw); max-height:82vh; overflow:auto; background:#7a5530; border:6px solid #3a2a1a; border-radius:8px; padding:16px; font-family:system-ui,sans-serif; }
+  #board h3 { margin:0 0 10px; font:900 22px "Arial Black",Impact,sans-serif; color:#ffe9a8; text-shadow:0 2px 0 #3a2a1a; }
+  #boardBody { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  #board .flyer { background:#fff6dc; color:#2a2016; padding:10px; border-radius:2px; box-shadow:0 3px 6px rgba(0,0,0,.35); transform:rotate(-1deg); font-size:14px; }
+  #board .flyer:nth-child(2n) { transform:rotate(1.2deg); background:#fde68a; }
+  #board .flyer b { display:block; font:700 15px/1.35 "Marker Felt","Comic Sans MS",cursive; }
+  #board .flyer small { display:block; margin:6px 0 8px; opacity:.7; }
+  #board .flyer.done { opacity:.55; }
+  #board .btn { text-align:center; padding:7px; border-radius:4px; background:#2a2016; color:#fff; font-weight:900; cursor:pointer; }
+  #board .btn.off { background:#9a8a70; cursor:default; }
+  #board .close { margin-top:12px; text-align:center; padding:10px; border-radius:6px; background:#3a2a1a; color:#fff; font-weight:900; cursor:pointer; }
   #intel { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:20; }
   #intel .cbox { width:min(480px,92vw); max-height:80vh; overflow:auto; background:#1a1610; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
   #intel h3 { margin:0 0 10px; font:900 22px "Arial Black",Impact,sans-serif; color:#9ae6ff; }
@@ -339,6 +351,7 @@
 </div>
 <div id="dlg" class="hidden"><div class="cbox"><div class="who" id="dlgWho"></div><div class="line" id="dlgLine"></div><div id="dlgOpts"></div></div></div>
 <div id="intel" class="hidden"><div class="cbox"><h3 data-i18n="intelTitle"></h3><div id="intelBody"></div><div class="close" id="intelClose" data-i18n="close">닫기</div></div></div>
+<div id="board" class="hidden"><div class="cbox"><h3 data-i18n="boardTitle"></h3><div id="boardBody"></div><div class="close" id="boardClose" data-i18n="close">닫기</div></div></div>
 <div id="prologue"></div>
 <div id="shop" class="hidden">
   <div class="cbox">
@@ -816,6 +829,101 @@ const STR = {
   ken_1b: ['아, 그리고요… 저 모퉁이 가게, 몇 년째 비어 있는데 밤마다 불이 켜져요. 할머니는 유령이래요.', 'Oh, and… that corner store\'s been empty for years, but a light comes on every night. Grandma says it\'s a ghost.', 'あ、それと…あの角の店、何年も空き家なのに毎晩明かりがつくんです。おばあちゃんは幽霊だって。'],
   ken_r_b: ['다들 래퍼 이름만 기억하잖아요. 저는 비트 만든 사람이 더 궁금했어요.', 'Everyone only remembers the rapper\'s name. I always wanted to know who made the beat.', 'みんなラッパーの名前しか覚えてないでしょ。僕はビートを作った人の方が気になってた。'],
   cho_join_b: ['…시끄러운 음악은 질색이다. 그래도… 사람 모으는 재주는 있군. 총은 내가 든다.', '…I hate loud music. Still… you\'ve got a way of bringing people together. I\'ll carry the gun.', '…うるさい音楽は嫌いだ。だが…人を集める才はあるな。銃は俺が持つ。'],
+  boardLabel: ['📌 동네 게시판', '📌 Neighborhood board', '📌 町内掲示板'],
+  boardTitle: ['동네 게시판', 'Neighborhood Board', '町内掲示板'],
+  boardTake: ['떼어 가기', 'Take it', 'はがす'],
+  boardTaken: ['진행 중', 'In progress', '進行中'],
+  boardThanks: ['고마워요!', 'Thank you!', 'ありがとう！'],
+  boardEmpty: ['새 전단이 아직 없다.', 'No new flyers yet.', 'まだ新しいチラシはない。'],
+  boardNew: ['📌 동네 게시판에 새 전단이 붙었다', '📌 A new flyer on the neighborhood board', '📌 町内掲示板に新しいチラシが貼られた'],
+  fl_laundry: ['빨래 배달해 줄 사람 — 수고비 드림', 'Need someone to deliver laundry — will pay', '洗濯物を届けてくれる人募集——お礼あり'],
+  fl_bento: ['도시락 배달 — 따뜻할 때!', 'Bento delivery — while it\'s warm!', 'お弁当の配達——温かいうちに！'],
+  fl_walkman: ['내 워크맨 찾아 주세요 ㅠㅠ', 'Please find my Walkman :(', '僕のウォークマンを探してください（泣）'],
+  fl_brother: ['농구장에서 사라진 동생을 찾습니다', 'Looking for my little brother — last seen at the court', 'コートからいなくなった弟を探してます'],
+  fl_record: ['아내의 레코드를 찾습니다', 'Looking for my wife\'s record', '妻のレコードを探しています'],
+  fl_helmet: ['옛 소방서에 두고 온 것', 'Something I left at the old firehouse', '昔の消防署に置いてきたもの'],
+  nm_kids: ['레드 후드 꼬맹이들', 'Red Hood kids', 'レッドフッズのガキども'],
+  nm_ty: ['타이', 'Ty', 'タイ'],
+  nm_pawn: ['전당포 주인', 'Pawnbroker', '質屋の主人'],
+  kidsLabel: ['💬 꼬맹이들', '💬 The kids', '💬 ガキども'],
+  pawnLabel: ['💬 전당포', '💬 Pawn shop', '💬 質屋'],
+  fireLabel: ['🚒 옛 소방서', '🚒 The old firehouse', '🚒 昔の消防署'],
+  fireLabelN: ['🔦 소방서 안 살펴보기', '🔦 Search the firehouse', '🔦 消防署の中を調べる'],
+  fireDay: ['판자 틈이 너무 어둡다… 밤에 손전등을 들고 다시 오자.', 'Too dark through the boards… come back at night with a flashlight.', '板の隙間が暗すぎる…夜に懐中電灯を持って出直そう。'],
+  fireFound: ['먼지 쌓인 사물함. 이름표가 붙은 헬멧 하나.', 'A dusty locker. One helmet with a name tag.', '埃をかぶったロッカー。名札のついたヘルメットが一つ。'],
+  sq_l_give: ['꾸러미 세 개야. 주소는 거기 적혀 있어. 고마워, 젊은이.', 'Three bundles. The addresses are on them. Thank you, dear.', '包みが三つよ。住所は書いてあるわ。ありがとうね。'],
+  sq_l_door: ['📦 빨래 배달 완료 ({n}/2)', '📦 Laundry delivered ({n}/2)', '📦 洗濯物を配達（{n}/2）'],
+  sq_l_end: ['…그건 배달 아니야. 내 거야.', '…That one\'s not a delivery. It\'s mine.', '…それは配達じゃないの。私のよ。'],
+  sq_l_show: ['꾸러미 틈으로 작은 남자아이 셔츠가 보인다. 아주 오래 빨아 입은.', 'Through a gap in the bundle you see a small boy\'s shirt. Washed many, many times.', '包みの隙間から小さな男の子のシャツが見える。何度も何度も洗われた。'],
+  sqo_l0: ['알바레스 할머니에게 빨래 받기', 'Pick up the laundry from Mrs. Alvarez', 'アルバレスさんから洗濯物を受け取る'],
+  sqo_l1: ['빨래 배달 ({n}/2)', 'Deliver the laundry ({n}/2)', '洗濯物を配達（{n}/2）'],
+  sqo_l3: ['주소 없는 꾸러미 — 할머니에게 돌아가기', 'The bundle with no address — go back to her', '住所のない包み——アルバレスさんのところへ戻る'],
+  sq_b_give: ['바이스 씨한테 갖다 줘요. 혼자 사시니까 끼니를 자주 거르셔.', 'Take this to Mr. Weiss. He lives alone, he skips meals.', 'ワイスさんに届けてね。一人暮らしだから、よく食事を抜くのよ。'],
+  sq_b_weiss: ['또 사토 씨가… 혼자 사는 노인한테 매번.', 'Mrs. Sato again… every time, for an old man living alone.', 'また佐藤さんか…一人暮らしの年寄りに、毎回。'],
+  sq_b_end: ['(빈 통을 보고) 다 드셨네. …다행이다.', '(looking at the empty box) He ate it all. …Good.', '（空の弁当箱を見て）全部食べたのね。…よかった。'],
+  sqo_b0: ['사토 할머니에게 도시락 받기', 'Pick up the bento from Mrs. Sato', '佐藤さんからお弁当を受け取る'],
+  sqo_b1: ['바이스 할아버지에게 도시락 전하기', 'Bring the bento to Mr. Weiss', 'ワイスさんにお弁当を届ける'],
+  sqo_b2: ['빈 도시락통을 사토 할머니에게', 'Bring the empty box back to Mrs. Sato', '空の弁当箱を佐藤さんへ'],
+  sq_w_ask: ['레드 후드 꼬맹이 둘이 뺏어 갔어요. 공원 서쪽에 있어요… 그 테이프만은 꼭.', 'Two Red Hood kids took it. They hang out west of the park… that tape, please.', 'レッドフッズのガキ二人に取られたんです。公園の西にいます…あのテープだけは。'],
+  kids_r0: ['뭐야, 아저씨. 이거 우리가 주운 거거든? (말로 하려면 평판 {r})', 'What, mister? We found this, okay? (talking them down needs {r} rep)', 'なんだよ、おっさん。これ拾ったんだけど？（話で済ませるには評判{r}）'],
+  kids_r_known: ['어? 혹시… 그 크루 사람이에요?', 'Huh? Are you… are you with that crew?', 'え？もしかして…あのクルーの人？'],
+  kids_o_talk: ['돌려줘. 그리고 집에 가.', 'Give it back. And go home.', '返せ。それから家に帰れ。'],
+  kids_a_talk: ['미, 미안해요! 여기요!', 'S-sorry! Here!', 'ご、ごめんなさい！はい！'],
+  kids_o_fight: ['말로 할 때 내놔.', 'Hand it over while I\'m asking nicely.', '口で言ってるうちに出せ。'],
+  kids_a_fight: ['싫은데? 덤벼!', 'Make me!', 'やだね！かかってこい！'],
+  sq_w_got: ['📼 워크맨을 되찾았다', '📼 Got the Walkman back', '📼 ウォークマンを取り返した'],
+  sq_w_end: ['이거… 이거 아무 데서도 못 구해요. 진짜 고마워요!', 'This… you can\'t get this anywhere. Thank you, really!', 'これ…どこにも売ってないんです。本当にありがとう！'],
+  sq_w_reward: ['📻 켄지의 테이프 — 나중에 해적 라디오 주파수가 열린다', '📻 Kenji\'s tape — a pirate radio frequency will open later', '📻 ケンジのテープ——後で海賊ラジオの周波数が開く'],
+  sqo_w0: ['켄지에게 이야기 듣기', 'Talk to Kenji', 'ケンジの話を聞く'],
+  sqo_w1: ['꼬맹이들에게서 워크맨 되찾기', 'Get the Walkman back from the kids', 'ガキどもからウォークマンを取り返す'],
+  sqo_w2: ['켄지에게 워크맨 돌려주기', 'Give Kenji his Walkman', 'ケンジにウォークマンを返す'],
+  sq_d_ask: ['타이가 틸 킹스 애들 따라 나갔어. Copper Heights 어딘가에 있을 거야. …난 못 가. 가면 싸움 나.', 'Ty went off with the Teal Kings. He\'s somewhere in Copper Heights. …I can\'t go. It\'d turn into a fight.', 'タイがティールキングスの連中についてった。Copper Heightsのどこかにいる。…俺は行けない。行けば喧嘩になる。'],
+  ty_r0: ['형이 보냈어? …형도 했잖아. 틸 킹스.', 'My brother sent you? …He was in the Teal Kings too.', '兄貴に言われて来たの？…兄貴もやってたじゃん。ティールキングス。'],
+  ty_o_a: ['네 형은 너만큼은 안 그랬으면 하는 거야.', 'Your brother just doesn\'t want you doing what he did.', 'お前の兄貴は、お前にだけは同じ道を歩いてほしくないんだ。'],
+  ty_a_a: ['…형이 그렇게 말했어?', '…He said that?', '…兄貴がそう言ったの？'],
+  ty_o_b: ['틸 킹스 애들, 네 이름도 몰라.', 'The Teal Kings don\'t even know your name.', 'ティールキングスの連中、お前の名前も知らないぞ。'],
+  ty_a_b: ['…뭐? 거짓말.', '…What? You\'re lying.', '…は？嘘だ。'],
+  ty_o_go: ['가서 직접 물어봐.', 'Go ask him yourself.', '自分で聞いてこい。'],
+  ty_end: ['…알았어. 가 볼게.', '…Fine. I\'ll go.', '…わかった。行ってみる。'],
+  ty_o_c: ['맘대로 해.', 'Suit yourself.', '勝手にしろ。'],
+  ty_a_c: ['그래, 맘대로 할 거야.', 'Yeah. I will.', 'ああ、勝手にするよ。'],
+  sq_d_show: ['데즈가 동생 머리를 한 대 쥐어박는다. 동생은 웃는다.', 'Dez smacks his brother on the back of the head. The kid laughs.', 'デズが弟の頭を一発はたく。弟は笑う。'],
+  sq_d_end: ['…밥은 먹었냐.', '…You eat yet?', '…飯は食ったのか。'],
+  sqo_d0: ['데즈에게 이야기 듣기', 'Talk to Dez', 'デズの話を聞く'],
+  sqo_d1: ['Copper Heights에서 타이 찾기', 'Find Ty in Copper Heights', 'Copper Heightsでタイを探す'],
+  sqo_d2: ['데즈에게 돌아가기', 'Go back to Dez', 'デズのところへ戻る'],
+  sq_r_ask: ['아이언 재킷 놈들이 내 레코드를 전당포에 팔았어. 아내가 제일 좋아하던 거야. Anchor Yard 전당포.', 'Those Iron Jackets sold my record to the pawn shop. My wife\'s favorite. The pawn shop in Anchor Yard.', 'アイアンジャケットの連中がレコードを質屋に売りやがった。妻の一番のお気に入りだ。Anchor Yardの質屋だ。'],
+  pawn_r0: ['레코드? 있지. 평판 150. 깎아 주는 거 없어.', 'The record? Got it. 150 rep. No haggling.', 'レコード？あるよ。評判150。値引きはなし。'],
+  pawn_o_buy: ['평판 150으로 산다', 'Buy it for 150 rep', '評判150で買う'],
+  pawn_a_buy: ['거래 끝.', 'Done deal.', '取引成立。'],
+  pawn_o_sneak: ['(밤) 뒷문으로 몰래 가져간다', '(Night) Slip in the back and take it', '（夜）裏口からこっそり持ち出す'],
+  pawn_a_sneak: ['뒷문 자물쇠는 생각보다 약했다. …누군가 경찰을 불렀다.', 'The back lock was weaker than it looked. …Someone called the cops.', '裏口の鍵は思ったより弱かった。…誰かが警察を呼んだ。'],
+  sq_r_show: ['할아버지는 바로 틀지 않고, 재킷만 오래 쓰다듬는다.', 'He doesn\'t play it. He just runs his hand over the sleeve for a long time.', '老人はすぐには針を落とさず、ジャケットを長いこと撫でている。'],
+  sq_r_end: ['…고맙네. 답례로 이거 가져가. 내 거야. 아내 것 말고.', '…Thank you. Take this as thanks. It\'s mine. Not hers.', '…ありがとう。礼にこれを持っていきなさい。私のだ。妻のじゃない。'],
+  sq_r_reward: ['💿 첫 레코드를 얻었다 — 바이스 할아버지의 재즈 LP', '💿 Your first record — Mr. Weiss\'s jazz LP', '💿 初めてのレコード——ワイスさんのジャズLP'],
+  sqo_r0: ['바이스 할아버지에게 이야기 듣기', 'Talk to Mr. Weiss', 'ワイスさんの話を聞く'],
+  sqo_r1: ['Anchor Yard 전당포에서 레코드 되찾기', 'Get the record back from the Anchor Yard pawn shop', 'Anchor Yardの質屋でレコードを取り戻す'],
+  sqo_r2: ['바이스 할아버지에게 레코드 돌려주기', 'Bring the record back to Mr. Weiss', 'ワイスさんにレコードを返す'],
+  sq_h_ask: ['옛 소방서, 판자 쳐 놓은 거기. 내 사물함에 헬멧이 있어. …난 거기 다시 못 들어가.', 'The old firehouse, the boarded-up one. My helmet\'s in my locker. …I can\'t go back in there.', '昔の消防署、板が打ち付けてあるところだ。ロッカーにヘルメットがある。…俺はもう入れない。'],
+  sq_h_show: ['헬멧 안쪽에 날짜 하나가 긁혀 있다.', 'A date is scratched inside the helmet.', 'ヘルメットの内側に、日付が一つ刻まれている。'],
+  sq_h_end: ['…네가 가져.', '…You keep it.', '…お前が持ってろ。'],
+  sq_h_reward: ['🪖 방탄 최대치 +25', '🪖 Max armor +25', '🪖 防弾上限 +25'],
+  sqo_h0: ['살바토레 아저씨에게 이야기 듣기', 'Talk to Salvatore', 'サルヴァトーレさんの話を聞く'],
+  sqo_h1: ['옛 소방서 — 밤에 손전등을 들고', 'The old firehouse — at night, with a flashlight', '昔の消防署——夜、懐中電灯を持って'],
+  sqo_h1n: ['옛 소방서 안 살펴보기', 'Search the old firehouse', '昔の消防署の中を調べる'],
+  sqo_h2: ['살바토레 아저씨에게 헬멧 가져가기', 'Bring the helmet to Salvatore', 'サルヴァトーレさんにヘルメットを届ける'],
+  small_alvarez: ['빨래는 기다려 주지 않아. 사람도 그렇고.', 'Laundry doesn\'t wait. Neither do people.', '洗濯物は待ってくれないの。人もそうよ。'],
+  small_kenji: ['이 동네 테이프 가게는 다 문 닫았어요. 아쉽다.', 'Every tape shop around here closed. Shame.', 'この辺のテープ屋は全部閉まっちゃった。残念。'],
+  small_sal: ['요즘 밤엔 사이렌 소리가 너무 많아.', 'Too many sirens at night these days.', '最近は夜のサイレンが多すぎる。'],
+  small_sato: ['배고프면 와요. 도시락 하나쯤은 늘 있어.', 'Come by if you\'re hungry. There\'s always a bento.', 'お腹がすいたら来なさい。お弁当の一つくらいいつでもあるわ。'],
+  small_dez: ['농구할래? …아니면 말고.', 'Wanna shoot some hoops? …Or not.', 'バスケやる？…やらないならいいけど。'],
+  small_weiss: ['레코드는 바늘을 올리기 직전이 제일 좋지.', 'The best part of a record is the moment before the needle drops.', 'レコードは針を落とす直前が一番いい。'],
+  thx_alvarez: ['그 셔츠… 고마워. 아무것도 묻지 않아 줘서.', 'That shirt… thank you. For not asking.', 'あのシャツ…ありがとう。何も聞かないでくれて。'],
+  thx_kenji: ['테이프 매일 들어요! 진짜 고마워요.', 'I listen to the tape every day! Thanks, really.', 'テープ毎日聴いてます！本当にありがとう。'],
+  thx_sal: ['그 헬멧, 잘 쓰고 있나.', 'You still wearing that helmet?', 'あのヘルメット、ちゃんと使ってるか。'],
+  thx_sato: ['바이스 씨가 요즘 웃어요. 고마워요.', 'Mr. Weiss smiles these days. Thank you.', 'ワイスさん、最近笑うのよ。ありがとうね。'],
+  thx_dez: ['타이 요즘 학교 가. …말하지 마, 쑥스러우니까.', 'Ty goes to school now. …Don\'t mention it, it\'s embarrassing.', 'タイは最近学校に行ってる。…言うなよ、照れるから。'],
+  thx_weiss: ['그 레코드, 들어 봤나? 아니면 아직 바늘 올리기 직전인가.', 'Played that record yet? Or still at the moment before the needle drops?', 'あのレコード、聴いたかね？それともまだ針を落とす直前かな。'],
   bikeRide: ['🚲 자전거 타기', '🚲 Ride the bike', '🚲 自転車に乗る'],
   bikeOff: ['🚲 자전거에서 내리기', '🚲 Get off the bike', '🚲 自転車から降りる'],
   bikeFall: ['🚲 총에 맞아 자전거에서 떨어졌다!', '🚲 Shot off your bike!', '🚲 撃たれて自転車から落ちた！'],
@@ -1998,6 +2106,7 @@ const $ = id => document.getElementById(id);
 addEventListener('keydown', e => {
   if (onTitle()) { leaveTitle(); return; }
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
+  if (state === 'board') { if (['KeyE', 'Escape'].includes(e.code)) closeBoard(); return; }
   if (state === 'intel') { if (['KeyJ', 'Escape'].includes(e.code)) closeIntel(); return; }
   if (state === 'dialog') { const n = +e.key; if (n >= 1 && n <= dlgOpts.length) pickOpt(n - 1); else if (e.code === 'Escape') closeDlg(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
@@ -4059,7 +4168,8 @@ function personalObjective() {
 function questObjective() {
   const ll = Q.landlord.s === 'find' || Q.landlord.s === 'fight';
   const urgent = Q.pizza.s === 'raid' || ['run', 'shoot', 'fight'].includes(Q.coach.s) || Q.bike.s === 'ride';
-  return (ll && personalObjective()) || (urgent && questObjectiveBase()) || campaignObjective() || questObjectiveBase() || personalObjective();
+  const campUrgent = CAMPAIGN() && ['confront', 'subdued'].includes(rivalQ().s);
+  return (ll && personalObjective()) || (urgent && questObjectiveBase()) || (campUrgent && campaignObjective()) || sideObjective() || campaignObjective() || questObjectiveBase() || personalObjective();
 }
 
 // ---------- save / continue (this browser; moves to the Supabase account later) ----------
@@ -4149,13 +4259,13 @@ const CHO_NPCS = [
     related_characters: ['mr_cho', 'big_man'], information_reliability: 'rumor', known_rumors: ['cho_light'],
     dialogue_variants: { first: 'ken_1', firstBy: { tank: 'ken_1b' }, repeat: 'ken_r', repeatBy: { tank: 'ken_r_b' }, deep: 'ken_d', deepNeeds: ['cho_photo', 'cho_light'] } },
   { npc_id: 'sal', district: 'Kings Commons', occupation: 'retired_firefighter', pos: { x: 40, z: -19.4 },
-    look: { hood: 0x2a2a2a, cap: 0x8e1414, jeans: 0x1b2a4a }, sign: ['ENGINE 217', '#8e1414', '#fff', 40, -17.6, Math.PI],
+    look: { hood: 0x2a2a2a, cap: 0x8e1414, jeans: 0x1b2a4a }, sign: null,
     related_characters: ['mr_cho'], information_reliability: 'partial', known_rumors: ['cho_fire'],
     dialogue_variants: { first: 'sal_1', repeat: 'sal_r', deep: 'sal_d', deepNeeds: ['cho_fire', 'cho_photo'] } },
 ];
 const RUN_NPCS = [
-  { npc_id: 'sato', district: 'Kings Commons', occupation: 'bento_shop_owner', pos: { x: 36, z: 31 },
-    look: { hood: 0x5a4a6a, cap: 0xcfcfcf, jeans: 0x3a3a3a, apron: 0xb3221b }, sign: ['SATO BENTO', '#b3221b', '#fff', 36, 32.4, Math.PI],
+  { npc_id: 'sato', district: 'Kings Commons', occupation: 'bento_shop_owner', pos: { x: 39.5, z: 31 },
+    look: { hood: 0x5a4a6a, cap: 0xcfcfcf, jeans: 0x3a3a3a, apron: 0xb3221b }, sign: null,
     related_characters: ['runner', 'mr_cho'], information_reliability: 'partial', known_rumors: ['run_father'],
     dialogue_variants: { first: 'sato_1', repeat: 'sato_r', deep: 'sato_d', deepNeeds: ['run_paper'] } },
   { npc_id: 'dez', district: 'Copper Heights', occupation: 'ex_crew_kid', pos: { x: -100, z: -30.6 },
@@ -4245,17 +4355,22 @@ const chapterNPCs = () => chapter() === 'cho' ? CHO_NPCS : RUN_NPCS;
 function campaignSetup() {
   if (!CAMPAIGN() || campaignReady) return;
   campaignReady = true;
-  for (const n of chapterNPCs()) {
+  for (const n of [...CHO_NPCS, ...RUN_NPCS]) {   // every resident lives here; only your chapter's ones hold clues
+    const inCh = chapterNPCs().includes(n);
     if (n.sign) { const [text, bg, fg, sx, sz, ry] = n.sign; signBoard(text, bg, fg, sx, 4.3, sz, ry); }
     npcState[n.npc_id] = npcState[n.npc_id] || { trust: 0, deepSeen: false };
     streetNPCs[n.npc_id] = addNPC(n.pos.x, n.pos.z, n.look,
-      () => hasClue(n.known_rumors[0]) ? L('qTalkTo', { n: L('nm_' + n.npc_id) }) : L('listenTo', { n: L('nm_' + n.npc_id) }),
+      () => inCh && !hasClue(n.known_rumors[0]) ? L('listenTo', { n: L('nm_' + n.npc_id) }) : L('qTalkTo', { n: L('nm_' + n.npc_id) }),
       () => streetTalk(n));
-    const gv = { n: () => streetNPCs[n.npc_id] && npcAt(n.pos), on: () => !hasClue(n.known_rumors[0]) };
+    const gv = { n: () => streetNPCs[n.npc_id] && npcAt(n.pos), on: () => (inCh && !hasClue(n.known_rumors[0])) || sideNeeds(n.npc_id) };
     gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false;
     scene.add(gv.sp); GIVERS.push(gv);
   }
-  npcs.push(peekSpot, waitSpot, phoneSpot);
+  npcs.push(peekSpot, waitSpot, phoneSpot, boardSpot, pawnSpot, fireSpot);
+  const bg = { n: () => boardSpot, on: () => Object.keys(SIDE).some(k => SQ(k).s === 'posted') };
+  bg.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); bg.sp.scale.setScalar(0.7); bg.sp.visible = false; scene.add(bg.sp);
+  boardSpot.pos.y = 0.6; GIVERS.push(bg);
+  sideRestore();
   const q = rivalQ();
   if (['subdued', 'needs_trust'].includes(q.s)) spawnRivalNPC();
   if (q.s === 'confront') q.s = 'identified';
@@ -4266,8 +4381,13 @@ function campaignHook() {
   if (chapter() === 'run' && !hasClue('run_father')) talk(L('nm_sato'), L('sato_hook'));
 }
 function streetTalk(n) {
+  if (sideTalk(n.npc_id)) return;
   const st = npcState[n.npc_id], v = n.dialogue_variants, who = L('nm_' + n.npc_id);
   st.trust++;
+  if (!chapterNPCs().includes(n)) {   // not part of your chapter's mystery: just a neighbour
+    const done = Object.keys(SIDE).some(k => SIDE[k].owner === n.npc_id && SQ(k).s === 'done');
+    return talk(who, L((done ? 'thx_' : 'small_') + n.npc_id));
+  }
   if (!hasClue(n.known_rumors[0])) { talk(who, L((v.firstBy && v.firstBy[clsKey]) || v.first)); addClue(n.known_rumors[0]); return; }
   if (!st.deepSeen && v.deepNeeds.every(hasClue)) { st.deepSeen = true; talk(who, L(v.deep)); saveGame(); return; }
   talk(who, L((v.repeatBy && v.repeatBy[clsKey]) || v.repeat));
@@ -4384,6 +4504,7 @@ function recruitRival() {
 }
 function updateCampaign(dt) {
   if (!CAMPAIGN()) return;
+  updateSide(dt);
   // somebody still turns the store's lights on at night
   const lit = chapter() === 'cho' && night > 0.55 && Q.rivalCho.s !== 'recruited';
   chosLight.intensity += ((lit ? 9 : 0) - chosLight.intensity) * Math.min(1, dt * 2);
@@ -4410,6 +4531,221 @@ function campaignObjective() {
   return null;
 }
 
+// ---------- neighbourhood board & side quests (SIDE_QUESTS.md) ----------
+// Small favours between campaign beats. Each one shows a little of the person asking, without saying it.
+const BOARD = { x: 31.3, z: 38 };
+const SIDE = {   // posted on the board in this order; finishing one posts the next
+  laundry: { owner: 'alvarez', next: 'brother' },
+  bento: { owner: 'sato', next: 'record' },
+  walkman: { owner: 'kenji', next: 'helmet' },
+  brother: { owner: 'dez' },
+  record: { owner: 'weiss' },
+  helmet: { owner: 'sal' },
+};
+for (const k in SIDE) Q['sq_' + k] = { s: ['laundry', 'bento', 'walkman'].includes(k) ? 'posted' : 'locked', step: 0 };
+const SQ = k => Q['sq_' + k];
+const WALKMAN_TALK_REP = 300;
+const DOORS = [[-31, -150], [19.4, -150]];   // laundry: two addresses, the third bundle has none
+const KIDS = { x: -60, z: 31 }, BRO = { x: -150, z: 19.4 }, PAWN = { x: -100, z: -131.2 }, FIRE = { x: -50, z: -69 };
+
+// the board itself: a cork board on the corner by the bento shop
+{
+  const cork = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.4, 2.2), std(0xa0784a, { roughness: 1 }));
+  cork.position.set(32.42, 1.7, BOARD.z); scene.add(cork);
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.55, 2.35), std(0x3a2a1a)); frame.position.set(32.46, 1.7, BOARD.z); scene.add(frame);
+  for (let k = 0; k < 5; k++) {   // paper flyers
+    const f = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.5), std([0xfff6dc, 0xfde68a, 0xe0f2fe, 0xfce7f3, 0xffffff][k]));
+    f.position.set(32.36, 1.5 + (k % 2) * 0.55, BOARD.z - 0.8 + k * 0.4); f.rotation.y = -Math.PI / 2; f.rotation.z = (k % 3 - 1) * 0.08; scene.add(f);
+  }
+  signBoard('NEIGHBORHOOD', '#3a2a1a', '#ffe9a8', 32.38, 2.75, BOARD.z, -Math.PI / 2, 2.0);
+}
+// places: a pawn shop on Iron Jackets turf, and the old firehouse boarded up for years
+{
+  signBoard('PAWN · BUY · SELL', '#1f1f1f', '#e8c35a', PAWN.x, 4.3, -132.4, 0);
+  signBoard('ENGINE 217', '#8e1414', '#fff', FIRE.x, 4.3, -67.6, Math.PI);
+  const wood = std(0x5e3f26, { roughness: 0.95 });
+  for (let k = 0; k < 5; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.3, 0.06), wood); b.position.set(FIRE.x + (k % 2 ? 0.2 : -0.2), 0.9 + k * 0.4, -67.56); b.rotation.z = (k % 3 - 1) * 0.07; scene.add(b); }
+}
+const boardSpot = { pos: { x: BOARD.x, z: BOARD.z }, label: () => L('boardLabel'), use: () => openBoard() };
+const pawnSpot = { pos: { x: PAWN.x, z: PAWN.z }, on: () => SQ('record').s === 'active' && SQ('record').step === 1, label: () => L('pawnLabel'), use: () => pawnTalk() };
+const fireSpot = { pos: { x: FIRE.x, z: FIRE.z }, on: () => SQ('helmet').s === 'active' && SQ('helmet').step === 1, label: () => L(night > 0.55 ? 'fireLabelN' : 'fireLabel'), use: () => {
+  if (night <= 0.55) return talk('🚒', L('fireDay'));
+  SQ('helmet').step = 2; talk('🔦', L('fireFound')); beep(700, 0.08, 0.06, 'triangle'); saveGame();
+} };
+let kidNPCs = [], kidFoes = [], broNPC = null;
+
+// board screen
+function renderBoard() {
+  const cards = Object.keys(SIDE).filter(k => SQ(k).s !== 'locked').map(k => {
+    const s = SQ(k).s;
+    const btn = s === 'posted' ? `<div class="btn" data-take="${k}">${L('boardTake')}</div>` : `<div class="btn off">${L(s === 'done' ? 'boardThanks' : 'boardTaken')}</div>`;
+    return `<div class="flyer${s === 'done' ? ' done' : ''}"><b>${L('fl_' + k)}</b><small>— ${L('nm_' + SIDE[k].owner)}</small>${btn}</div>`;
+  });
+  $('boardBody').innerHTML = cards.join('') || `<p>${L('boardEmpty')}</p>`;
+}
+function openBoard() {
+  if (state !== 'play') return;
+  state = 'board'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  renderBoard(); $('board').classList.remove('hidden');
+}
+function closeBoard() {
+  if (state !== 'board') return;
+  $('board').classList.add('hidden'); state = 'play';
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+$('boardClose').addEventListener('click', closeBoard);
+$('boardBody').addEventListener('click', e => {
+  const k = e.target.dataset?.take; if (!k || SQ(k).s !== 'posted') return;
+  SQ(k).s = 'active'; SQ(k).step = 0;
+  feed(L('qNew', { q: L('fl_' + k) }), '#ffd23f'); beep(660, 0.08, 0.08, 'triangle');
+  renderBoard(); saveGame();
+});
+
+function sideFinish(k, line) {
+  const q = SQ(k), owner = SIDE[k].owner;
+  q.s = 'done';
+  if (line) talk(L('nm_' + owner), L(line));
+  npcState[owner] = npcState[owner] || { trust: 0, deepSeen: false }; npcState[owner].trust += 3;
+  const nx = SIDE[k].next; if (nx && SQ(nx).s === 'locked') { SQ(nx).s = 'posted'; setTimeout(() => feed(L('boardNew'), '#ffe9a8'), 3000); }
+  msg(L('qDone', { q: L('fl_' + k) }), 2.4);
+  beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(784, 0.3, 0.1, 'triangle'), 150);
+  saveGame();
+}
+// a resident's side-quest lines come before their campaign lines; returns true if it handled the talk
+function sideTalk(id) {
+  const who = L('nm_' + id);
+  const L1 = SQ('laundry'), B = SQ('bento'), W = SQ('walkman'), D = SQ('brother'), R = SQ('record'), H = SQ('helmet');
+  if (id === 'alvarez' && L1.s === 'active') {
+    if (L1.step === 0) { L1.step = 1; talk(who, L('sq_l_give')); saveGame(); return true; }
+    if (L1.step === 3) {
+      sideFinish('laundry', 'sq_l_end'); rep += 60;
+      setTimeout(() => feed(L('sq_l_show'), '#cfd2d6'), 2600); return true;
+    }
+  }
+  if (id === 'sato' && B.s === 'active') {
+    if (B.step === 0) { B.step = 1; talk(who, L('sq_b_give')); saveGame(); return true; }
+    if (B.step === 2) { sideFinish('bento', 'sq_b_end'); rep += 40; player.hp = player.maxHp; return true; }
+  }
+  if (id === 'weiss' && B.s === 'active' && B.step === 1) { B.step = 2; talk(who, L('sq_b_weiss')); saveGame(); return true; }
+  if (id === 'weiss' && R.s === 'active') {
+    if (R.step === 0) { R.step = 1; talk(who, L('sq_r_ask')); saveGame(); return true; }
+    if (R.step === 2) {
+      sideFinish('record', null); rep += 50; R.got = 1;
+      feed(L('sq_r_show'), '#cfd2d6');
+      setTimeout(() => talk(who, L('sq_r_end')), 2800);
+      setTimeout(() => feed(L('sq_r_reward'), '#ffd23f'), 3400); return true;
+    }
+  }
+  if (id === 'kenji' && W.s === 'active') {
+    if (W.step === 0) { W.step = 1; talk(who, L('sq_w_ask')); spawnKids(); saveGame(); return true; }
+    if (W.step === 2) { sideFinish('walkman', 'sq_w_end'); rep += 60; W.radio = 1; setTimeout(() => feed(L('sq_w_reward'), '#9ae6ff'), 2600); return true; }
+  }
+  if (id === 'dez' && D.s === 'active') {
+    if (D.step === 0) { D.step = 1; talk(who, L('sq_d_ask')); spawnBrother(); saveGame(); return true; }
+    if (D.step === 2) {
+      sideFinish('brother', null); rep += 80;
+      feed(L('sq_d_show'), '#cfd2d6'); setTimeout(() => talk(who, L('sq_d_end')), 1800); return true;
+    }
+  }
+  if (id === 'sal' && H.s === 'active') {
+    if (H.step === 0) { H.step = 1; talk(who, L('sq_h_ask')); saveGame(); return true; }
+    if (H.step === 2) {
+      sideFinish('helmet', null); armorMax += 25;
+      feed(L('sq_h_show'), '#cfd2d6'); setTimeout(() => talk(who, L('sq_h_end')), 2600); setTimeout(() => feed(L('sq_h_reward'), '#ffd23f'), 3200); return true;
+    }
+  }
+  return false;
+}
+// Kenji's walkman: two Red Hood kids. Talk them down if the street knows you, or take it back.
+function spawnKids() {
+  if (kidNPCs.length) return;
+  for (const dx of [-1, 1]) {
+    const o = addNPC(KIDS.x + dx, KIDS.z, { hood: 0xb3221b, cap: 0x8e1414, jeans: 0x2c3b57 }, () => L('kidsLabel'), () => kidsTalk());
+    o.g.scale.setScalar(0.82); kidNPCs.push(o);
+  }
+}
+function removeKidNPCs() {
+  for (const o of kidNPCs) { scene.remove(o.g); const i = npcs.findIndex(n => n.o === o); if (i >= 0) npcs.splice(i, 1); }
+  kidNPCs = [];
+}
+function kidsTalk() {
+  const opts = [{ label: L('kids_o_fight'), go: () => {
+    talk(L('nm_kids'), L('kids_a_fight'));
+    for (const o of kidNPCs) { const p = o.g.position, e = new Enemy(p.x, p.z, 'red', districtAt(p.x, p.z)); e.hp = 40; e.hunter = true; e.kid = true; kidFoes.push(e); enemies.push(e); }
+    removeKidNPCs(); rebuildParts();
+  } }];
+  if (rep >= WALKMAN_TALK_REP) opts.unshift({ label: L('kids_o_talk'), go: () => { talk(L('nm_kids'), L('kids_a_talk')); removeKidNPCs(); SQ('walkman').step = 2; saveGame(); } });
+  ask(L('nm_kids'), L(rep >= WALKMAN_TALK_REP ? 'kids_r_known' : 'kids_r0', { r: WALKMAN_TALK_REP }), opts);
+}
+// Dez's little brother, about to join the Teal Kings
+function spawnBrother() {
+  if (broNPC) return;
+  broNPC = addNPC(BRO.x, BRO.z, { hood: 0x1f8a8a, cap: 0xeeeeee, jeans: 0x1f2f3a }, () => L('qTalkTo', { n: L('nm_ty') }), () => broTalk());
+  broNPC.g.scale.setScalar(0.88);
+}
+function broTalk() {
+  const home = () => {
+    scene.remove(broNPC.g); const i = npcs.findIndex(n => n.o === broNPC); if (i >= 0) npcs.splice(i, 1); broNPC = null;
+    SQ('brother').step = 2; saveGame();
+  };
+  ask(L('nm_ty'), L('ty_r0'), [
+    { label: L('ty_o_a'), go: () => ask(L('nm_ty'), L('ty_a_a'), [{ label: L('ty_o_go'), go: () => { talk(L('nm_ty'), L('ty_end')); home(); } }]) },
+    { label: L('ty_o_b'), go: () => ask(L('nm_ty'), L('ty_a_b'), [{ label: L('ty_o_go'), go: () => { talk(L('nm_ty'), L('ty_end')); home(); } }]) },
+    { label: L('ty_o_c'), go: () => talk(L('nm_ty'), L('ty_a_c')) },
+  ]);
+}
+// the pawn shop: buy the record back, or come at night and take it
+function pawnTalk() {
+  const R = SQ('record'), got = () => { R.step = 2; saveGame(); };
+  const opts = [];
+  if (rep >= 150) opts.push({ label: L('pawn_o_buy'), go: () => { rep -= 150; talk(L('nm_pawn'), L('pawn_a_buy')); got(); } });
+  if (night > 0.55) opts.push({ label: L('pawn_o_sneak'), go: () => { talk('🌙', L('pawn_a_sneak')); heat = Math.min(HEAT_MAX, heat + 70); got(); } });
+  opts.push({ label: L('later'), go: () => {} });
+  ask(L('nm_pawn'), L('pawn_r0'), opts);
+}
+
+function updateSide(dt) {
+  const L1 = SQ('laundry'), W = SQ('walkman');
+  if (L1.s === 'active' && L1.step >= 1 && L1.step <= 2 && zone === 'street') {
+    const [x, z] = DOORS[L1.step - 1];
+    if (near({ x, z }, 2.6)) { L1.step++; feed(L('sq_l_door', { n: L1.step - 1 }), '#3ddc84'); beep(880, 0.06, 0.06, 'triangle'); saveGame(); }
+  }
+  if (W.s === 'active' && W.step === 1 && kidFoes.length && kidFoes.every(e => e.dead || !enemies.includes(e))) {
+    kidFoes = []; W.step = 2; feed(L('sq_w_got'), '#3ddc84'); saveGame();
+  }
+}
+function sideObjective() {
+  const L1 = SQ('laundry'), B = SQ('bento'), W = SQ('walkman'), D = SQ('brother'), R = SQ('record'), H = SQ('helmet');
+  const npcPos = id => [...CHO_NPCS, ...RUN_NPCS].find(n => n.npc_id === id).pos;
+  if (L1.s === 'active') return L1.step === 0 ? { text: L('sqo_l0'), at: npcPos('alvarez') } : L1.step <= 2 ? { text: L('sqo_l1', { n: L1.step }), at: { x: DOORS[L1.step - 1][0], z: DOORS[L1.step - 1][1] } } : { text: L('sqo_l3'), at: npcPos('alvarez') };
+  if (W.s === 'active') return W.step === 0 ? { text: L('sqo_w0'), at: npcPos('kenji') } : W.step === 1 ? { text: L('sqo_w1'), at: kidFoes[0] && !kidFoes[0].dead ? kidFoes[0].g.position : KIDS } : { text: L('sqo_w2'), at: npcPos('kenji') };
+  if (D.s === 'active') return D.step === 0 ? { text: L('sqo_d0'), at: npcPos('dez') } : D.step === 1 ? { text: L('sqo_d1'), at: BRO } : { text: L('sqo_d2'), at: npcPos('dez') };
+  if (B.s === 'active') return B.step === 0 ? { text: L('sqo_b0'), at: npcPos('sato') } : B.step === 1 ? { text: L('sqo_b1'), at: npcPos('weiss') } : { text: L('sqo_b2'), at: npcPos('sato') };
+  if (R.s === 'active') return R.step === 0 ? { text: L('sqo_r0'), at: npcPos('weiss') } : R.step === 1 ? { text: L('sqo_r1'), at: PAWN } : { text: L('sqo_r2'), at: npcPos('weiss') };
+  if (H.s === 'active') return H.step === 0 ? { text: L('sqo_h0'), at: npcPos('sal') } : H.step === 1 ? { text: L(night > 0.55 ? 'sqo_h1n' : 'sqo_h1'), at: FIRE } : { text: L('sqo_h2'), at: npcPos('sal') };
+  return null;
+}
+// residents who have something for you right now get the yellow "!"
+function sideNeeds(id) {
+  const L1 = SQ('laundry'), B = SQ('bento'), W = SQ('walkman'), D = SQ('brother'), R = SQ('record'), H = SQ('helmet');
+  return (id === 'alvarez' && L1.s === 'active' && (L1.step === 0 || L1.step === 3)) ||
+    (id === 'sato' && B.s === 'active' && (B.step === 0 || B.step === 2)) || (id === 'weiss' && B.s === 'active' && B.step === 1) ||
+    (id === 'weiss' && R.s === 'active' && (R.step === 0 || R.step === 2)) || (id === 'kenji' && W.s === 'active' && W.step !== 1) ||
+    (id === 'dez' && D.s === 'active' && D.step !== 1) || (id === 'sal' && H.s === 'active' && H.step !== 1);
+}
+function sideRestore() {
+  if (SQ('walkman').s === 'active' && SQ('walkman').step === 1) spawnKids();
+  if (SQ('brother').s === 'active' && SQ('brother').step === 1) spawnBrother();
+}
+function renderSideLog() {
+  const ks = Object.keys(SIDE).filter(k => ['active', 'done'].includes(SQ(k).s));
+  if (!ks.length) return '';
+  return `<div class="who" style="margin-top:14px">📌 ${L('boardTitle')}</div>` + ks.map(k => `<div class="clue"><span class="rel">${SQ(k).s === 'done' ? '✅' : '▶'}</span><div><b>${L('fl_' + k)}</b><small>${L('nm_' + SIDE[k].owner)}</small></div></div>`).join('');
+}
+
 // ---- Street Intel notebook (J / 📓) ----
 function renderIntel() {
   const rel = { fact: '✅', partial: '◐', rumor: '❓' };
@@ -4423,7 +4759,7 @@ function renderIntel() {
     h += `<div class="clue"><span class="rel">${rel[c.rel]}</span><div><b>${L('cl_' + id)}</b><small>${src} · ${intel[id].d} · ${L('relName_' + c.rel)}</small></div></div>`;
   }
   for (const inf of INFERENCES) if (intel[inf.id] && CLUES[inf.needs[0]].subject === subj) h += `<div class="inf">💡 ${L(inf.id)}</div>`;
-  $('intelBody').innerHTML = h;
+  $('intelBody').innerHTML = h + renderSideLog();
 }
 function openIntel() {
   if (state !== 'play' || !CAMPAIGN()) return;
@@ -4762,7 +5098,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
