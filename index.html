@@ -362,18 +362,18 @@
     body.touch #bPause { right:10px; width:40px; }
     body.touch #bCrew { right:56px; width:52px; }
     body.touch #bLight { right:114px; width:40px; }
-    body.touch #bIntel { left:auto; margin-left:0; top:118px; height:40px; right:160px; width:40px; }
-    body.touch #bRadio { left:auto; margin-left:0; top:118px; height:40px; right:206px; width:40px; }
-    body.touch #bVol { left:auto; margin-left:0; top:118px; height:40px; right:252px; width:40px; }
-    body.touch #hp { left:12px; top:124px; bottom:auto; transform:none; }
+    /* six buttons don't fit in one row next to the health bar: a second row under the first */
+    body.touch #bIntel, body.touch #bRadio, body.touch #bVol { left:auto; margin-left:0; top:164px; height:40px; width:40px; }
+    body.touch #bIntel { right:10px; } body.touch #bRadio { right:56px; } body.touch #bVol { right:102px; }
+    body.touch #hp { left:12px; top:214px; bottom:auto; transform:none; }   /* below the quest text, which can wrap */
     body.touch #hp .bar { width:90px; }
-    body.touch #ammo { left:12px; top:150px; }
+    body.touch #ammo { left:12px; top:240px; }
     body.touch #mag { font-size:24px; }
-    body.touch #feed { top:172px; right:10px; max-width:58vw; font-size:11px; }
-    body.touch #nav { top:204px; max-width:92vw; white-space:normal; text-align:center; }
-    body.touch #bossbar { top:240px; width:82vw; }
-    body.touch #prompt { top:280px; }
-    body.touch #talk { top:330px; }
+    body.touch #feed { top:214px; right:10px; max-width:50vw; font-size:11px; }
+    body.touch #nav { top:248px; max-width:92vw; white-space:normal; text-align:center; }
+    body.touch #bossbar { top:284px; width:82vw; }
+    body.touch #prompt { top:322px; }
+    body.touch #talk { top:372px; }
     body.touch #msg { top:36%; font-size:28px; letter-spacing:2px; }
     body.touch #stick { left:20px; bottom:40px; }
     body.touch #bFire { right:18px; bottom:40px; width:96px; height:96px; }
