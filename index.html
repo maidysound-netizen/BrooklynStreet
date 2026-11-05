@@ -177,7 +177,12 @@
     #charInfo q, #charInfo .cf { display:none; }
     #menu .go { padding:8px 24px; font-size:17px; }
     #menu .mtoggle { margin-top:6px; padding:6px 14px; }
+    #menu #savedFounder { width:110px; margin:4px auto 6px; padding:4px; } #menu #savedFounder b { font-size:14px; margin-top:3px; }
   }
+  /* continuing: the founder you play, as a portrait card */
+  #savedFounder { width:170px; margin:6px auto 12px; padding:6px; border-radius:12px; background:rgba(242,183,5,.18); border:2px solid var(--yellow); cursor:default; }
+  #savedFounder img { display:block; width:100%; aspect-ratio:300/258; object-fit:cover; border-radius:8px; }
+  #savedFounder b { display:block; margin-top:5px; font:900 18px system-ui,sans-serif; }
   #saveInfo { margin-top:10px; font:700 13px system-ui,sans-serif; opacity:.85; }
   #newGame { display:inline-block; margin-top:8px; padding:6px 14px; border-radius:16px; background:rgba(255,255,255,.12); font:700 13px system-ui,sans-serif; cursor:pointer; }
   #prompt { position:absolute; left:50%; bottom:90px; transform:translateX(-50%); padding:8px 16px; border-radius:20px; background:rgba(0,0,0,.65); font:800 15px system-ui,sans-serif; white-space:nowrap; }
@@ -500,6 +505,7 @@
     </ul>
     <div id="stage" class="p1"></div>
     <div id="chars" class="p1"></div>
+    <div id="savedFounder" class="hidden p1"><img alt=""><b></b></div>
     <div id="charInfo" class="p1"></div>
     <div class="p1"><span class="go" id="go">클릭해서 시작</span></div>
     <div id="saveInfo" class="hidden p1"></div>
@@ -4474,6 +4480,9 @@ function updateSaveUi() {
   // continuing plays the saved founder: show who that is, and pick a new one only after "New game"
   $('chars').classList.toggle('hidden', !!d); $('stage').classList.toggle('hidden', !!d);
   if (d && CLASSES[d.cls] && clsKey !== d.cls) { clsKey = d.cls; cls = CLASSES[clsKey]; renderChars(); }
+  const c = d && CLASSES[d.cls];
+  $('savedFounder').classList.toggle('hidden', !c);
+  if (c) { $('savedFounder').querySelector('img').src = c.img; $('savedFounder').querySelector('b').textContent = c.name; }
 }
 $('newGame').addEventListener('click', e => {
   e.stopPropagation();
