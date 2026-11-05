@@ -25,6 +25,14 @@ cd ~/Developer/mans-war-app/ios/App && xcodebuild -project App.xcodeproj -scheme
 xcrun devicectl device install app --device 00008110-000538811E0A801E ~/Developer/mans-war-app/ios/App/build-device/Build/Products/Debug-iphoneos/App.app
 ```
 
+## 두 번째 앱: MW Casual
+같은 게임인데 비트메이커만 예전처럼 간단한 1마디·5줄 버전이다. 아이콘은 노을 하늘에 청록 그림자라 MAN'S WAR(밤하늘·빨간 그림자)와 구별된다. 번들 ID가 달라서(`com.maidysound.manswar.casual`) 두 앱이 나란히 깔리고 저장도 따로다.
+```bash
+./build-casual.sh
+```
+- 브라우저에서는 주소 뒤에 `?studio=casual`을 붙이면 같은 모드로 열린다.
+- ⚠️ 무료 개인 팀은 기기 한 대에 직접 서명한 앱을 **3개까지만** 깔 수 있다. 다른 앱을 지우거나, Apple 개발자 계정(연 $99)이 있어야 네 번째가 들어간다.
+
 ## 손댄 것 (Capacitor 기본 템플릿과 다른 점)
 - 앱 아이콘·시작 화면: `make_icon.py`로 그림 (밤하늘 + 킹스 스트리트 스카이라인 + 노란 왕관 + 타이틀처럼 흰 글씨에 빨간 그림자 "MW")
 - iOS 27은 scene 방식이 아닌 앱을 바로 종료시킨다 → `AppDelegate.swift`에 `SceneDelegate`, `Info.plist`에 `UIApplicationSceneManifest` 추가

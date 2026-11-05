@@ -4,12 +4,16 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 S = 1024
 out = sys.argv[1]
+# 'casual' = the MW Casual app: sunset sky, teal shadow, so the two icons are easy to tell apart
+CASUAL = len(sys.argv) > 2 and sys.argv[2] == 'casual'
+SKY = ((255, 120, 90), (90, 40, 120)) if CASUAL else ((38, 58, 96), (10, 14, 20))
+SHADOW = (20, 170, 160) if CASUAL else (232, 53, 43)
 img = Image.new('RGB', (S, S))
 d = ImageDraw.Draw(img)
 # sky: navy at the top to almost black at the street
 for y in range(S):
     k = y / S
-    c = (int(38 - 28 * k), int(58 - 44 * k), int(96 - 76 * k))
+    a, b = SKY; c = tuple(int(a[i] + (b[i] - a[i]) * k) for i in range(3))
     d.line([(0, y), (S, y)], fill=c)
 
 # skyline with lit windows
@@ -34,7 +38,7 @@ while x < S:
 glow = Image.new('L', (S, S), 0)
 ImageDraw.Draw(glow).ellipse([150, 250, 874, 760], fill=120)
 glow = glow.filter(ImageFilter.GaussianBlur(120))
-img.paste((255, 70, 50), (0, 0), glow.point(lambda v: v // 3))
+img.paste((255, 220, 120) if CASUAL else (255, 70, 50), (0, 0), glow.point(lambda v: v // 3))
 
 # yellow crown
 cx, cy = S // 2, 250
@@ -51,10 +55,10 @@ bb = d.textbbox((0, 0), text, font=f)
 tw, th = bb[2] - bb[0], bb[3] - bb[1]
 tx, ty = (S - tw) // 2 - bb[0], 330 - bb[1]
 d.text((tx + 22, ty + 18), text, font=f, fill=(20, 8, 8))
-d.text((tx + 12, ty + 10), text, font=f, fill=(232, 53, 43))
+d.text((tx + 12, ty + 10), text, font=f, fill=SHADOW)
 d.text((tx, ty), text, font=f, fill=(255, 255, 255))
 # red rule under it, like the title
-d.rectangle([200, ty + th + bb[1] + 40, S - 200, ty + th + bb[1] + 54], fill=(232, 53, 43))
+d.rectangle([200, ty + th + bb[1] + 40, S - 200, ty + th + bb[1] + 54], fill=SHADOW)
 
 img.save(out)
 print('saved', out)
