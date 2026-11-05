@@ -217,6 +217,42 @@
   #intel .rel { font-size:18px; }
   #intel .inf { margin-top:10px; padding:8px 10px; border-left:3px solid #ffd23f; font-weight:700; font-size:14px; }
   #intel .empty { opacity:.75; }
+  #music { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:20; }
+  #music .cbox { width:min(560px,96vw); max-height:88vh; overflow:auto; background:#14213d; border:2px solid rgba(255,210,63,.35); border-radius:12px; padding:14px; font-family:system-ui,sans-serif; }
+  #music h3 { margin:0 0 8px; font:900 22px "Arial Black",Impact,sans-serif; color:#ffd23f; letter-spacing:1px; }
+  #music .say { font-size:14px; opacity:.85; margin-bottom:8px; font-style:italic; }
+  #music .sec { font-weight:900; color:#ffd23f; margin:12px 0 6px; font-size:14px; }
+  #music .rec { display:flex; align-items:center; gap:8px; padding:7px; border-radius:8px; background:rgba(255,255,255,.07); margin-bottom:5px; font-size:13px; }
+  #music .rec[data-tune], #music .rec[data-tape], #music .rec[data-mytape], #music .rec[data-pick] { cursor:pointer; }
+  #music .rec.cur { outline:2px solid #ffd23f; }
+  #music .rec .tx { flex:1; min-width:0; }
+  #music .rec b { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #music .rec small { opacity:.7; }
+  #music .cv { width:40px; height:40px; border-radius:3px; flex:none; }
+  #music .cv.big { width:96px; height:96px; }
+  #music .mb { padding:9px 12px; border-radius:6px; background:#ffd23f; color:#111; font-weight:900; cursor:pointer; text-align:center; user-select:none; }
+  #music .mb.sm { padding:6px 9px; font-size:12px; flex:none; }
+  #music .mb.off { background:#4a4f63; color:#aaa; cursor:default; }
+  #music .mb.warn { background:#5a2a2a; color:#fff; }
+  #music .mb.on { outline:2px solid #fff; }
+  #music .mb.back { background:#2b2d42; color:#fff; margin-top:10px; }
+  #music .row2 { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  #music .hint { font-size:12px; opacity:.7; margin:6px 0; line-height:1.4; }
+  #music .ctl { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; font-size:13px; font-weight:800; }
+  #music .ctl input[type=range] { width:110px; vertical-align:middle; }
+  #music .ctl input:not([type]), #music .ctl select { flex:1; min-width:120px; padding:8px; border-radius:6px; border:0; font-size:14px; }
+  #music .sw { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid rgba(255,255,255,.3); }
+  #music .sw.on { border-color:#fff; transform:scale(1.15); }
+  #music .now { padding:10px; border-radius:8px; background:#0b1326; color:#9ae6ff; font-weight:800; font-size:14px; }
+  #grid { display:grid; grid-template-columns:52px repeat(16,1fr); gap:3px; margin:6px 0; }
+  #grid .lab { font-size:11px; font-weight:900; align-self:center; opacity:.85; }
+  #grid .cell { aspect-ratio:1; border-radius:3px; background:#24304f; cursor:pointer; font:900 11px/1 system-ui; color:#111; display:flex; align-items:center; justify-content:center; user-select:none; }
+  #grid .cell.beat { background:#2e3c63; }
+  #grid .cell.on.rk { background:#e63946; } #grid .cell.on.rs { background:#f4a261; } #grid .cell.on.rh { background:#e9c46a; }
+  #grid .cell.on.rb { background:#2a9d8f; } #grid .cell.on.rl { background:#9ae6ff; }
+  #grid .cell.ph { box-shadow:inset 0 0 0 2px #fff; }
+  @media (max-width:440px) { #grid { grid-template-columns:30px repeat(16,1fr); gap:2px; } #grid .lab { font-size:9px; } #music .cbox { padding:10px; } }
+  #bRadio { left:50%; top:10px; margin-left:-234px; width:44px; height:44px; border-radius:10px; font-size:18px; }
   #intel .close { margin-top:10px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #shop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
   #shop .cbox { width:min(460px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
@@ -280,6 +316,7 @@
     body.touch #bCrew { right:56px; width:52px; }
     body.touch #bLight { right:114px; width:40px; }
     body.touch #bIntel { left:auto; margin-left:0; top:118px; height:40px; right:160px; width:40px; }
+    body.touch #bRadio { left:auto; margin-left:0; top:118px; height:40px; right:206px; width:40px; }
     body.touch #hp { left:12px; top:124px; bottom:auto; transform:none; }
     body.touch #hp .bar { width:90px; }
     body.touch #ammo { left:12px; top:150px; }
@@ -330,6 +367,7 @@
     <div class="tb" id="bLight" data-b="light">🔦</div>
     <div class="tb hidden" id="bSwap" data-b="swap">🔁</div>
     <div class="tb hidden" id="bIntel" data-b="intel">📓</div>
+    <div class="tb hidden" id="bRadio" data-b="radio">📻</div>
   </div>
 </div>
 <div id="portal" class="hidden">
@@ -352,6 +390,7 @@
 <div id="dlg" class="hidden"><div class="cbox"><div class="who" id="dlgWho"></div><div class="line" id="dlgLine"></div><div id="dlgOpts"></div></div></div>
 <div id="intel" class="hidden"><div class="cbox"><h3 data-i18n="intelTitle"></h3><div id="intelBody"></div><div class="close" id="intelClose" data-i18n="close">닫기</div></div></div>
 <div id="board" class="hidden"><div class="cbox"><h3 data-i18n="boardTitle"></h3><div id="boardBody"></div><div class="close" id="boardClose" data-i18n="close">닫기</div></div></div>
+<div id="music" class="hidden"><div class="cbox"><h3 id="musicTitle"></h3><div id="musicBody"></div><div class="mb back" id="musicClose" data-i18n="close">닫기</div></div></div>
 <div id="prologue"></div>
 <div id="shop" class="hidden">
   <div class="cbox">
@@ -399,7 +438,7 @@
     <ul id="keys">
       <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
       <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+      <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>T</kbd> 붐박스 · <kbd>Esc</kbd> 일시정지</li>
       <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
       <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>
     </ul>
@@ -462,17 +501,17 @@ const STR = {
   keysDesktop: [
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동 · <kbd>Shift</kbd> 달리기 · <kbd>Space</kbd> 점프</li>
      <li><kbd>마우스</kbd> 시점 · <kbd>좌클릭</kbd> 사격 · <kbd>우클릭</kbd> 정조준</li>
-     <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>Esc</kbd> 일시정지</li>
+     <li><kbd>R</kbd> 재장전 · <kbd>Q</kbd> 무기 교체 · <kbd>C</kbd> 크루 관리 · <kbd>E</kbd> 대화/가게/자전거 · <kbd>F</kbd> 손전등 · <kbd>T</kbd> 붐박스 · <kbd>Esc</kbd> 일시정지</li>
      <li>🎯 목표: 라이벌 크루를 몰아내고 <b>킹스 스트리트의 9개 구역</b>을 모두 점령하세요</li>
      <li>쓰러진 적이 떨어뜨린 <span style="color:#f2b705">탄약</span> / <span style="color:#3ddc84">체력</span> 상자를 주우세요</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move · <kbd>Shift</kbd> Sprint · <kbd>Space</kbd> Jump</li>
      <li><kbd>Mouse</kbd> Look · <kbd>Left click</kbd> Shoot · <kbd>Right click</kbd> Aim</li>
-     <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop/Bike · <kbd>F</kbd> Flashlight · <kbd>Esc</kbd> Pause</li>
+     <li><kbd>R</kbd> Reload · <kbd>Q</kbd> Switch weapon · <kbd>C</kbd> Crew · <kbd>E</kbd> Talk/Shop/Bike · <kbd>F</kbd> Flashlight · <kbd>T</kbd> Boombox · <kbd>Esc</kbd> Pause</li>
      <li>🎯 Goal: drive out the rival crews and take all <b>9 districts of Kings St.</b></li>
      <li>Grab the <span style="color:#f2b705">ammo</span> / <span style="color:#3ddc84">health</span> boxes that enemies drop</li>`,
     `<li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移動 · <kbd>Shift</kbd> ダッシュ · <kbd>Space</kbd> ジャンプ</li>
      <li><kbd>マウス</kbd> 視点 · <kbd>左クリック</kbd> 射撃 · <kbd>右クリック</kbd> エイム</li>
-     <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ/自転車 · <kbd>F</kbd> 懐中電灯 · <kbd>Esc</kbd> 一時停止</li>
+     <li><kbd>R</kbd> リロード · <kbd>Q</kbd> 武器切替 · <kbd>C</kbd> クルー管理 · <kbd>E</kbd> 会話/ショップ/自転車 · <kbd>F</kbd> 懐中電灯 · <kbd>T</kbd> ラジカセ · <kbd>Esc</kbd> 一時停止</li>
      <li>🎯 目標：ライバルクルーを追い出し、<b>キングス・ストリートの9地区</b>をすべて制圧しよう</li>
      <li>倒した敵が落とす<span style="color:#f2b705">弾薬</span>／<span style="color:#3ddc84">体力</span>ボックスを拾おう</li>`,
   ],
@@ -984,6 +1023,93 @@ const STR = {
   defendHud: ['🛡 {d} 방어 {s}초 · 남은 적 {n}', '🛡 Defend {d} {s}s · {n} left', '🛡 {d} 防衛 {s}秒・残り {n}'],
   turfHud: ['{c} 구역 · ', '{c} turf · ', '{c}のナワバリ・'],
   ownedHud: ['내 구역 {o}/9', 'My districts {o}/9', '自分の地区 {o}/9'],
+  // ---- music: KINGS WAX, beatmaker, albums, boombox (MUSIC.md) ----
+  nm_ruth: ['루스', 'Ruth', 'ルース'],
+  waxLabel0: ['🎵 레코드 가게 주인에게 말 걸기', '🎵 Talk to the record store owner', '🎵 レコード屋の店主に話しかける'],
+  waxLabel: ['🎵 KINGS WAX 둘러보기', '🎵 Browse KINGS WAX', '🎵 KINGS WAX を見る'],
+  studioLabel: ['🎛️ 뒷방 작업실 STUDIO B', '🎛️ Back room: STUDIO B', '🎛️ 奥の作業部屋 STUDIO B'],
+  ruth_hi: ['…처음 보는 얼굴이네. 이 동네 레코드 가게는 여기 하나야. 삼십 년째.', '…New face. This is the only record store on the block. Thirty years now.', '…見ない顔だね。この辺のレコード屋はここだけだよ。三十年になる。'],
+  ruth_hi_b: ['…너 아직 비트 만드니?', '…You still making beats?', '…まだビート作ってるのかい？'],
+  gotBoombox: ['루스가 낡은 붐박스를 내밀었다. "가져가. 소리 없는 동네는 무서워."', 'Ruth pushes an old boombox across the counter. "Take it. A quiet street is a scary street."', 'ルースが古いラジカセを差し出した。「持っていきな。音のない街は怖いよ」'],
+  lpOnTable: ['바이스 할아버지의 LP를 턴테이블에 걸었다. 가게가 조용해졌다.', 'You put Mr. Weiss\'s LP on the store turntable. The shop goes quiet.', 'ワイスさんのLPを店のターンテーブルに載せた。店が静かになった。'],
+  ruth_lp: ['…이 판 아는 사람, 이제 몇 없어.', '…Not many people left who know this one.', '…この盤を知ってる人も、もう何人もいないね。'],
+  radioTip: ['📻 T 키로 붐박스를 켜요', '📻 Press T for the boombox', '📻 Tキーでラジカセ'],
+  radioTipTouch: ['📻 위의 📻 버튼으로 붐박스를 켜요', '📻 Tap 📻 at the top for the boombox', '📻 上の📻ボタンでラジカセ'],
+  waxObj: ['📻 켄지의 테이프를 들으려면 붐박스가 필요하다 — 레코드 가게 KINGS WAX', '📻 Kenji\'s tape needs a boombox — KINGS WAX record store', '📻 ケンジのテープを聴くにはラジカセが要る——レコード屋 KINGS WAX'],
+  waxObjLp: ['💿 바이스 할아버지의 LP — 턴테이블이 있는 레코드 가게 KINGS WAX로', '💿 Mr. Weiss\'s LP — take it to KINGS WAX, they have a turntable', '💿 ワイスさんのLP——ターンテーブルのあるレコード屋 KINGS WAX へ'],
+  noBoombox: ['📻 아직 붐박스가 없다. 레코드 가게 KINGS WAX에 가 보자.', '📻 No boombox yet. Try the KINGS WAX record store.', '📻 まだラジカセがない。レコード屋 KINGS WAX に行ってみよう。'],
+  ruth_store: ['"사든 안 사든 들어 보는 건 공짜야."', '"Buy or don\'t, listening\'s free."', '「買っても買わなくても、聴くのはタダだよ」'],
+  ruth_store_b: ['"뒷방은 비워 뒀어. …예전처럼."', '"I kept the back room empty. …Like before."', '「奥の部屋は空けてあるよ。…昔みたいに」'],
+  shelfTitle: ['🛒 이번 주 레코드', '🛒 This week\'s records', '🛒 今週のレコード'],
+  mListen: ['▶ 듣기', '▶ Listen', '▶ 試聴'],
+  mStop: ['■ 멈춤', '■ Stop', '■ 停止'],
+  mOwned: ['보유', 'Owned', '所持'],
+  backRoom: ['🎛️ 뒷방', '🎛️ The back room', '🎛️ 奥の部屋'],
+  beatTitle: ['비트메이커', 'Beatmaker', 'ビートメーカー'],
+  pressTitle: ['앨범 찍기', 'Press an album', 'アルバムを作る'],
+  needTracks: ['앨범을 찍으려면 곡이 3개 필요해요 (지금 {n}개)', 'You need 3 tracks to press an album (you have {n})', 'アルバムには曲が3つ必要（今 {n}曲）'],
+  myAlbums: ['💿 진열대의 내 앨범', '💿 Your albums on the shelf', '💿 棚の自分のアルバム'],
+  soldN: ['{n}장 팔림', '{n} sold', '{n}枚売れた'],
+  rev0: ['"…연습이 더 필요하겠는데."', '"…Needs more practice."', '「…もう少し練習だね」'],
+  rev1: ['"괜찮아. 동네 애들은 좋아하겠어."', '"Not bad. The kids round here will like it."', '「悪くない。近所の子は気に入るよ」'],
+  rev2: ['"이건… 오래 팔리겠다."', '"This one… this one\'ll sell for a long time."', '「これは…長く売れるね」'],
+  buyTx: ['낡은 송신기 사기 · 평판 300', 'Buy the old transmitter · 300 rep', '古い送信機を買う・評判300'],
+  txHint: ['우리 크루 방송(88.1)에서 내 앨범을 동네에 틀어요. 판매 +50%', 'Your crew station (88.1) plays your albums to the whole street. Sales +50%', 'クルー放送（88.1）で自分のアルバムを街に流す。売上 +50%'],
+  ruth_tx: ['"지붕에 안테나 하나 세우면 돼. 경찰한텐 내가 말 안 했다?"', '"Put an antenna on a roof and you\'re on air. You didn\'t hear that from me."', '「屋根にアンテナ一本立てれば放送できるよ。あたしから聞いたって言うんじゃないよ」'],
+  txOn: ['📡 88.1 우리 크루 방송 개국! 앨범이 더 잘 팔린다', '📡 88.1, your crew station, is on the air! Albums sell faster', '📡 88.1 クルー放送開局！アルバムがよく売れる'],
+  row_k: ['킥', 'Kick', 'キック'],
+  row_s: ['스네어', 'Snare', 'スネア'],
+  row_h: ['하이햇', 'Hi-hat', 'ハイハット'],
+  row_b: ['베이스', 'Bass', 'ベース'],
+  row_l: ['멜로디', 'Melody', 'メロディ'],
+  kit_chip: ['8비트', '8-bit', '8ビット'],
+  kit_soul: ['소울', 'Soul', 'ソウル'],
+  kit_jazz: ['재즈', 'Jazz', 'ジャズ'],
+  mIdea: ['아이디어', 'Idea', 'アイデア'],
+  mClear: ['새 곡', 'New track', '新しい曲'],
+  mLoad: ['열기', 'Open', '開く'],
+  beatHint: ['칸을 눌러 켜요. 베이스·멜로디 칸은 누를 때마다 음이 1→5로 올라가고, 한 번 더 누르면 꺼져요. 아무렇게나 눌러도 어울리는 음만 있어요.', 'Tap cells to turn them on. Bass and melody cells go up 1→5 with each tap, then off. Every note fits, so tap freely.', 'マスをタップでオン。ベースとメロディは押すたびに 1→5 と上がり、もう一度でオフ。どの音も合うので自由に。'],
+  trackNamePh: ['곡 이름', 'Track name', '曲名'],
+  saveNew: ['새 곡으로 저장', 'Save as new', '新しく保存'],
+  saveOver: ['덮어쓰기', 'Save', '上書き保存'],
+  myTracks: ['내 곡 {n}/8', 'My tracks {n}/8', '自分の曲 {n}/8'],
+  untitled: ['무제 {n}', 'Untitled {n}', '無題 {n}'],
+  untitledAlbum: ['첫 앨범', 'First Album', 'ファーストアルバム'],
+  tracksFull: ['곡은 8개까지 저장할 수 있어요. 하나를 지우거나 덮어쓰세요.', 'You can keep 8 tracks. Delete or overwrite one.', '曲は8つまで。どれかを消すか上書きして。'],
+  trackSaved: ['💾 "{t}" 저장', '💾 Saved "{t}"', '💾「{t}」を保存'],
+  ruth_three: ['"곡 세 개면 한 장 찍을 수 있어. 진열대 자리 비워 둘게."', '"Three tracks makes a record. I\'ll keep a spot on the shelf."', '「三曲あれば一枚作れるよ。棚を空けておく」'],
+  pickTracks: ['곡 3개 고르기', 'Pick 3 tracks', '曲を3つ選ぶ'],
+  albumNamePh: ['앨범 이름', 'Album title', 'アルバム名'],
+  pressBtn: ['💿 찍기 · 평판 200', '💿 Press · 200 rep', '💿 作る・評判200'],
+  pressed: ['"{t}"이(가) 진열대에 올라갔다.', '"{t}" goes up on the shelf.', '「{t}」が棚に並んだ。'],
+  ruth_rev0: ['"…솔직히 말해도 돼? 연습이 더 필요하겠는데. 그래도 진열은 해 줄게."', '"…Can I be honest? Needs more practice. I\'ll still put it out."', '「…正直に言っていい？もう少し練習だね。でも並べてはあげる」'],
+  ruth_rev1: ['"괜찮아. 동네 애들은 좋아하겠어."', '"Not bad. The kids round here will like it."', '「悪くない。近所の子は気に入るよ」'],
+  ruth_rev2: ['"…이건 오래 팔리겠다. 오랜만에 소름 돋았어."', '"…This one\'ll sell for a long time. Haven\'t had chills like that in years."', '「…これは長く売れるね。久しぶりに鳥肌が立ったよ」'],
+  ruth_txOffer: ['"창고에 낡은 송신기가 하나 있는데… 관심 있으면 말해."', '"There\'s an old transmitter in the storeroom… if you\'re interested."', '「倉庫に古い送信機があるんだけど…興味があれば言いな」'],
+  bmCredit: ['크레딧: Produced by Big Man', 'Credits: Produced by Big Man', 'クレジット：Produced by Big Man'],
+  albumSold: ['💿 내 앨범 {n}장 팔림 · 평판 +{r}', '💿 {n} copies of your albums sold · +{r} rep', '💿 アルバムが{n}枚売れた・評判 +{r}'],
+  boughtRec: ['💿 "{t}" 샀다 — 붐박스 테이프에 추가', '💿 Bought "{t}" — added to your boombox tapes', '💿「{t}」を買った——ラジカセのテープに追加'],
+  radioTitle: ['📻 붐박스', '📻 Boombox', '📻 ラジカセ'],
+  radioDefault: ['기본 음악', 'Game music', 'いつもの音楽'],
+  stations: ['주파수', 'Stations', '周波数'],
+  tapes: ['테이프', 'Tapes', 'テープ'],
+  st_off: ['기본 음악', 'Game music', 'いつもの音楽'],
+  st_wax: ['WAX FM', 'WAX FM', 'WAX FM'],
+  st_wax_d: ['루스가 트는 가게 레코드', 'Ruth spins the store\'s records', 'ルースが店のレコードをかける'],
+  st_bm: ['이름 없는 주파수', 'An unnamed frequency', '名前のない周波数'],
+  st_bm_d: ['켄지의 테이프. 라벨에는 B.M.뿐', 'Kenji\'s tape. The label just says B.M.', 'ケンジのテープ。ラベルには B.M. とだけ'],
+  st_crew: ['우리 크루 방송', 'Our crew station', 'クルー放送'],
+  st_crew_d: ['내 앨범을 동네에 튼다', 'Your albums, to the whole street', '自分のアルバムを街に流す'],
+  radioEmpty: ['📻 아직 틀 곡이 없다.', '📻 Nothing to play yet.', '📻 まだかける曲がない。'],
+  bmTapeOn: ['📻 107.9 … 지직거리는 비트. 두 번째 절부터 멜로디가 비어 있다. 누군가 랩을 넣을 자리처럼.', '📻 107.9 … a crackly beat. From the second half the melody drops out, like it\'s waiting for someone\'s verse.', '📻 107.9 …ノイズまじりのビート。後半からメロディが消える。誰かのラップを待つ場所みたいに。'],
+  bmTapeEnd: ['(테이프가 끝났다. 뒷면은 비어 있다.)', '(The tape runs out. Side B is blank.)', '（テープが終わった。B面は空っぽだ）'],
+  bmCut: ['(손이 먼저 다이얼을 돌렸다. …끝까지는 못 듣겠다.)', '(Your hand turns the dial first. …Can\'t listen to the end.)', '（手が先にダイヤルを回した。…最後までは聴けない）'],
+  dj1: ['"WAX FM, 킹스 스트리트의 밤을 지키는 91.5. 볼륨 올려."', '"WAX FM, 91.5, keeping Kings St. company tonight. Turn it up."', '「WAX FM、91.5。キングス・ストリートの夜のお供。ボリューム上げて」'],
+  dj2: ['"전화 신청은 안 받아. 가게로 와."', '"No phone requests. Come by the store."', '「電話リクエストは受けないよ。店においで」'],
+  dj3: ['"이 판 산 사람, 지난주에 딱 한 명이었어. 그게 너면 손 들어."', '"Sold one copy of that last week. If that was you, raise your hand."', '「この盤、先週売れたのは一枚だけ。あんたなら手を挙げな」'],
+  dj4: ['"오늘 밤엔 총소리보다 베이스가 컸으면 좋겠네."', '"Tonight I\'d like the bass louder than the gunshots."', '「今夜は銃声よりベースの方が大きいといいね」'],
+  dj5: ['"사토 할머니, 도시락 잘 먹었어요. …방송으로 하니까 쑥스럽네."', '"Mrs. Sato, thank you for the bento. …Feels silly saying that on air."', '「佐藤さん、お弁当ごちそうさま。…放送で言うと照れるね」'],
+  dj6: ['"다음 곡. 이 동네 사람이 만든 거야. 그거면 됐지."', '"Next one. Somebody from this street made it. That\'s enough."', '「次の曲。この街の誰かが作った。それで十分さ」'],
 };
 function L(key, vars = {}) {
   const e = STR[key];
@@ -2108,6 +2234,7 @@ addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
   if (state === 'board') { if (['KeyE', 'Escape'].includes(e.code)) closeBoard(); return; }
   if (state === 'intel') { if (['KeyJ', 'Escape'].includes(e.code)) closeIntel(); return; }
+  if (state === 'music') { if (['KeyT', 'Escape'].includes(e.code)) closeMusic(); return; }
   if (state === 'dialog') { const n = +e.key; if (n >= 1 && n <= dlgOpts.length) pickOpt(n - 1); else if (e.code === 'Escape') closeDlg(); return; }
   if (state === 'shop') { if (['KeyE', 'Escape'].includes(e.code)) closeShop(); return; }
   if (state === 'metro') { if (['KeyE', 'Escape'].includes(e.code)) closeMetro(); return; }
@@ -2115,6 +2242,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyF') { toggleFlashlight(); return; }
   if (e.code === 'KeyQ') { nextWeapon(); return; }
   if (e.code === 'KeyJ') { openIntel(); return; }
+  if (e.code === 'KeyT') { openMusic('radio'); return; }
   if (e.code === 'Digit1') { switchWeapon('rifle'); return; }
   if (e.code === 'Digit2') { switchWeapon('shotgun'); return; }
   if (e.code === 'Digit3') { switchWeapon('revolver'); return; }
@@ -2193,7 +2321,7 @@ const BGM_MAX = 0.35;   // even at 100% the music stays under the gunfire
 // But iPhone mutes Web Audio when the ring/silent switch is on, so we only route it when we can mark this page as
 // media playback (iOS 17+ navigator.audioSession); older iPhones keep the plain <audio> so the music still plays.
 const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-let bgmGain = null;
+let bgmGain = null, bgmHold = false, radioBus = null;   // bgmHold: the boombox or beatmaker is playing instead
 function routeBgm() {
   if (bgmGain || !actx || actx.state !== 'running' || !location.protocol.startsWith('http')) return;   // file:// pages can't route media this way
   if (IOS && !navigator.audioSession) return;
@@ -2207,9 +2335,10 @@ const applyVolume = () => {
   const v = settings.bgm * BGM_MAX;
   if (bgmGain) bgmGain.gain.value = v; else bgm.volume = v;
   if (master) master.gain.value = settings.sfx;
+  if (radioBus) radioBus.gain.value = document.hidden ? 0 : settings.bgm * 0.55;
 };
 applyVolume();
-function playBgm() { if (settings.bgm > 0 && bgm.paused) bgm.play().catch(() => {}); }
+function playBgm() { if (settings.bgm > 0 && bgm.paused && !bgmHold) bgm.play().catch(() => {}); }
 // browsers only allow sound after the first touch, click or key press, so start the music on whichever comes first
 function unlockSound() {
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}   // play even in silent mode
@@ -2220,7 +2349,7 @@ function unlockSound() {
 }
 // capture phase, so no button or panel on the intro can swallow the tap before the music gets it
 for (const ev of ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockSound, { passive: true, capture: true });
-const syncSndHint = () => $('sndHint').classList.toggle('hidden', !bgm.paused || settings.bgm === 0);
+const syncSndHint = () => $('sndHint').classList.toggle('hidden', !bgm.paused || settings.bgm === 0 || bgmHold);
 bgm.addEventListener('play', syncSndHint); bgm.addEventListener('pause', syncSndHint);
 $('sndHint').addEventListener('click', e => { e.stopPropagation(); unlockSound(); });
 playBgm();   // works right away only if the browser already allows sound for this site
@@ -2228,7 +2357,7 @@ syncSndHint();
 $('bgmVol').addEventListener('input', e => { settings.bgm = +e.target.value; applyVolume(); saveSettings(); if (settings.bgm > 0) playBgm(); else bgm.pause(); syncSndHint(); });
 $('sfxVol').addEventListener('input', e => { settings.sfx = +e.target.value; applyVolume(); saveSettings(); });
 $('sfxVol').addEventListener('change', () => { audio(); applyVolume(); bang(0.55, 3500, 0.22); });   // test shot at the new level
-document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else playBgm(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.pause(); else playBgm(); applyVolume(); });
 $('sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); });
 $('autoF').addEventListener('change', e => { settings.autoFire = e.target.checked; saveSettings(); });
 if (TOUCH) {
@@ -2245,6 +2374,7 @@ if (TOUCH) {
       } else if (b === 'aim') { aiming = !aiming; $('bAim').classList.toggle('on', aiming); }
       else if (b === 'reload') startReload();
       else if (b === 'intel') openIntel();
+      else if (b === 'radio') openMusic('radio');
       else if (b === 'jump') { if (player.onGround && !riding) { player.vy = 6.5; player.onGround = false; } }
       else if (b === 'turn') { if (!turnLeft) turnLeft = Math.PI; }
       else if (b === 'pause') { pauseGame(); $('bAim').classList.remove('on'); }
@@ -3970,6 +4100,7 @@ function updateQuests(dt) {
 
   updatePersonal(dt);
   updateCampaign(dt);
+  updateMusic(dt);
   if (state === 'play' && (saveT += dt) > 30) saveGame();
 
   // crew gets bored (and grumpy) when nothing happens for a while
@@ -4169,7 +4300,7 @@ function questObjective() {
   const ll = Q.landlord.s === 'find' || Q.landlord.s === 'fight';
   const urgent = Q.pizza.s === 'raid' || ['run', 'shoot', 'fight'].includes(Q.coach.s) || Q.bike.s === 'ride';
   const campUrgent = CAMPAIGN() && ['confront', 'subdued'].includes(rivalQ().s);
-  return (ll && personalObjective()) || (urgent && questObjectiveBase()) || (campUrgent && campaignObjective()) || sideObjective() || campaignObjective() || questObjectiveBase() || personalObjective();
+  return (ll && personalObjective()) || (urgent && questObjectiveBase()) || (campUrgent && campaignObjective()) || sideObjective() || musicObjective() || campaignObjective() || questObjectiveBase() || personalObjective();
 }
 
 // ---------- save / continue (this browser; moves to the Supabase account later) ----------
@@ -4177,7 +4308,7 @@ const SAVE_KEY = 'mw-save';
 function hasSave() { try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return d && d.v >= 1 ? d : null; } catch { return null; } }
 let saveT = 0;
 function saveGame() {
-  if (!['play', 'shop', 'dialog', 'crew', 'metro'].includes(state)) return;
+  if (!['play', 'shop', 'dialog', 'crew', 'metro', 'music'].includes(state)) return;
   const q = {};
   for (const k in Q) { const o = {}; for (const [f, v] of Object.entries(Q[k])) if (v === null || typeof v !== 'object' || Array.isArray(v)) o[f] = v; q[k] = o; }
   if (['run', 'shoot', 'fight'].includes(q.coach.s)) q.coach.s = q.coach.step >= 3 ? 'done' : 'ready';
@@ -4190,7 +4321,7 @@ function saveGame() {
     v: 2, cls: clsKey, rep, score, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
     owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
     armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
-    intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)),
+    intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)), music: JSON.parse(JSON.stringify(MUS)),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch {}
   saveT = 0;
@@ -4207,7 +4338,8 @@ function loadGame(d) {
   if (['offer', 'look', 'report'].includes(Q.lou.s)) spawnLou();
   for (const a of d.allies) { const al = new Ally(a.key); al.mood = a.mood; allies.push(al); }
   defectors.push(...(d.defectors || []));
-  Object.assign(intel, d.intel || {}); Object.assign(npcState, d.npcState || {});   // v1 saves have neither: start the campaign fresh
+  Object.assign(intel, d.intel || {}); Object.assign(npcState, d.npcState || {});
+  Object.assign(MUS, JSON.parse(JSON.stringify(d.music || {})));   // v1 saves have neither: start the campaign fresh
   ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
   personalSetup(false);
   checkBossTrigger();
@@ -4746,6 +4878,405 @@ function renderSideLog() {
   return `<div class="who" style="margin-top:14px">📌 ${L('boardTitle')}</div>` + ks.map(k => `<div class="clue"><span class="rel">${SQ(k).s === 'done' ? '✅' : '▶'}</span><div><b>${L('fl_' + k)}</b><small>${L('nm_' + SIDE[k].owner)}</small></div></div>`).join('');
 }
 
+// ---------- music: record store, beatmaker, albums, boombox radio (MUSIC.md) ----------
+// Every song is a few lines of 16-step patterns the game plays itself, so there are no audio files and no copyright worries.
+const WAX = { x: 48, z: 68.8 }, WAX_DOOR = { x: 53.6, z: 68.8 };
+const MUS = { visited: 0, boombox: 0, tx: 0, lp: 0, tracks: [], albums: [], owned: [], cut: 0 };   // saved with the game
+const SCALE = [0, 3, 5, 7, 10];   // minor pentatonic: any cell you tap fits with the others
+const KITS = {
+  chip: { bass: 'square', lead: 'square', bv: 0.07, lv: 0.05, kick: 1 },
+  soul: { bass: 'triangle', lead: 'sawtooth', bv: 0.16, lv: 0.035, kick: 1 },
+  jazz: { bass: 'sine', lead: 'triangle', bv: 0.2, lv: 0.08, kick: 0.45, brush: true },
+};
+const ROWS = ['k', 's', 'h', 'b', 'l'];
+const RECORDS = {   // fictional neighbourhood musicians, early '80s
+  weiss: { title: 'Evening, Kings St.', by: 'Harriet & The Sunday Five', cover: '#1d3557', bpm: 92, swing: 0.33, root: 50, kit: 'jazz', order: [0, 0, 1, 0],
+    pats: [{ k: 'x.......x.......', s: '....x.......x...', h: 'x..xx..xx..xx..x', b: '1...2...3...4...', l: '5..4.3..1.......' },
+      { k: 'x.......x.......', s: '....x.......x..x', h: 'x..xx..xx..xx..x', b: '4...3...2...1...', l: '..3.4.5...8.7...' }] },
+  disco: { title: 'Pier 9 Boogie', by: 'The Saltworks Strings', cover: '#e76f51', price: 80, bpm: 118, root: 45, kit: 'soul', order: [0, 0, 1, 1],
+    pats: [{ k: 'x...x...x...x...', s: '....x.......x...', h: '..o...o...o...o.', b: '1.6.1.6.1.6.3.4.', l: '................' },
+      { k: 'x...x...x...x...', s: '....x.......x...', h: 'x.o.x.o.x.o.x.o.', b: '1.6.1.6.3.8.4.9.', l: '5.5.4...3.4.5...' }] },
+  salsa: { title: 'Calle Copper', by: 'Orquesta Copper Heights', cover: '#f4a261', price: 90, bpm: 104, root: 48, kit: 'soul', order: [0, 1, 0, 1],
+    pats: [{ k: 'x.......x.......', s: 'x..x..x...x.x...', h: '..x...x...x...x.', b: '...1..5....1..5.', l: '1.3.5.6...5.3...' },
+      { k: 'x.......x.......', s: 'x..x..x...x.x...', h: 'x.x.x.x.x.x.x.x.', b: '...4..8....4..8.', l: '8.7.6.5...3.2.1.' }] },
+  breaks: { title: 'Block Party Breaks', by: 'DJ Lightbulb', cover: '#2a9d8f', price: 100, bpm: 96, root: 43, kit: 'chip', order: [0, 0, 1, 0],
+    pats: [{ k: 'x.........x.x...', s: '....x.......x...', h: 'x.x.x.x.x.x.x.x.', b: '1.....1...3.4...', l: '................' },
+      { k: 'x.........x.x...', s: '....x.......x.x.', h: 'x.x.x.x.x.x.x.x.', b: '1.....1...3.4...', l: '9.8.7...5.......' }] },
+  electro: { title: 'Brickfield Electro', by: 'The Payphones', cover: '#7b2cbf', price: 120, bpm: 126, root: 48, kit: 'chip', order: [0, 1, 0, 1],
+    pats: [{ k: 'x.....x...x.....', s: '....x.......x...', h: 'xxxxxxxxxxxxxxxx', b: '1.1.1.1.3.3.4.4.', l: '5...7...6.5.3...' },
+      { k: 'x.....x...x...x.', s: '....x.......x...', h: 'xxxxxxxxxxxxxxxx', b: '4.4.4.4.3.3.2.2.', l: '8...7...5...3...' }] },
+  bm: { title: 'untitled (side A)', by: 'B.M.', cover: '#333', bpm: 90, root: 41, kit: 'chip', order: [0, 0, 1, 1],   // Kenji's tape: the second half waits for a verse
+    pats: [{ k: 'x..x......x.....', s: '....x.......x...', h: 'x.x.x.x.x.x.x.xo', b: '1..1....3..4.5..', l: '5.6.5.3.........' },
+      { k: 'x..x......x.....', s: '....x.......x...', h: 'x.x.x.x.x.x.x.xo', b: '1..1....3..4.5..', l: '................' }] },
+};
+const SHELF = ['disco', 'salsa', 'breaks', 'electro'];
+const midiHz = m => 440 * Math.pow(2, (m - 69) / 12);
+const degree = (root, ch) => { const d = +ch; return d >= 6 ? root + 12 + SCALE[d - 6] : root + SCALE[d - 1]; };
+const trackSong = tr => ({ title: tr.n, by: myCrew.name, bpm: tr.bpm, root: 45, kit: tr.kit, order: [0, 0], pats: [tr.g] });
+
+// ---- synth voices (into the radio bus, which follows the music slider) ----
+function radioOut() {
+  audio();
+  if (!radioBus) { radioBus = actx.createGain(); radioBus.connect(actx.destination); }
+  radioBus.gain.value = document.hidden ? 0 : settings.bgm * 0.55;
+  return radioBus;
+}
+function vNoise(t, out, type, freq, dur, vol) {
+  const s = actx.createBufferSource(); s.buffer = noiseBuf;
+  const f = actx.createBiquadFilter(); f.type = type; f.frequency.value = freq;
+  const g = actx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  s.connect(f).connect(g).connect(out); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+}
+function vTone(t, out, type, hz, dur, vol) {
+  const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = hz;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(out); o.start(t); o.stop(t + dur + 0.02);
+}
+function playStep(song, pat, i, t, sd, out) {
+  const kit = KITS[song.kit] || KITS.chip, c = r => (pat[r] || '')[i] || '.';
+  if (c('k') !== '.') {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.12);
+    g.gain.setValueAtTime(0.55 * kit.kick, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    o.connect(g).connect(out); o.start(t); o.stop(t + 0.24);
+  }
+  if (c('s') !== '.') {
+    if (kit.brush) vNoise(t, out, 'highpass', 2500, 0.22, 0.12);
+    else { vNoise(t, out, 'bandpass', 1800, 0.16, 0.38); vTone(t, out, 'triangle', 190, 0.07, 0.12); }
+  }
+  if (c('h') !== '.') vNoise(t, out, 'highpass', kit.brush ? 6000 : 7500, c('h') === 'o' ? 0.18 : 0.04, kit.brush ? 0.05 : 0.09);
+  if (c('b') !== '.') vTone(t, out, kit.bass, midiHz(degree(song.root, c('b'))), sd * 1.8, kit.bv);
+  if (c('l') !== '.') vTone(t, out, kit.lead, midiHz(degree(song.root + 24, c('l'))), sd * 0.95, kit.lv);
+}
+
+// ---- the sequencer: one song at a time, scheduled a little ahead of the audio clock ----
+const seq = { song: null, i: 0, o: 0, next: 0, timer: null, loops: 1, done: 0, onEnd: null, onStep: null, live: null };
+function seqPlay(song, o = {}) {
+  seqStop(); radioOut();
+  Object.assign(seq, { song, i: 0, o: 0, done: 0, next: actx.currentTime + 0.08, loops: o.loops ?? 2, onEnd: o.onEnd || null, onStep: o.onStep || null, live: o.live || null });
+  seq.timer = setInterval(seqTick, 25);
+}
+function seqStop() { clearInterval(seq.timer); seq.timer = null; seq.song = null; }
+function seqTick() {
+  const s = seq.song; if (!s) return;
+  const sd = 60 / s.bpm / 4, out = radioOut();
+  if (seq.next < actx.currentTime - 0.25) seq.next = actx.currentTime + 0.05;   // the tab slept: skip ahead, don't burst
+  while (seq.song && seq.next < actx.currentTime + 0.12) {
+    const pat = seq.live ? seq.live() : s.pats[s.order[seq.o]];
+    const swing = seq.i % 2 ? (s.swing || 0) * sd : 0;
+    playStep(s, pat, seq.i, seq.next + swing, sd, out);
+    if (seq.onStep) { const i = seq.i, at = seq.next; setTimeout(() => seq.onStep && seq.onStep(i), Math.max(0, (at - actx.currentTime) * 1000)); }
+    seq.next += sd;
+    if (++seq.i >= 16) {
+      seq.i = 0;
+      if (!seq.live && ++seq.o >= s.order.length) {
+        seq.o = 0;
+        if (++seq.done >= seq.loops) { const cb = seq.onEnd; seqStop(); if (cb) cb(); return; }
+      }
+    }
+  }
+}
+
+// ---- boombox radio: stations play songs back to back; the game music waits while one is on ----
+const seqTalk = (items, gap) => items.forEach((f, i) => setTimeout(() => { if (state !== "dead") f(); }, i * gap));
+const radio = { st: null, n: 0, item: null, cutT: 0 };
+const radioOn = () => !!radio.st;
+const myAlbumSongs = () => MUS.albums.flatMap(a => a.tracks.map(i => MUS.tracks[i]).filter(Boolean).map(trackSong));
+const STATIONS = {
+  wax: { f: '91.5', ok: () => MUS.boombox, list: () => SHELF.map(k => RECORDS[k]) },
+  bm: { f: '107.9', ok: () => SQ('walkman').radio, list: () => [RECORDS.bm] },
+  crew: { f: '88.1', ok: () => MUS.tx, list: () => myAlbumSongs() },
+};
+function tune(st, song) {
+  audio();
+  radio.st = st; radio.n = 0; radio.cutT = 0;
+  bgmHold = true; bgm.pause(); syncSndHint();
+  if (song) radio.list = [song];
+  else radio.list = STATIONS[st].list();
+  if (!radio.list.length) { radioOff(); feed(L('radioEmpty'), '#cfd2d6'); return; }
+  if (st === 'bm' && clsKey === 'tank') radio.cutT = 12;   // he can't listen to the end
+  radioNext(true);
+}
+function radioNext(first) {
+  if (!radio.st) return;
+  const song = radio.list[radio.n % radio.list.length]; radio.n++;
+  radio.item = song;
+  seqPlay(song, { loops: radio.st === 'tape' ? 99 : 2, onEnd: () => {
+    if (radio.st === 'bm') { vNoise(actx.currentTime, radioOut(), 'bandpass', 3000, 1.6, 0.06); feed(L('bmTapeEnd'), '#cfd2d6'); radioOff(); return; }
+    if (radio.st === 'wax' && Math.random() < 0.7) talk('📻 WAX FM', L('dj' + (1 + Math.floor(Math.random() * 6))));
+    radioNext();
+  } });
+  if (radio.st === 'bm' && first) feed(L('bmTapeOn'), '#cfd2d6');
+  else feed(`📻 ${song.title} — ${song.by}`, '#9ae6ff');
+  if (state === 'music') renderMusic();
+}
+function radioOff() {
+  radio.st = null; radio.item = null; radio.cutT = 0;
+  if (!bt.play) { seqStop(); bgmHold = false; playBgm(); } syncSndHint();
+  if (state === 'music') renderMusic();
+}
+function updateRadio(dt) {
+  if (radio.cutT > 0 && (radio.cutT -= dt) <= 0) { radioOff(); feed(L('bmCut'), '#cfd2d6'); }
+}
+
+// ---- the store, its owner, and the back-room studio door ----
+{
+  signBoard('KINGS WAX · RECORDS', '#14213d', '#ffd23f', 48, 2.9, 67.66, 0, 5.2);   // over the storefront's painted name
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(5.4, 2.0), new THREE.MeshStandardMaterial({ color: 0x1b1622, emissive: 0xff9f43, emissiveIntensity: 0.35 }));
+  win.position.set(48, 1.8, 67.56); scene.add(win);
+  for (let k = 0; k < 5; k++) {   // sleeves in the window
+    const c = mkCanvas(64, 64), g = c.getContext('2d');
+    g.fillStyle = ['#e76f51', '#f4a261', '#2a9d8f', '#7b2cbf', '#1d3557'][k]; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.arc(32, 32, 10 + k * 3, 0, 7); g.fill();
+    const s = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), new THREE.MeshStandardMaterial({ map: texOf(c, false), emissive: 0xffffff, emissiveMap: texOf(c, false), emissiveIntensity: 0.3 }));
+    s.position.set(46.1 + k * 0.95, 1.55 + (k % 2) * 0.25, 67.6); scene.add(s);
+  }
+  const door = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.2, 0.08), std(0x2b2d42));
+  door.position.set(WAX_DOOR.x, 1.35, 67.52); scene.add(door);
+  signBoard('STUDIO B', '#2b2d42', '#ff9f43', WAX_DOOR.x, 2.05, 67.6, 0, 0.9);
+  // an old show poster by the door; one of the two names has been torn off
+  const c = mkCanvas(128, 180), g = c.getContext('2d');
+  g.fillStyle = '#f1e3c2'; g.fillRect(0, 0, 128, 180);
+  g.fillStyle = '#b3221b'; g.font = '900 30px Arial'; g.textAlign = 'center'; g.fillText('LIVE!', 64, 40);
+  g.fillStyle = '#1b1b1b'; g.font = '900 24px Arial'; g.fillText('B.M. &', 64, 84);
+  g.fillStyle = '#7a5530'; g.beginPath(); g.moveTo(10, 96); for (let x = 10; x <= 118; x += 9) g.lineTo(x, 96 + (x % 2 ? 6 : -4)); g.lineTo(118, 128); g.lineTo(10, 124); g.fill();
+  g.fillStyle = '#1b1b1b'; g.font = '700 14px Arial'; g.fillText('BLOCK PARTY', 64, 150); g.fillText('SAT · 9PM', 64, 168);
+  const poster = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 1.05), new THREE.MeshStandardMaterial({ map: texOf(c, false), roughness: 0.9 }));
+  poster.position.set(44.4, 1.75, 67.58); poster.rotation.z = 0.03; scene.add(poster);
+}
+let ruthNPC = null;
+const waxNeeds = () => !MUS.visited && (SQ('record').got || SQ('walkman').radio);
+const studioSpot = { pos: { x: WAX_DOOR.x, z: WAX_DOOR.z }, on: () => MUS.visited, label: () => L('studioLabel'), use: () => openMusic('beat') };
+function musicSetup() {
+  if (ruthNPC) return;
+  ruthNPC = addNPC(WAX.x, WAX.z, { hood: 0x6d597a, cap: 0xd9d9d9, jeans: 0x3d3d3d, apron: 0x14213d }, () => L(MUS.visited ? 'waxLabel' : 'waxLabel0'), () => ruthTalk());
+  npcs.push(studioSpot);
+  const gv = { n: () => npcAt(WAX), on: waxNeeds };
+  gv.sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: markTex, depthWrite: false })); gv.sp.scale.setScalar(0.7); gv.sp.visible = false;
+  scene.add(gv.sp); GIVERS.push(gv);
+}
+function ruthTalk() {
+  if (MUS.visited) return openMusic('store');
+  MUS.visited = 1; MUS.boombox = 1; saveGame();
+  const lines = [[L('nm_ruth'), L(clsKey === 'tank' ? 'ruth_hi_b' : 'ruth_hi')], ['📻', L('gotBoombox')]];
+  if (SQ('record').got && !MUS.lp) {
+    MUS.lp = 1;
+    lines.push(['💿', L('lpOnTable')], [L('nm_ruth'), L('ruth_lp')]);
+    setTimeout(() => tune('tape', RECORDS.weiss), 6400);
+  }
+  seqTalk(lines.map(([w, l]) => () => talk(w, l)), 3200);
+  setTimeout(() => feed(L(TOUCH ? 'radioTipTouch' : 'radioTip'), '#ffd23f'), lines.length * 3200 + 400);
+}
+function musicObjective() {
+  if (waxNeeds()) return { text: L(SQ('record').got ? 'waxObjLp' : 'waxObj'), at: WAX };
+  return null;
+}
+
+// ---- albums on the shelf sell a little while you play ----
+function trackQuality(g) {
+  const n = r => [...g[r]].filter(c => c !== '.').length, uniq = r => new Set([...g[r]].filter(c => c !== '.')).size;
+  const all = ROWS.reduce((a, r) => a + n(r), 0);
+  const checks = [n('k') >= 2 && n('k') <= 8, n('s') >= 1 && n('s') <= 6, n('h') >= 3, n('b') >= 2, n('l') >= 3 && uniq('l') >= 2, all <= 56];
+  return checks.filter(Boolean).length / checks.length;
+}
+const albumQuality = a => a.tracks.reduce((s, i) => s + (MUS.tracks[i] ? trackQuality(MUS.tracks[i].g) : 0), 0) / a.tracks.length;
+let salesT = 0, salesAcc = 0;
+function updateSales(dt) {
+  if (!MUS.albums.length || (salesT += dt) < 45) return;
+  salesT = 0;
+  for (const a of MUS.albums) {
+    const boost = (MUS.tx ? 1.5 : 1) * (clsKey === 'tank' ? 1.3 : 1);
+    const n = Math.max(0, Math.round(albumQuality(a) * 3 * boost / (1 + a.sold / 150) + Math.random() - 0.3));
+    a.sold += n; salesAcc += n;
+  }
+  if (++updateSales.k % 3 === 0 && salesAcc > 0) {
+    rep += salesAcc * 2; feed(L('albumSold', { n: salesAcc, r: salesAcc * 2 }), '#ffd23f'); salesAcc = 0; saveGame();
+  }
+}
+updateSales.k = 0;
+function coverCanvas(a, size = 96) {
+  const c = mkCanvas(size, size), g = c.getContext('2d'), s = size;
+  g.fillStyle = a.color; g.fillRect(0, 0, s, s);
+  g.fillStyle = 'rgba(255,255,255,.8)'; g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = s / 24;
+  if (a.pat === 0) { g.beginPath(); g.arc(s / 2, s * 0.55, s * 0.28, Math.PI, 0); g.fill(); for (let k = 0; k < 4; k++) g.fillRect(0, s * 0.62 + k * s * 0.07, s, s * 0.025); }
+  if (a.pat === 1) for (let k = 0; k < 5; k++) g.fillRect(0, k * s / 5 + s / 20, s, s / 14);
+  if (a.pat === 2) for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.beginPath(); g.arc((x + 0.5) * s / 4, (y + 0.5) * s / 4, s / 14, 0, 7); g.fill(); }
+  if (a.pat === 3) { g.beginPath(); for (let k = 0; k < 5; k++) { g.moveTo(0, s * (0.2 + k * 0.15)); for (let x = 0; x <= s; x += s / 8) g.lineTo(x, s * (0.2 + k * 0.15) + Math.sin(x / s * 6 + k) * s * 0.05); } g.stroke(); }
+  g.fillStyle = '#fff'; g.font = `900 ${s / 8}px Arial`; g.textAlign = 'center'; g.fillText((a.title || '').slice(0, 14), s / 2, s * 0.94);
+  return c;
+}
+
+// ---- one panel, four views: store, beatmaker, album press, boombox ----
+const COVER_COLORS = ['#e63946', '#f4a261', '#2a9d8f', '#457b9d', '#7b2cbf', '#111111'];
+const bt = { g: null, bpm: 96, kit: 'chip', n: '', slot: -1, play: false, step: -1 };
+const emptyGrid = () => ({ k: '.'.repeat(16), s: '.'.repeat(16), h: '.'.repeat(16), b: '.'.repeat(16), l: '.'.repeat(16) });
+const draft = { pick: [], title: '', color: COVER_COLORS[0], pat: 0 };
+let mView = 'store';
+function openMusic(view) {
+  if (state !== 'play') return;
+  if (view === 'radio' && !MUS.boombox) { feed(L('noBoombox'), '#cfd2d6'); return; }
+  state = 'music'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  mView = view; if (view === 'beat' && !bt.g) bt.g = emptyGrid();
+  renderMusic(); $('music').classList.remove('hidden');
+}
+function closeMusic() {
+  if (state !== 'music') return;
+  if (bt.play) beatStop();
+  $('music').classList.add('hidden'); state = 'play';
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+function renderMusic() {
+  const box = $('musicBody'); let h = '';
+  $('music').dataset.view = mView;
+  if (mView === 'store') {
+    $('musicTitle').textContent = 'KINGS WAX';
+    h += `<div class="say">${L(clsKey === 'tank' ? 'ruth_store_b' : 'ruth_store')}</div><div class="sec">${L('shelfTitle')}</div>`;
+    for (const k of SHELF) {
+      const r = RECORDS[k], have = MUS.owned.includes(k);
+      h += `<div class="rec"><div class="cv" style="background:${r.cover}"></div><div class="tx"><b>${r.title}</b><small>${r.by}</small></div>` +
+        `<div class="mb sm" data-prev="${k}">${L(radio.item === r && radio.st === 'tape' ? 'mStop' : 'mListen')}</div>` +
+        `<div class="mb sm${have || rep < r.price ? ' off' : ''}" data-buyrec="${k}">${have ? L('mOwned') : L('repCost', { c: r.price })}</div></div>`;
+    }
+    h += `<div class="sec">${L('backRoom')}</div><div class="row2"><div class="mb" data-go="beat">🎛️ ${L('beatTitle')}</div>` +
+      `<div class="mb${MUS.tracks.length < 3 || MUS.albums.length >= 3 ? ' off' : ''}" data-go="album">💿 ${L('pressTitle')}</div></div>`;
+    if (MUS.tracks.length < 3) h += `<div class="hint">${L('needTracks', { n: MUS.tracks.length })}</div>`;
+    if (MUS.albums.length) {
+      h += `<div class="sec">${L('myAlbums')}</div>`;
+      MUS.albums.forEach((a, i) => { h += `<div class="rec"><canvas class="cv" data-cover="${i}" width="96" height="96"></canvas><div class="tx"><b>${esc(a.title)}</b><small>${L('soldN', { n: a.sold })} · ${L(albumQuality(a) < 0.45 ? 'rev0' : albumQuality(a) < 0.8 ? 'rev1' : 'rev2')}</small></div></div>`; });
+      if (!MUS.tx) h += `<div class="mb${rep < 300 ? ' off' : ''}" data-tx="1">📡 ${L('buyTx')}</div><div class="hint">${L('txHint')}</div>`;
+    }
+  }
+  if (mView === 'beat') {
+    $('musicTitle').textContent = 'STUDIO B';
+    h += `<div class="ctl"><div class="mb" data-bplay="1">${bt.play ? '■' : '▶'}</div>` +
+      `<label>BPM <input type="range" min="70" max="140" step="2" value="${bt.bpm}" id="bmBpm"><span>${bt.bpm}</span></label>` +
+      `<select id="bmKit">${Object.keys(KITS).map(k => `<option value="${k}"${k === bt.kit ? ' selected' : ''}>${L('kit_' + k)}</option>`).join('')}</select>` +
+      `<div class="mb sm" data-bidea="1">🎲 ${L('mIdea')}</div><div class="mb sm" data-bclear="1">${L('mClear')}</div></div><div id="grid">`;
+    ROWS.forEach(r => {
+      h += `<div class="lab">${L('row_' + r)}</div>`;
+      for (let c = 0; c < 16; c++) { const v = bt.g[r][c]; h += `<div class="cell r${r}${v !== '.' ? ' on' : ''}${c % 4 === 0 ? ' beat' : ''}" data-cell="${r}${c}">${'bl'.includes(r) && v !== '.' ? v : ''}</div>`; }
+    });
+    h += `</div><div class="hint">${L('beatHint')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(bt.n)}"><div class="mb" data-bsave="1">💾 ${L(bt.slot >= 0 ? 'saveOver' : 'saveNew')}</div></div>`;
+    if (MUS.tracks.length) {
+      h += `<div class="sec">${L('myTracks', { n: MUS.tracks.length })}</div>`;
+      MUS.tracks.forEach((tr, i) => { h += `<div class="rec small${i === bt.slot ? ' cur' : ''}"><div class="tx"><b>${esc(tr.n)}</b><small>${tr.bpm} BPM · ${L('kit_' + tr.kit)}</small></div><div class="mb sm" data-bload="${i}">${L('mLoad')}</div>${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-bdel="${i}">✕</div>`}</div>`; });
+    }
+    h += `<div class="mb back" data-go="store">← KINGS WAX</div>`;
+  }
+  if (mView === 'album') {
+    $('musicTitle').textContent = L('pressTitle');
+    h += `<div class="sec">${L('pickTracks')}</div>`;
+    MUS.tracks.forEach((tr, i) => { const on = draft.pick.includes(i); h += `<div class="rec small${on ? ' cur' : ''}" data-pick="${i}"><div class="tx"><b>${on ? '☑' : '☐'} ${esc(tr.n)}</b><small>${tr.bpm} BPM</small></div></div>`; });
+    h += `<div class="ctl"><input id="alTitle" maxlength="20" placeholder="${L('albumNamePh')}" value="${esc(draft.title)}"></div><div class="ctl">` +
+      COVER_COLORS.map(c => `<div class="sw${c === draft.color ? ' on' : ''}" style="background:${c}" data-col="${c}"></div>`).join('') +
+      [0, 1, 2, 3].map(p => `<div class="mb sm${p === draft.pat ? ' on' : ''}" data-pat="${p}">${['☀', '☰', '⠿', '〰'][p]}</div>`).join('') + `</div>` +
+      `<div class="ctl"><canvas id="alCover" width="96" height="96" class="cv big"></canvas><div class="mb${draft.pick.length !== 3 || rep < 200 ? ' off' : ''}" data-press="1">${L('pressBtn')}</div></div>` +
+      `<div class="mb back" data-go="store">← KINGS WAX</div>`;
+  }
+  if (mView === 'radio') {
+    $('musicTitle').textContent = L('radioTitle');
+    const cur = radio.item ? `${radio.item.title} — ${radio.item.by}` : L('radioDefault');
+    h += `<div class="now">${radio.st ? '▶' : '♪'} ${esc(cur)}</div><div class="sec">${L('stations')}</div>`;
+    h += `<div class="rec small${!radio.st ? ' cur' : ''}" data-tune="off"><div class="tx"><b>— ${L('st_off')}</b><small>8-Bit Drop · -MAID¥$AMA-</small></div></div>`;
+    for (const k in STATIONS) if (STATIONS[k].ok()) h += `<div class="rec small${radio.st === k ? ' cur' : ''}" data-tune="${k}"><div class="tx"><b>${STATIONS[k].f} ${L('st_' + k)}</b><small>${L('st_' + k + '_d')}</small></div></div>`;
+    const tapes = [...(MUS.lp ? ['weiss'] : []), ...MUS.owned];
+    if (tapes.length || MUS.tracks.length) {
+      h += `<div class="sec">${L('tapes')}</div>`;
+      for (const k of tapes) h += `<div class="rec small${radio.item === RECORDS[k] ? ' cur' : ''}" data-tape="${k}"><div class="cv" style="background:${RECORDS[k].cover}"></div><div class="tx"><b>${RECORDS[k].title}</b><small>${RECORDS[k].by}</small></div></div>`;
+      MUS.tracks.forEach((tr, i) => { h += `<div class="rec small" data-mytape="${i}"><div class="cv" style="background:${myCrew.color}"></div><div class="tx"><b>${esc(tr.n)}</b><small>${esc(myCrew.name)}</small></div></div>`; });
+    }
+  }
+  box.innerHTML = h;
+  box.querySelectorAll('canvas[data-cover]').forEach(cv => cv.getContext('2d').drawImage(coverCanvas(MUS.albums[+cv.dataset.cover]), 0, 0));
+  const ac = $('alCover'); if (ac) ac.getContext('2d').drawImage(coverCanvas({ ...draft, title: draft.title || '???' }), 0, 0);
+}
+function beatStop() { bt.play = false; bt.step = -1; seqStop(); if (radio.st) radioNext(); else { bgmHold = false; playBgm(); } }
+function beatStart() {
+  bgmHold = true; bgm.pause(); bt.play = true;
+  seqPlay({ bpm: bt.bpm, root: 45, kit: bt.kit, order: [0], pats: [bt.g] }, { loops: 1e9, live: () => bt.g, onStep: i => {
+    bt.step = i; document.querySelectorAll('#grid .cell.ph').forEach(e => e.classList.remove('ph'));
+    for (const r of ROWS) document.querySelector(`#grid [data-cell="${r}${i}"]`)?.classList.add('ph');
+  } });
+}
+function beatIdea() {
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const g = {
+    k: pick(['x.........x.x...', 'x..x......x.....', 'x...x...x...x...', 'x.....x...x.....']),
+    s: pick(['....x.......x...', '....x.......x..x', '....x..x....x...']),
+    h: pick(['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx', '..o...o...o...o.', 'x.x.x.x.x.x.x.xo']),
+  };
+  let b = '', l = '';
+  for (let i = 0; i < 16; i++) { b += i % 4 === 0 || Math.random() < 0.18 ? pick('11345') : '.'; l += Math.random() < 0.35 ? pick('12345') : '.'; }
+  bt.g = { ...g, b, l }; bt.bpm = pick([88, 92, 96, 100, 108]);
+}
+$('musicClose').addEventListener('click', closeMusic);
+$('musicBody').addEventListener('input', e => {
+  if (e.target.id === 'bmBpm') { bt.bpm = +e.target.value; e.target.nextElementSibling.textContent = bt.bpm; if (seq.song && bt.play) seq.song.bpm = bt.bpm; }
+  if (e.target.id === 'bmName') bt.n = e.target.value;
+  if (e.target.id === 'alTitle') { draft.title = e.target.value; const ac = $('alCover'); if (ac) ac.getContext('2d').drawImage(coverCanvas({ ...draft, title: draft.title || '???' }), 0, 0); }
+});
+$('musicBody').addEventListener('change', e => { if (e.target.id === 'bmKit') { bt.kit = e.target.value; if (seq.song && bt.play) seq.song.kit = bt.kit; } });
+$('musicBody').addEventListener('click', e => {
+  const d = e.target.closest('[data-cell],[data-go],[data-prev],[data-buyrec],[data-tx],[data-bplay],[data-bidea],[data-bclear],[data-bsave],[data-bload],[data-bdel],[data-pick],[data-col],[data-pat],[data-press],[data-tune],[data-tape],[data-mytape]')?.dataset;
+  if (!d || e.target.closest('.off')) return;
+  audio();
+  if (d.cell) {
+    const r = d.cell[0], c = +d.cell.slice(1), row = bt.g[r], v = row[c];
+    const nv = 'bl'.includes(r) ? (v === '.' ? '1' : v === '5' ? '.' : String(+v + 1)) : (v === '.' ? 'x' : '.');
+    bt.g[r] = row.slice(0, c) + nv + row.slice(c + 1);
+    if (nv !== '.' && !bt.play) playStep({ root: 45, kit: bt.kit, bpm: bt.bpm }, { [r]: '.'.repeat(c) + nv }, c, actx.currentTime + 0.01, 60 / bt.bpm / 4, radioOut());
+    const el = e.target.closest('[data-cell]'); el.classList.toggle('on', nv !== '.'); el.textContent = 'bl'.includes(r) && nv !== '.' ? nv : '';
+    return;
+  }
+  if (d.go) { if (bt.play) beatStop(); mView = d.go; if (d.go === 'beat' && !bt.g) bt.g = emptyGrid(); if (d.go === 'album') draft.pick = MUS.tracks.map((_, i) => i).filter(i => !MUS.albums.some(a => a.tracks.includes(i))).slice(0, 3); }
+  if (d.prev) { const r = RECORDS[d.prev]; if (radio.item === r && radio.st === 'tape') radioOff(); else tune('tape', r); }
+  if (d.buyrec) { const r = RECORDS[d.buyrec]; if (MUS.owned.includes(d.buyrec) || rep < r.price) return; rep -= r.price; MUS.owned.push(d.buyrec); feed(L('boughtRec', { t: r.title }), '#ffd23f'); beep(784, 0.1, 0.08, 'triangle'); saveGame(); }
+  if (d.tx) { if (rep < 300) return; rep -= 300; MUS.tx = 1; talk(L('nm_ruth'), L('ruth_tx')); feed(L('txOn'), '#ffd23f'); saveGame(); }
+  if (d.bplay) { if (bt.play) beatStop(); else beatStart(); }
+  if (d.bidea) bt.g && beatIdea();
+  if (d.bclear) Object.assign(bt, { g: emptyGrid(), slot: -1, n: '' });   // a fresh track, not a wipe of the saved one
+  if (d.bsave) {
+    const tr = { n: (bt.n || '').trim() || L('untitled', { n: MUS.tracks.length + 1 }), bpm: bt.bpm, kit: bt.kit, g: { ...bt.g } };
+    if (bt.slot >= 0 && MUS.tracks[bt.slot]) MUS.tracks[bt.slot] = tr;
+    else if (MUS.tracks.length >= 8) { feed(L('tracksFull'), '#ff6b6b'); return; }
+    else { MUS.tracks.push(tr); bt.slot = MUS.tracks.length - 1; }
+    bt.n = tr.n; feed(L('trackSaved', { t: tr.n }), '#3ddc84'); beep(660, 0.08, 0.07, 'triangle');
+    if (MUS.tracks.length === 3 && !MUS.albums.length) setTimeout(() => talk(L('nm_ruth'), L('ruth_three')), 900);
+    saveGame();
+  }
+  if (d.bload !== undefined) { const tr = MUS.tracks[+d.bload]; Object.assign(bt, { g: { ...tr.g }, bpm: tr.bpm, kit: tr.kit, n: tr.n, slot: +d.bload }); if (bt.play) { beatStop(); beatStart(); } }
+  if (d.bdel !== undefined) {
+    const i = +d.bdel; if (MUS.albums.some(a => a.tracks.includes(i))) return;
+    MUS.tracks.splice(i, 1); for (const a of MUS.albums) a.tracks = a.tracks.map(x => x > i ? x - 1 : x);
+    if (bt.slot === i) bt.slot = -1; else if (bt.slot > i) bt.slot--;
+    saveGame();
+  }
+  if (d.pick !== undefined) { const i = +d.pick, k = draft.pick.indexOf(i); if (k >= 0) draft.pick.splice(k, 1); else if (draft.pick.length < 3) draft.pick.push(i); }
+  if (d.col) draft.color = d.col;
+  if (d.pat !== undefined) draft.pat = +d.pat;
+  if (d.press) {
+    if (draft.pick.length !== 3 || rep < 200 || MUS.albums.length >= 3) return;
+    rep -= 200;
+    const a = { title: draft.title.trim() || L('untitledAlbum'), color: draft.color, pat: draft.pat, tracks: [...draft.pick], sold: 0 };
+    MUS.albums.push(a); draft.title = ''; mView = 'store';
+    const q = albumQuality(a);
+    seqTalk([() => talk('💿', L('pressed', { t: a.title })), () => talk(L('nm_ruth'), L(q < 0.45 ? 'ruth_rev0' : q < 0.8 ? 'ruth_rev1' : 'ruth_rev2')),
+      ...(clsKey === 'tank' ? [() => feed(L('bmCredit'), '#cfd2d6')] : []), ...(!MUS.tx ? [() => talk(L('nm_ruth'), L('ruth_txOffer'))] : [])], 3200);
+    beep(523, 0.15, 0.1, 'triangle'); setTimeout(() => beep(784, 0.3, 0.1, 'triangle'), 150);
+    saveGame();
+  }
+  if (d.tune) { if (d.tune === 'off') radioOff(); else tune(d.tune); }
+  if (d.tape) tune('tape', RECORDS[d.tape]);
+  if (d.mytape !== undefined) tune('tape', trackSong(MUS.tracks[+d.mytape]));
+  renderMusic();
+});
+musicSetup();
+function updateMusic(dt) { updateRadio(dt); if (state === 'play') updateSales(dt); }
+
 // ---- Street Intel notebook (J / 📓) ----
 function renderIntel() {
   const rel = { fact: '✅', partial: '◐', rumor: '❓' };
@@ -4922,6 +5453,7 @@ function update(dt) {
   $('wname').textContent = many ? `${W().icon} ${W().name}` : '';
   $('bSwap').classList.toggle('hidden', !many);
   $('bIntel').classList.toggle('hidden', !CAMPAIGN());
+  $('bRadio').classList.toggle('hidden', !MUS.boombox);
   updateMoodHud();
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
   $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
@@ -4971,6 +5503,7 @@ function applyLang() {
   if (state === 'crew') renderCrew();
   if (state === 'shop') renderShop();
   if (state === 'metro') renderMetro();
+  if (state === 'music') renderMusic();
 }
 $('langs').addEventListener('click', e => {
   e.stopPropagation();
@@ -5098,7 +5631,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
