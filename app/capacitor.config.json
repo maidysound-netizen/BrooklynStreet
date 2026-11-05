@@ -1,0 +1,6 @@
+{
+  "appId": "com.maidysound.manswar",
+  "appName": "MAN'S WAR",
+  "webDir": "www",
+  "ios": { "contentInset": "never", "backgroundColor": "#000000" }
+}

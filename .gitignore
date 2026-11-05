@@ -1,0 +1,4 @@
+.DS_Store
+._*
+app/node_modules/
+app/www/

@@ -13,6 +13,9 @@
   canvas#game { display:block; }
   .hidden { display:none !important; }
   #hud { position:fixed; inset:0; pointer-events:none; }
+  /* keep HUD and menus clear of the notch / Dynamic Island and the home bar (zero in normal browsers) */
+  #hud { inset:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); }
+  #menu { padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); }
   #cross { position:absolute; left:50%; top:50%; width:22px; height:22px; transform:translate(-50%,-50%); }
   #cross::before,#cross::after { content:""; position:absolute; background:rgba(255,255,255,.9); box-shadow:0 0 2px #000; }
   #cross::before { left:10px; top:0; width:2px; height:22px; }

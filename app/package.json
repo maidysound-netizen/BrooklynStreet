@@ -1,0 +1,17 @@
+{
+  "name": "mans-war-app",
+  "private": true,
+  "description": "MAN'S WAR: KINGS ST. as a phone app (Capacitor). The game itself stays in ../index.html.",
+  "scripts": {
+    "www": "node build-www.mjs",
+    "ios": "node build-www.mjs && npx cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "three": "0.160.0"
+  }
+}
