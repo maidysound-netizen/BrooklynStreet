@@ -273,6 +273,25 @@
   #grid .cell.on.rb { background:#2a9d8f; } #grid .cell.on.rl { background:#9ae6ff; }
   #grid .cell.ph { box-shadow:inset 0 0 0 2px #fff; }
   @media (max-width:440px) { #grid { grid-template-columns:30px repeat(16,1fr); gap:2px; } #grid .lab { font-size:9px; } #music .cbox { padding:10px; } }
+  #music[data-view=beat] .cbox { width:min(980px,98vw); max-height:96vh; padding:10px; }
+  #music .ctl b { font-size:12px; opacity:.85; }
+  #music .kn { display:flex; align-items:center; gap:4px; font-size:12px; } #music .kn input { width:80px; }
+  #music .mb.pat { min-width:26px; }
+  #music .chain .slot { width:26px; height:26px; border-radius:5px; background:#2b2d42; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; cursor:pointer; user-select:none; }
+  #music .chain .slot.cur { background:#3d4470; } #music .chain .slot.ph { outline:2px solid #ffd23f; }
+  #music .tabs { display:flex; gap:3px; margin-top:8px; }
+  #music .tab { flex:1; position:relative; padding:8px 4px; border-radius:6px 6px 0 0; background:#24304f; font-weight:900; font-size:13px; text-align:center; cursor:pointer; user-select:none; }
+  #music .tab.on { background:var(--tc); color:#111; }
+  #music .tab .mute { position:absolute; right:3px; top:3px; font-size:9px; padding:1px 4px; border-radius:3px; background:rgba(0,0,0,.35); color:#fff; }
+  #music .tab .mute.on { background:#e63946; }
+  #roll { display:grid; grid-template-columns:42px repeat(16,1fr); gap:2px; padding:6px; background:#0f1730; border-radius:0 0 8px 8px; }
+  #roll .lab { font:800 9.5px system-ui; opacity:.75; align-self:center; white-space:nowrap; overflow:hidden; }
+  #roll .lab.root { color:#ffd23f; opacity:1; }
+  #roll .c { height:19px; border-radius:2px; background:#1c2644; cursor:pointer; }
+  #roll .c.beat { background:#253158; } #roll .c.rt { background:#262f4d; }
+  #roll .c.on { background:var(--tc); } #roll .c.acc { background:#fff; } #roll .c.hold { opacity:.6; border-radius:0; }
+  #roll .c.ph { box-shadow:inset 0 0 0 2px #fff; }
+  @media (max-width:440px) { #roll { grid-template-columns:30px repeat(16,1fr); gap:1px; padding:3px; } #roll .lab { font-size:8px; } #music .kn input { width:62px; } }
   #bRadio { left:50%; top:10px; margin-left:-234px; width:44px; height:44px; border-radius:10px; font-size:18px; }
   #volPanel { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.5); z-index:21; }
   #volPanel .cbox { width:min(340px,90vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:16px; font:700 15px system-ui,sans-serif; }
@@ -1108,6 +1127,35 @@ const STR = {
   kit_soul: ['소울', 'Soul', 'ソウル'],
   kit_jazz: ['재즈', 'Jazz', 'ジャズ'],
   mIdea: ['아이디어', 'Idea', 'アイデア'],
+  sLoop: ['🔁 패턴 반복', '🔁 Loop pattern', '🔁 パターン'],
+  sSong: ['🎼 곡 전체', '🎼 Whole song', '🎼 曲全体'],
+  sSwing: ['스윙', 'Swing', 'スウィング'],
+  sKey: ['키', 'Key', 'キー'],
+  sc_minpent: ['마이너 펜타토닉', 'Minor pentatonic', 'マイナーペンタ'],
+  sc_minor: ['마이너', 'Minor', 'マイナー'],
+  sc_dorian: ['도리안', 'Dorian', 'ドリアン'],
+  sc_blues: ['블루스', 'Blues', 'ブルース'],
+  sc_major: ['메이저', 'Major', 'メジャー'],
+  sc_majpent: ['메이저 펜타토닉', 'Major pentatonic', 'メジャーペンタ'],
+  kit2_808: ['드럼 808', 'Drums 808', 'ドラム 808'],
+  kit2_chip: ['드럼 8비트', 'Drums 8-bit', 'ドラム 8ビット'],
+  kit2_brush: ['드럼 브러시', 'Drums brush', 'ドラム ブラシ'],
+  sPattern: ['패턴', 'Pattern', 'パターン'],
+  sCopy: ['복제', 'Copy', '複製'],
+  sWipe: ['비우기', 'Clear', '消去'],
+  sChain: ['곡 순서', 'Song order', '曲の順番'],
+  sLen: ['음 길이', 'Length', '長さ'],
+  sVol: ['볼륨', 'Volume', '音量'],
+  sCut: ['밝기', 'Tone', '明るさ'],
+  sRev: ['리버브', 'Reverb', 'リバーブ'],
+  sDly: ['딜레이', 'Delay', 'ディレイ'],
+  tr_drums: ['🥁 드럼', '🥁 Drums', '🥁 ドラム'],
+  tr_bass: ['🎸 베이스', '🎸 Bass', '🎸 ベース'],
+  tr_keys: ['🎹 건반', '🎹 Keys', '🎹 鍵盤'],
+  tr_lead: ['🎺 리드', '🎺 Lead', '🎺 リード'],
+  beatHint2: ['드럼 칸: 누를 때마다 켜짐 → 세게(흰색) → 꺼짐. 악기 칸: 고른 음 길이만큼 음이 들어가고, 다시 누르면 지워져요. 모든 줄이 고른 스케일 안의 음이라 어디를 눌러도 어울려요. 패턴 A~D를 만들고 곡 순서에 이어 붙이세요. M은 그 트랙 음소거.',
+    'Drum cells: tap for on → accent (white) → off. Instrument cells: tap to place a note of the chosen length, tap again to remove it. Every row is in the chosen scale, so anything you tap fits. Build patterns A–D and chain them in the song order. M mutes a track.',
+    'ドラム：タップでオン → 強く（白）→ オフ。楽器：選んだ長さの音が入り、もう一度タップで消える。どの行も選んだスケールの音なので、どこを押しても合う。パターンA〜Dを作って曲の順番につなげよう。Mはそのトラックをミュート。'],
   mClear: ['새 곡', 'New track', '新しい曲'],
   mLoad: ['열기', 'Open', '開く'],
   beatHint: ['칸을 눌러 켜요. 베이스·멜로디 칸은 누를 때마다 음이 1→5로 올라가고, 한 번 더 누르면 꺼져요. 아무렇게나 눌러도 어울리는 음만 있어요.', 'Tap cells to turn them on. Bass and melody cells go up 1→5 with each tap, then off. Every note fits, so tap freely.', 'マスをタップでオン。ベースとメロディは押すたびに 1→5 と上がり、もう一度でオフ。どの音も合うので自由に。'],
@@ -4409,7 +4457,8 @@ function loadGame(d) {
   for (const a of d.allies) { const al = new Ally(a.key); al.mood = a.mood; allies.push(al); }
   defectors.push(...(d.defectors || []));
   Object.assign(intel, d.intel || {}); Object.assign(npcState, d.npcState || {});
-  Object.assign(MUS, JSON.parse(JSON.stringify(d.music || {})));   // v1 saves have neither: start the campaign fresh
+  Object.assign(MUS, JSON.parse(JSON.stringify(d.music || {})));
+  MUS.tracks = MUS.tracks.map(toV2);   // v1 saves have neither: start the campaign fresh
   ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
   personalSetup(false);
   checkBossTrigger();
@@ -4982,7 +5031,7 @@ const RECORDS = {   // fictional neighbourhood musicians, early '80s
 const SHELF = ['disco', 'salsa', 'breaks', 'electro'];
 const midiHz = m => 440 * Math.pow(2, (m - 69) / 12);
 const degree = (root, ch) => { const d = +ch; return d >= 6 ? root + 12 + SCALE[d - 6] : root + SCALE[d - 1]; };
-const trackSong = tr => ({ title: tr.n, by: myCrew.name, bpm: tr.bpm, root: 45, kit: tr.kit, order: [0, 0], pats: [tr.g] });
+const trackSong = tr => ({ ...toV2(tr), title: tr.n, by: myCrew.name });
 
 // ---- synth voices (into the radio bus, which follows the music slider) ----
 function radioOut() {
@@ -5037,14 +5086,14 @@ function seqTick() {
   const sd = 60 / s.bpm / 4, out = radioOut();
   if (seq.next < actx.currentTime - 0.25) seq.next = actx.currentTime + 0.05;   // the tab slept: skip ahead, don't burst
   while (seq.song && seq.next < actx.currentTime + 0.12) {
-    const pat = seq.live ? seq.live() : s.pats[s.order[seq.o]];
+    const order = s.v === 2 ? s.arr : s.order, pat = seq.live ? seq.live() : s.pats[order[seq.o % order.length]];
     const swing = seq.i % 2 ? (s.swing || 0) * sd : 0;
-    playStep(s, pat, seq.i, seq.next + swing, sd, out);
-    if (seq.onStep) { const i = seq.i, at = seq.next; setTimeout(() => seq.onStep && seq.onStep(i), Math.max(0, (at - actx.currentTime) * 1000)); }
+    if (s.v === 2) playStep2(s, pat, seq.i, seq.next + swing, sd); else playStep(s, pat, seq.i, seq.next + swing, sd, out);
+    if (seq.onStep) { const i = seq.i, o = seq.o % order.length, at = seq.next; setTimeout(() => seq.onStep && seq.onStep(i, o), Math.max(0, (at - actx.currentTime) * 1000)); }
     seq.next += sd;
     if (++seq.i >= 16) {
       seq.i = 0;
-      if (!seq.live && ++seq.o >= s.order.length) {
+      if (!seq.live && ++seq.o >= (s.v === 2 ? s.arr : s.order).length) {
         seq.o = 0;
         if (++seq.done >= seq.loops) { const cb = seq.onEnd; seqStop(); if (cb) cb(); return; }
       }
@@ -5087,7 +5136,7 @@ function radioNext(first) {
 }
 function radioOff() {
   radio.st = null; radio.item = null; radio.cutT = 0;
-  if (!bt.play) { seqStop(); bgmHold = false; playBgm(); } syncSndHint();
+  if (!stu.play) { seqStop(); bgmHold = false; playBgm(); } syncSndHint();
   if (state === 'music') renderMusic();
 }
 function updateRadio(dt) {
@@ -5148,13 +5197,7 @@ function musicObjective() {
 }
 
 // ---- albums on the shelf sell a little while you play ----
-function trackQuality(g) {
-  const n = r => [...g[r]].filter(c => c !== '.').length, uniq = r => new Set([...g[r]].filter(c => c !== '.')).size;
-  const all = ROWS.reduce((a, r) => a + n(r), 0);
-  const checks = [n('k') >= 2 && n('k') <= 8, n('s') >= 1 && n('s') <= 6, n('h') >= 3, n('b') >= 2, n('l') >= 3 && uniq('l') >= 2, all <= 56];
-  return checks.filter(Boolean).length / checks.length;
-}
-const albumQuality = a => a.tracks.reduce((s, i) => s + (MUS.tracks[i] ? trackQuality(MUS.tracks[i].g) : 0), 0) / a.tracks.length;
+const albumQuality = a => a.tracks.reduce((s, i) => s + (MUS.tracks[i] ? quality2(toV2(MUS.tracks[i])) : 0), 0) / a.tracks.length;
 let salesT = 0, salesAcc = 0;
 function updateSales(dt) {
   if (!MUS.albums.length || (salesT += dt) < 45) return;
@@ -5183,8 +5226,283 @@ function coverCanvas(a, size = 96) {
 
 // ---- one panel, four views: store, beatmaker, album press, boombox ----
 const COVER_COLORS = ['#e63946', '#f4a261', '#2a9d8f', '#457b9d', '#7b2cbf', '#111111'];
-const bt = { g: null, bpm: 96, kit: 'chip', n: '', slot: -1, play: false, step: -1 };
-const emptyGrid = () => ({ k: '.'.repeat(16), s: '.'.repeat(16), h: '.'.repeat(16), b: '.'.repeat(16), l: '.'.repeat(16) });
+// ---- STUDIO B: four tracks (drums, bass, keys, lead), patterns A–D, a song order, synth presets and effects ----
+// Melodic rows are locked to the chosen scale, so any cell you tap fits. Songs are plain data (MUS.tracks).
+const SCALES = { minpent: [0, 3, 5, 7, 10], minor: [0, 2, 3, 5, 7, 8, 10], dorian: [0, 2, 3, 5, 7, 9, 10], blues: [0, 3, 5, 6, 7, 10], major: [0, 2, 4, 5, 7, 9, 11], majpent: [0, 2, 4, 7, 9] };
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const DRUMS = ['kick', 'snare', 'clap', 'chh', 'ohh', 'tomL', 'tomH', 'perc'];
+const DRUM_LAB = { kick: 'KICK', snare: 'SNARE', clap: 'CLAP', chh: 'HAT', ohh: 'OPEN', tomL: 'TOM L', tomH: 'TOM H', perc: 'BELL' };
+const TRACKS = ['drums', 'bass', 'keys', 'lead'];
+const TR_COLOR = ['#e63946', '#2a9d8f', '#f4a261', '#9ae6ff'];
+const TR_BASE = [0, 36, 48, 60];   // midi note of each melodic track's lowest row, before the key
+const INST = {
+  bass: {
+    Sub: { w: ['sine'], a: 0.005, d: 0.3, s: 0.8, r: 0.08, cut: 900, q: 1, v: 0.55 },
+    Square: { w: ['square'], a: 0.004, d: 0.15, s: 0.6, r: 0.05, cut: 1200, q: 3, v: 0.22 },
+    Acid: { w: ['sawtooth'], a: 0.003, d: 0.18, s: 0.25, r: 0.05, cut: 380, q: 16, fenv: 2600, v: 0.26 },
+    Pluck: { w: ['triangle'], a: 0.002, d: 0.22, s: 0, r: 0.05, cut: 2500, q: 1, v: 0.55 },
+    Reese: { w: ['sawtooth', 'sawtooth'], det: 16, a: 0.01, d: 0.3, s: 0.8, r: 0.1, cut: 650, q: 4, v: 0.2 },
+  },
+  keys: {
+    'E.Piano': { w: ['sine', 'sine'], mul: [1, 2], mix: [1, 0.3], a: 0.003, d: 0.7, s: 0.3, r: 0.3, cut: 5000, q: 0.5, v: 0.22 },
+    Organ: { w: ['square', 'sine'], mul: [1, 2], mix: [0.35, 0.8], a: 0.01, d: 0.1, s: 0.9, r: 0.06, cut: 2400, q: 1, v: 0.14 },
+    Pad: { w: ['sawtooth', 'sawtooth'], det: 12, a: 0.28, d: 0.5, s: 0.8, r: 0.6, cut: 1500, q: 1, v: 0.1 },
+    Stab: { w: ['sawtooth', 'square'], det: 7, a: 0.002, d: 0.16, s: 0.08, r: 0.08, cut: 2000, q: 5, fenv: 1800, v: 0.14 },
+  },
+  lead: {
+    Chip: { w: ['square'], a: 0.003, d: 0.1, s: 0.7, r: 0.04, cut: 6000, q: 0.5, v: 0.12 },
+    Saw: { w: ['sawtooth'], a: 0.005, d: 0.2, s: 0.6, r: 0.1, cut: 3200, q: 2, v: 0.12 },
+    Flute: { w: ['triangle'], a: 0.05, d: 0.1, s: 0.9, r: 0.12, cut: 6000, q: 0.5, v: 0.3, vib: 5 },
+    Bell: { fm: 3.5, a: 0.002, d: 1.1, s: 0, r: 0.4, cut: 9000, q: 0.5, v: 0.25 },
+  },
+};
+const KIT2 = ['808', 'chip', 'brush'];
+const newPat = () => ({ d: Object.fromEntries(DRUMS.map(k => [k, '.'.repeat(16)])), n: [[], [], []] });
+const newSong = () => ({ v: 2, n: '', bpm: 96, swing: 0, key: 9, scale: 'minpent', kit: '808', arr: [0], pats: [newPat()],
+  tr: [{ vol: 0.9, cut: 0.5, rev: 0.1, dly: 0, mute: 0 }, { inst: 'Sub', vol: 0.9, cut: 0.5, rev: 0, dly: 0, mute: 0 },
+    { inst: 'E.Piano', vol: 0.7, cut: 0.5, rev: 0.35, dly: 0, mute: 0 }, { inst: 'Chip', vol: 0.7, cut: 0.5, rev: 0.2, dly: 0.25, mute: 0 }] });
+const rowsOf = s => SCALES[s.scale].length * 2 + 1;
+const rowMidi = (s, tr, r) => { const sc = SCALES[s.scale]; return TR_BASE[tr] + s.key + Math.floor(r / sc.length) * 12 + sc[r % sc.length]; };
+const noteName = m => NOTE_NAMES[m % 12] + (Math.floor(m / 12) - 1);
+// first-version tracks (5 rows, one bar) become a one-pattern song
+function toV2(tr) {
+  if (!tr || tr.v === 2) return tr;
+  const s = newSong(), p = s.pats[0], g = tr.g, deg = ch => { const d = +ch; return d >= 6 ? 5 + d - 6 : d - 1; };
+  s.n = tr.n; s.bpm = tr.bpm; s.kit = tr.kit === 'jazz' ? 'brush' : tr.kit === 'chip' ? 'chip' : '808'; s.arr = [0, 0];
+  if (tr.kit === 'jazz') s.swing = 0.33;
+  p.d.kick = g.k.replace(/[^.]/g, 'x'); p.d.snare = g.s.replace(/[^.]/g, 'x');
+  p.d.chh = g.h.replace(/[^.x]/g, '.'); p.d.ohh = g.h.replace(/[^.o]/g, '.').replace(/o/g, 'x');
+  [...g.b].forEach((c, i) => { if (c !== '.') p.n[0].push([i, deg(c), 2]); });
+  [...g.l].forEach((c, i) => { if (c !== '.') p.n[2].push([i, deg(c), 1]); });
+  s.tr[1].inst = { chip: 'Square', soul: 'Pluck', jazz: 'Sub' }[tr.kit] || 'Sub';
+  s.tr[3].inst = { chip: 'Chip', soul: 'Saw', jazz: 'Flute' }[tr.kit] || 'Chip';
+  return s;
+}
+
+// ---- mixer: one bus per track, with reverb and delay sends ----
+let mix = null;
+function studioMix() {
+  if (mix) return mix;
+  const out = radioOut(), master = actx.createGain(); master.connect(out);
+  const rev = actx.createConvolver(), len = Math.floor(actx.sampleRate * 2.2), b = actx.createBuffer(2, len, actx.sampleRate);
+  for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+  rev.buffer = b; const revOut = actx.createGain(); revOut.gain.value = 0.8; rev.connect(revOut).connect(master);
+  const dly = actx.createDelay(1), fb = actx.createGain(), dlf = actx.createBiquadFilter();
+  fb.gain.value = 0.38; dlf.type = 'lowpass'; dlf.frequency.value = 2800; dly.connect(dlf).connect(fb).connect(dly); dlf.connect(master);
+  const bus = TRACKS.map(() => { const g = actx.createGain(), r = actx.createGain(), d = actx.createGain(); g.connect(master); g.connect(r).connect(rev); g.connect(d).connect(dly); return { g, r, d }; });
+  return (mix = { master, bus, dly });
+}
+function applyMix(s) {
+  const m = studioMix(); m.dly.delayTime.value = Math.min(0.9, 60 / s.bpm * 0.75);   // dotted eighth
+  s.tr.forEach((tr, i) => { const b = m.bus[i]; b.g.gain.value = tr.mute ? 0 : tr.vol * 1.4; b.r.gain.value = tr.rev * 0.6; b.d.gain.value = tr.dly * 0.5; });
+}
+function drum2(k, t, vel, kit, out) {
+  const tone = (type, f0, f1, dur, vol) => {
+    const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.6);
+    g.gain.setValueAtTime(vol * vel, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur); o.connect(g).connect(out); o.start(t); o.stop(t + dur + 0.02);
+  };
+  const brush = kit === 'brush', chip = kit === 'chip';
+  if (k === 'kick') tone(chip ? 'square' : 'sine', chip ? 110 : 150, 40, kit === '808' ? 0.55 : 0.22, brush ? 0.5 : chip ? 0.35 : 0.95);
+  if (k === 'snare') { if (brush) vNoise(t, out, 'highpass', 2500, 0.25, 0.2 * vel); else { vNoise(t, out, 'bandpass', 1800, 0.18, 0.5 * vel); tone('triangle', 190, 0, 0.08, 0.22); } }
+  if (k === 'clap') for (let j = 0; j < 3; j++) vNoise(t + j * 0.011, out, 'bandpass', 1300, j < 2 ? 0.03 : 0.22, 0.55 * vel);
+  if (k === 'chh') vNoise(t, out, 'highpass', brush ? 6000 : 8000, 0.045, 0.18 * vel);
+  if (k === 'ohh') vNoise(t, out, 'highpass', 7000, 0.32, 0.13 * vel);
+  if (k === 'tomL') tone('sine', 140, 80, 0.35, 0.65);
+  if (k === 'tomH') tone('sine', 220, 140, 0.28, 0.55);
+  if (k === 'perc') { tone('square', 540, 0, 0.12, 0.12); tone('square', 800, 0, 0.12, 0.1); }
+}
+function voice2(tr, inst, bright, midi, t, dur, out) {
+  const set = INST[TRACKS[tr]], P = set[inst] || Object.values(set)[0], hz = midiHz(midi);
+  const f = actx.createBiquadFilter(), env = actx.createGain(), cut = Math.min(16000, P.cut * Math.pow(2, (bright - 0.5) * 4));
+  f.type = 'lowpass'; f.Q.value = P.q;
+  if (P.fenv) { f.frequency.setValueAtTime(Math.min(16000, cut + P.fenv * Math.pow(2, (bright - 0.5) * 2)), t); f.frequency.exponentialRampToValueAtTime(cut, t + P.d + 0.01); } else f.frequency.value = cut;
+  const end = t + Math.max(dur, P.a + 0.02), stop = end + P.r * 3 + 0.05;
+  env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(P.v, t + P.a);
+  env.gain.setTargetAtTime(P.v * P.s, t + P.a, P.d / 3); env.gain.setTargetAtTime(0, end, P.r / 3);
+  f.connect(env).connect(out);
+  if (P.fm) {   // two-operator FM bell
+    const c = actx.createOscillator(), m = actx.createOscillator(), mg = actx.createGain();
+    c.frequency.value = hz; m.frequency.value = hz * P.fm; mg.gain.setValueAtTime(hz * 2.2, t); mg.gain.exponentialRampToValueAtTime(hz * 0.05, t + P.d);
+    m.connect(mg).connect(c.frequency); c.connect(f); c.start(t); m.start(t); c.stop(stop); m.stop(stop); return;
+  }
+  P.w.forEach((w, j) => {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = w; o.frequency.value = hz * ((P.mul || [])[j] || 1); if (P.det) o.detune.value = j ? P.det : -P.det;
+    g.gain.value = (P.mix || [])[j] ?? 1 / P.w.length;
+    if (P.vib) { const l = actx.createOscillator(), lg = actx.createGain(); l.frequency.value = P.vib; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(hz * 0.012, t + 0.3); l.connect(lg).connect(o.frequency); l.start(t); l.stop(stop); }
+    o.connect(g).connect(f); o.start(t); o.stop(stop);
+  });
+}
+function playStep2(s, p, i, t, sd) {
+  applyMix(s); const m = studioMix();
+  for (const k of DRUMS) { const c = (p.d[k] || '')[i]; if (c && c !== '.') drum2(k, t, c === 'X' ? 1 : 0.72, s.kit, m.bus[0].g); }
+  for (let tr = 1; tr < 4; tr++) for (const [st0, r, len] of p.n[tr - 1]) if (st0 === i) voice2(tr, s.tr[tr].inst, s.tr[tr].cut, rowMidi(s, tr, r), t, len * sd * 0.95, m.bus[tr].g);
+}
+function quality2(s) {
+  const used = [...new Set(s.arr)].map(i => s.pats[i]).filter(Boolean); if (!used.length) return 0;
+  const cnt = (p, k) => [...p.d[k]].filter(c => c !== '.').length, avg = f => used.reduce((a, p) => a + f(p), 0) / used.length;
+  const kick = avg(p => cnt(p, 'kick')), sn = avg(p => cnt(p, 'snare') + cnt(p, 'clap')), hat = avg(p => cnt(p, 'chh') + cnt(p, 'ohh'));
+  const bass = avg(p => p.n[0].length), mel = avg(p => p.n[1].length + p.n[2].length), uniq = avg(p => new Set([...p.n[1], ...p.n[2]].map(n => n[1])).size);
+  const dens = avg(p => DRUMS.reduce((a, k) => a + cnt(p, k), 0));
+  const checks = [kick >= 2 && kick <= 8, sn >= 1 && sn <= 6, hat >= 3, bass >= 2, mel >= 3 && uniq >= 2, dens <= 56, used.length >= 2, s.arr.length >= 4];
+  return checks.filter(Boolean).length / checks.length;
+}
+
+// ---- the studio screen ----
+const stu = { song: null, slot: -1, cur: 0, trk: 0, len: 2, mode: 'loop', play: false };
+const pickR = a => a[Math.floor(Math.random() * a.length)];
+function studioIdea() {
+  const s = newSong();
+  Object.assign(s, { bpm: pickR([86, 90, 94, 98, 104, 112]), key: pickR([0, 2, 5, 7, 9]), scale: pickR(['minpent', 'minor', 'dorian']), kit: pickR(['808', '808', 'chip']) });
+  s.tr[1].inst = pickR(Object.keys(INST.bass)); s.tr[2].inst = pickR(Object.keys(INST.keys)); s.tr[3].inst = pickR(Object.keys(INST.lead));
+  const sc = SCALES[s.scale].length, chordAt = pickR([0, 3, 4, 5]);
+  s.pats = [0, 1].map(pi => {
+    const p = newPat();
+    p.d.kick = pickR(['x.........x.x...', 'x..x......x.....', 'x...x...x...x...', 'x.....x...x.....']);
+    p.d.snare = pi ? '....x.......x..x' : '....x.......x...'; if (pi) p.d.clap = '............x...';
+    p.d.chh = pickR(['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx', 'x.x.x.x.x.x.x.xX']); if (Math.random() < 0.4) p.d.ohh = '..x...x...x...x.';
+    for (let i = 0; i < 16; i += 2) if (i % 4 === 0 || Math.random() < 0.3) p.n[0].push([i, pickR([0, 0, sc, 2, 3]), 2]);
+    const pad = s.tr[2].inst === 'Pad';
+    for (const at of pad ? [0] : [0, 8]) { const r = (pi ? chordAt : 0) + (at ? 1 : 0); for (const k of [0, 2, 4]) p.n[1].push([at, r + k, pad ? 16 : 3]); }
+    if (pi) for (let i = 0; i < 16; i++) if (Math.random() < 0.3) p.n[2].push([i, sc + Math.floor(Math.random() * sc), pickR([1, 1, 2])]);
+    return p;
+  });
+  s.arr = [0, 0, 1, 1]; return s;
+}
+function studioStop() { stu.play = false; seqStop(); if (radio.st) radioNext(); else { bgmHold = false; playBgm(); } if (mView === 'beat') renderMusic(); }
+function studioStart() {
+  bgmHold = true; bgm.pause(); stu.play = true;
+  seqPlay(stu.song, { loops: 1e9, live: stu.mode === 'loop' ? () => stu.song.pats[stu.cur] : null, onStep: (i, o) => {
+    document.querySelectorAll('#roll .ph, #music .slot.ph').forEach(e => e.classList.remove('ph'));
+    if (stu.mode === 'song' && stu.song.arr[o] !== stu.cur) { document.querySelector(`#music .slot[data-slot="${o}"]`)?.classList.add('ph'); return; }
+    document.querySelectorAll(`#roll [data-c="${i}"]`).forEach(e => e.classList.add('ph'));
+    document.querySelector(`#music .slot[data-slot="${o}"]`)?.classList.add('ph');
+  } });
+}
+const range = (id, v, min, max, step, lab) => `<label class="kn"><span>${lab}</span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${v}"></label>`;
+function studioHtml() {
+  const s = stu.song, p = s.pats[stu.cur], tr = s.tr[stu.trk], AB = 'ABCD';
+  let h = `<div class="ctl"><div class="mb" data-s="play">${stu.play ? '■' : '▶'}</div>` +
+    `<div class="mb sm${stu.mode === 'loop' ? ' on' : ''}" data-s="loop">${L('sLoop')}</div><div class="mb sm${stu.mode === 'song' ? ' on' : ''}" data-s="song">${L('sSong')}</div>` +
+    `<label>BPM <input type="range" id="sBpm" min="60" max="160" step="1" value="${s.bpm}"><span id="sBpmV">${s.bpm}</span></label>` +
+    range('sSwing', s.swing, 0, 0.5, 0.05, L('sSwing')) + `</div><div class="ctl">` +
+    `<select id="sKey">${NOTE_NAMES.map((n, i) => `<option value="${i}"${i === s.key ? ' selected' : ''}>${L('sKey')} ${n}</option>`).join('')}</select>` +
+    `<select id="sScale">${Object.keys(SCALES).map(k => `<option value="${k}"${k === s.scale ? ' selected' : ''}>${L('sc_' + k)}</option>`).join('')}</select>` +
+    `<div class="mb sm" data-s="idea">🎲 ${L('mIdea')}</div><div class="mb sm" data-s="new">${L('mClear')}</div></div>`;
+  // patterns and song order
+  h += `<div class="ctl"><b>${L('sPattern')}</b>` + s.pats.map((_, i) => `<div class="mb sm pat${i === stu.cur ? ' on' : ''}" data-s="pat" data-i="${i}">${AB[i]}</div>`).join('') +
+    (s.pats.length < 4 ? `<div class="mb sm" data-s="addpat">+ ${L('sCopy')}</div>` : '') + `<div class="mb sm warn" data-s="wipe">${L('sWipe')}</div></div>`;
+  h += `<div class="ctl chain"><b>${L('sChain')}</b>` + s.arr.map((pi, i) => `<div class="slot${pi === stu.cur ? ' cur' : ''}" data-s="slot" data-slot="${i}">${AB[pi]}</div>`).join('') +
+    (s.arr.length < 16 ? `<div class="mb sm" data-s="slotadd">+</div>` : '') + (s.arr.length > 1 ? `<div class="mb sm" data-s="slotdel">−</div>` : '') + `</div>`;
+  // track tabs
+  h += `<div class="tabs">` + TRACKS.map((k, i) => `<div class="tab${i === stu.trk ? ' on' : ''}" style="--tc:${TR_COLOR[i]}" data-s="trk" data-i="${i}">${L('tr_' + k)}<span class="mute${s.tr[i].mute ? ' on' : ''}" data-s="mute" data-i="${i}">M</span></div>`).join('') + `</div>`;
+  // the grid: drums, or a scale-locked piano roll
+  h += `<div id="roll" style="--tc:${TR_COLOR[stu.trk]}">`;
+  if (stu.trk === 0) for (const k of DRUMS) {
+    h += `<div class="lab">${DRUM_LAB[k]}</div>`;
+    for (let c = 0; c < 16; c++) { const v = p.d[k][c]; h += `<div class="c${c % 4 === 0 ? ' beat' : ''}${v === 'x' ? ' on' : v === 'X' ? ' on acc' : ''}" data-s="cell" data-r="${k}" data-c="${c}"></div>`; }
+  } else {
+    const notes = p.n[stu.trk - 1], sc = SCALES[s.scale].length;
+    for (let r = rowsOf(s) - 1; r >= 0; r--) {
+      h += `<div class="lab${r % sc === 0 ? ' root' : ''}">${noteName(rowMidi(s, stu.trk, r))}</div>`;
+      for (let c = 0; c < 16; c++) {
+        const n = notes.find(([a, rr, l]) => rr === r && c >= a && c < a + l);
+        h += `<div class="c${c % 4 === 0 ? ' beat' : ''}${r % sc === 0 ? ' rt' : ''}${n ? (n[0] === c ? ' on' : ' on hold') : ''}" data-s="cell" data-r="${r}" data-c="${c}"></div>`;
+      }
+    }
+  }
+  h += `</div><div class="ctl">`;
+  if (stu.trk === 0) h += `<select id="sKit">${KIT2.map(k => `<option value="${k}"${k === s.kit ? ' selected' : ''}>${L('kit2_' + k)}</option>`).join('')}</select>`;
+  else h += `<select id="sInst">${Object.keys(INST[TRACKS[stu.trk]]).map(k => `<option${k === tr.inst ? ' selected' : ''}>${k}</option>`).join('')}</select>` +
+    `<b>${L('sLen')}</b>` + [1, 2, 4, 8, 16].map(n => `<div class="mb sm${n === stu.len ? ' on' : ''}" data-s="len" data-i="${n}">${n}</div>`).join('');
+  h += `</div><div class="ctl">` + range('tVol', tr.vol, 0, 1, 0.05, L('sVol')) + range('tCut', tr.cut, 0, 1, 0.05, L('sCut')) +
+    range('tRev', tr.rev, 0, 1, 0.05, L('sRev')) + range('tDly', tr.dly, 0, 1, 0.05, L('sDly')) + `</div>`;
+  h += `<div class="hint">${L('beatHint2')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(s.n)}"><div class="mb" data-s="save">💾 ${L(stu.slot >= 0 ? 'saveOver' : 'saveNew')}</div></div>`;
+  if (MUS.tracks.length) {
+    h += `<div class="sec">${L('myTracks', { n: MUS.tracks.length })}</div>`;
+    MUS.tracks.forEach((t2, i) => { h += `<div class="rec small${i === stu.slot ? ' cur' : ''}"><div class="tx"><b>${esc(t2.n)}</b><small>${t2.bpm} BPM · ${t2.arr.map(x => AB[x]).join('')}</small></div><div class="mb sm" data-s="load" data-i="${i}">${L('mLoad')}</div>${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-s="del" data-i="${i}">✕</div>`}</div>`; });
+  }
+  return h + `<div class="mb back" data-go="store">← KINGS WAX</div>`;
+}
+const restartIfPlaying = () => { if (stu.play) { seqStop(); studioStart(); } };
+function studioClick(e) {
+  const el = e.target.closest('[data-s]'); if (!el) return false;
+  const a = el.dataset.s, i = +el.dataset.i, s = stu.song, p = s.pats[stu.cur];
+  audio();
+  if (a === 'cell') {
+    const c = +el.dataset.c;
+    if (stu.trk === 0) {
+      const k = el.dataset.r, v = p.d[k][c], nv = v === '.' ? 'x' : v === 'x' ? 'X' : '.';
+      p.d[k] = p.d[k].slice(0, c) + nv + p.d[k].slice(c + 1);
+      if (nv !== '.' && !stu.play) { applyMix(s); drum2(k, actx.currentTime + 0.01, nv === 'X' ? 1 : 0.72, s.kit, studioMix().bus[0].g); }
+    } else {
+      const notes = p.n[stu.trk - 1], r = +el.dataset.r, hit = notes.findIndex(([a0, rr, l]) => rr === r && c >= a0 && c < a0 + l);
+      if (hit >= 0) notes.splice(hit, 1);
+      else {
+        const len = Math.min(stu.len, 16 - c);
+        for (let j = notes.length - 1; j >= 0; j--) { const [a0, rr, l] = notes[j]; if (rr === r && a0 < c + len && a0 + l > c) notes.splice(j, 1); }   // no overlaps on one row
+        notes.push([c, r, len]);
+        if (!stu.play) { applyMix(s); voice2(stu.trk, s.tr[stu.trk].inst, s.tr[stu.trk].cut, rowMidi(s, stu.trk, r), actx.currentTime + 0.01, Math.min(len, 4) * 60 / s.bpm / 4, studioMix().bus[stu.trk].g); }
+      }
+    }
+  }
+  if (a === 'mute') { s.tr[i].mute = s.tr[i].mute ? 0 : 1; e.stopPropagation(); renderMusic(); return true; }
+  if (a === 'play') { if (stu.play) { studioStop(); return true; } studioStart(); }
+  if (a === 'loop' || a === 'song') { stu.mode = a; restartIfPlaying(); }
+  if (a === 'idea') { stu.song = studioIdea(); stu.slot = -1; stu.cur = 0; restartIfPlaying(); }
+  if (a === 'new') { stu.song = newSong(); stu.slot = -1; stu.cur = 0; restartIfPlaying(); }
+  if (a === 'pat') stu.cur = i;
+  if (a === 'addpat' && s.pats.length < 4) { s.pats.push(JSON.parse(JSON.stringify(p))); stu.cur = s.pats.length - 1; }
+  if (a === 'wipe') s.pats[stu.cur] = newPat();
+  if (a === 'slot') { const k = +el.dataset.slot; s.arr[k] = (s.arr[k] + 1) % s.pats.length; }
+  if (a === 'slotadd' && s.arr.length < 16) s.arr.push(stu.cur);
+  if (a === 'slotdel' && s.arr.length > 1) s.arr.pop();
+  if (a === 'trk') stu.trk = i;
+  if (a === 'len') stu.len = i;
+  if (a === 'save') {
+    const tr = JSON.parse(JSON.stringify(s)); tr.n = (s.n || '').trim() || L('untitled', { n: MUS.tracks.length + 1 }); s.n = tr.n;
+    if (stu.slot >= 0 && MUS.tracks[stu.slot]) MUS.tracks[stu.slot] = tr;
+    else if (MUS.tracks.length >= 8) { feed(L('tracksFull'), '#ff6b6b'); return true; }
+    else { MUS.tracks.push(tr); stu.slot = MUS.tracks.length - 1; }
+    feed(L('trackSaved', { t: tr.n }), '#3ddc84'); beep(660, 0.08, 0.07, 'triangle');
+    if (MUS.tracks.length === 3 && !MUS.albums.length) setTimeout(() => talk(L('nm_ruth'), L('ruth_three')), 900);
+    saveGame();
+  }
+  if (a === 'load') { stu.song = JSON.parse(JSON.stringify(toV2(MUS.tracks[i]))); stu.slot = i; stu.cur = 0; restartIfPlaying(); }
+  if (a === 'del') {
+    if (MUS.albums.some(al => al.tracks.includes(i))) return true;
+    MUS.tracks.splice(i, 1); for (const al of MUS.albums) al.tracks = al.tracks.map(x => x > i ? x - 1 : x);
+    if (stu.slot === i) stu.slot = -1; else if (stu.slot > i) stu.slot--;
+    saveGame();
+  }
+  if (stu.cur >= stu.song.pats.length) stu.cur = 0;
+  renderMusic(); return true;
+}
+// sliders change the sound live without redrawing the panel
+function studioInput(e) {
+  const s = stu.song, tr = s?.tr[stu.trk], v = +e.target.value;
+  switch (e.target.id) {
+    case 'sBpm': s.bpm = v; $('sBpmV').textContent = v; return true;
+    case 'sSwing': s.swing = v; return true;
+    case 'tVol': tr.vol = v; return true;
+    case 'tCut': tr.cut = v; return true;
+    case 'tRev': tr.rev = v; return true;
+    case 'tDly': tr.dly = v; return true;
+    case 'bmName': s.n = e.target.value; return true;
+  }
+  return false;
+}
+function studioChange(e) {
+  const s = stu.song, id = e.target.id, v = e.target.value;
+  if (id === 'sKey') s.key = +v;
+  else if (id === 'sScale') { const old = SCALES[s.scale].length; s.scale = v; const now = SCALES[v].length, max = rowsOf(s);   // keep notes in the same octave
+    for (const p of s.pats) for (const ns of p.n) for (let j = ns.length - 1; j >= 0; j--) { const r = ns[j][1], nr = Math.floor(r / old) * now + Math.min(r % old, now - 1); if (nr >= max) ns.splice(j, 1); else ns[j][1] = nr; } }
+  else if (id === 'sKit') s.kit = v;
+  else if (id === 'sInst') s.tr[stu.trk].inst = v;
+  else return false;
+  renderMusic(); return true;
+}
 const draft = { pick: [], title: '', color: COVER_COLORS[0], pat: 0 };
 let mView = 'store';
 function openMusic(view) {
@@ -5194,12 +5512,12 @@ function openMusic(view) {
   for (const k in keys) keys[k] = false;
   joy.x = joy.y = 0; joy.id = look.id = fireId = null;
   document.exitPointerLock?.();
-  mView = view; if (view === 'beat' && !bt.g) bt.g = emptyGrid();
+  mView = view; if (view === 'beat' && !stu.song) stu.song = newSong();
   renderMusic(); $('music').classList.remove('hidden');
 }
 function closeMusic() {
   if (state !== 'music') return;
-  if (bt.play) beatStop();
+  if (stu.play) studioStop();
   $('music').classList.add('hidden'); state = 'play';
   if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
 }
@@ -5225,23 +5543,7 @@ function renderMusic() {
       if (!MUS.tx) h += `<div class="mb${rep < 300 ? ' off' : ''}" data-tx="1">📡 ${L('buyTx')}</div><div class="hint">${L('txHint')}</div>`;
     }
   }
-  if (mView === 'beat') {
-    $('musicTitle').textContent = 'STUDIO B';
-    h += `<div class="ctl"><div class="mb" data-bplay="1">${bt.play ? '■' : '▶'}</div>` +
-      `<label>BPM <input type="range" min="70" max="140" step="2" value="${bt.bpm}" id="bmBpm"><span>${bt.bpm}</span></label>` +
-      `<select id="bmKit">${Object.keys(KITS).map(k => `<option value="${k}"${k === bt.kit ? ' selected' : ''}>${L('kit_' + k)}</option>`).join('')}</select>` +
-      `<div class="mb sm" data-bidea="1">🎲 ${L('mIdea')}</div><div class="mb sm" data-bclear="1">${L('mClear')}</div></div><div id="grid">`;
-    ROWS.forEach(r => {
-      h += `<div class="lab">${L('row_' + r)}</div>`;
-      for (let c = 0; c < 16; c++) { const v = bt.g[r][c]; h += `<div class="cell r${r}${v !== '.' ? ' on' : ''}${c % 4 === 0 ? ' beat' : ''}" data-cell="${r}${c}">${'bl'.includes(r) && v !== '.' ? v : ''}</div>`; }
-    });
-    h += `</div><div class="hint">${L('beatHint')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(bt.n)}"><div class="mb" data-bsave="1">💾 ${L(bt.slot >= 0 ? 'saveOver' : 'saveNew')}</div></div>`;
-    if (MUS.tracks.length) {
-      h += `<div class="sec">${L('myTracks', { n: MUS.tracks.length })}</div>`;
-      MUS.tracks.forEach((tr, i) => { h += `<div class="rec small${i === bt.slot ? ' cur' : ''}"><div class="tx"><b>${esc(tr.n)}</b><small>${tr.bpm} BPM · ${L('kit_' + tr.kit)}</small></div><div class="mb sm" data-bload="${i}">${L('mLoad')}</div>${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-bdel="${i}">✕</div>`}</div>`; });
-    }
-    h += `<div class="mb back" data-go="store">← KINGS WAX</div>`;
-  }
+  if (mView === 'beat') { $('musicTitle').textContent = 'STUDIO B'; h += studioHtml(); }
   if (mView === 'album') {
     $('musicTitle').textContent = L('pressTitle');
     h += `<div class="sec">${L('pickTracks')}</div>`;
@@ -5269,67 +5571,21 @@ function renderMusic() {
   box.querySelectorAll('canvas[data-cover]').forEach(cv => cv.getContext('2d').drawImage(coverCanvas(MUS.albums[+cv.dataset.cover]), 0, 0));
   const ac = $('alCover'); if (ac) ac.getContext('2d').drawImage(coverCanvas({ ...draft, title: draft.title || '???' }), 0, 0);
 }
-function beatStop() { bt.play = false; bt.step = -1; seqStop(); if (radio.st) radioNext(); else { bgmHold = false; playBgm(); } }
-function beatStart() {
-  bgmHold = true; bgm.pause(); bt.play = true;
-  seqPlay({ bpm: bt.bpm, root: 45, kit: bt.kit, order: [0], pats: [bt.g] }, { loops: 1e9, live: () => bt.g, onStep: i => {
-    bt.step = i; document.querySelectorAll('#grid .cell.ph').forEach(e => e.classList.remove('ph'));
-    for (const r of ROWS) document.querySelector(`#grid [data-cell="${r}${i}"]`)?.classList.add('ph');
-  } });
-}
-function beatIdea() {
-  const pick = a => a[Math.floor(Math.random() * a.length)];
-  const g = {
-    k: pick(['x.........x.x...', 'x..x......x.....', 'x...x...x...x...', 'x.....x...x.....']),
-    s: pick(['....x.......x...', '....x.......x..x', '....x..x....x...']),
-    h: pick(['x.x.x.x.x.x.x.x.', 'xxxxxxxxxxxxxxxx', '..o...o...o...o.', 'x.x.x.x.x.x.x.xo']),
-  };
-  let b = '', l = '';
-  for (let i = 0; i < 16; i++) { b += i % 4 === 0 || Math.random() < 0.18 ? pick('11345') : '.'; l += Math.random() < 0.35 ? pick('12345') : '.'; }
-  bt.g = { ...g, b, l }; bt.bpm = pick([88, 92, 96, 100, 108]);
-}
 $('musicClose').addEventListener('click', closeMusic);
 $('musicBody').addEventListener('input', e => {
-  if (e.target.id === 'bmBpm') { bt.bpm = +e.target.value; e.target.nextElementSibling.textContent = bt.bpm; if (seq.song && bt.play) seq.song.bpm = bt.bpm; }
-  if (e.target.id === 'bmName') bt.n = e.target.value;
+  if (mView === 'beat' && studioInput(e)) return;
   if (e.target.id === 'alTitle') { draft.title = e.target.value; const ac = $('alCover'); if (ac) ac.getContext('2d').drawImage(coverCanvas({ ...draft, title: draft.title || '???' }), 0, 0); }
 });
-$('musicBody').addEventListener('change', e => { if (e.target.id === 'bmKit') { bt.kit = e.target.value; if (seq.song && bt.play) seq.song.kit = bt.kit; } });
+$('musicBody').addEventListener('change', e => { if (mView === 'beat') studioChange(e); });
 $('musicBody').addEventListener('click', e => {
-  const d = e.target.closest('[data-cell],[data-go],[data-prev],[data-buyrec],[data-tx],[data-bplay],[data-bidea],[data-bclear],[data-bsave],[data-bload],[data-bdel],[data-pick],[data-col],[data-pat],[data-press],[data-tune],[data-tape],[data-mytape]')?.dataset;
+  if (mView === 'beat' && studioClick(e)) return;
+  const d = e.target.closest('[data-go],[data-prev],[data-buyrec],[data-tx],[data-pick],[data-col],[data-pat],[data-press],[data-tune],[data-tape],[data-mytape]')?.dataset;
   if (!d || e.target.closest('.off')) return;
   audio();
-  if (d.cell) {
-    const r = d.cell[0], c = +d.cell.slice(1), row = bt.g[r], v = row[c];
-    const nv = 'bl'.includes(r) ? (v === '.' ? '1' : v === '5' ? '.' : String(+v + 1)) : (v === '.' ? 'x' : '.');
-    bt.g[r] = row.slice(0, c) + nv + row.slice(c + 1);
-    if (nv !== '.' && !bt.play) playStep({ root: 45, kit: bt.kit, bpm: bt.bpm }, { [r]: '.'.repeat(c) + nv }, c, actx.currentTime + 0.01, 60 / bt.bpm / 4, radioOut());
-    const el = e.target.closest('[data-cell]'); el.classList.toggle('on', nv !== '.'); el.textContent = 'bl'.includes(r) && nv !== '.' ? nv : '';
-    return;
-  }
-  if (d.go) { if (bt.play) beatStop(); mView = d.go; if (d.go === 'beat' && !bt.g) bt.g = emptyGrid(); if (d.go === 'album') draft.pick = MUS.tracks.map((_, i) => i).filter(i => !MUS.albums.some(a => a.tracks.includes(i))).slice(0, 3); }
+  if (d.go) { if (stu.play) studioStop(); mView = d.go; if (d.go === 'beat' && !stu.song) stu.song = newSong(); if (d.go === 'album') draft.pick = MUS.tracks.map((_, i) => i).filter(i => !MUS.albums.some(a => a.tracks.includes(i))).slice(0, 3); }
   if (d.prev) { const r = RECORDS[d.prev]; if (radio.item === r && radio.st === 'tape') radioOff(); else tune('tape', r); }
   if (d.buyrec) { const r = RECORDS[d.buyrec]; if (MUS.owned.includes(d.buyrec) || rep < r.price) return; rep -= r.price; MUS.owned.push(d.buyrec); feed(L('boughtRec', { t: r.title }), '#ffd23f'); beep(784, 0.1, 0.08, 'triangle'); saveGame(); }
   if (d.tx) { if (rep < 300) return; rep -= 300; MUS.tx = 1; talk(L('nm_ruth'), L('ruth_tx')); feed(L('txOn'), '#ffd23f'); saveGame(); }
-  if (d.bplay) { if (bt.play) beatStop(); else beatStart(); }
-  if (d.bidea) bt.g && beatIdea();
-  if (d.bclear) Object.assign(bt, { g: emptyGrid(), slot: -1, n: '' });   // a fresh track, not a wipe of the saved one
-  if (d.bsave) {
-    const tr = { n: (bt.n || '').trim() || L('untitled', { n: MUS.tracks.length + 1 }), bpm: bt.bpm, kit: bt.kit, g: { ...bt.g } };
-    if (bt.slot >= 0 && MUS.tracks[bt.slot]) MUS.tracks[bt.slot] = tr;
-    else if (MUS.tracks.length >= 8) { feed(L('tracksFull'), '#ff6b6b'); return; }
-    else { MUS.tracks.push(tr); bt.slot = MUS.tracks.length - 1; }
-    bt.n = tr.n; feed(L('trackSaved', { t: tr.n }), '#3ddc84'); beep(660, 0.08, 0.07, 'triangle');
-    if (MUS.tracks.length === 3 && !MUS.albums.length) setTimeout(() => talk(L('nm_ruth'), L('ruth_three')), 900);
-    saveGame();
-  }
-  if (d.bload !== undefined) { const tr = MUS.tracks[+d.bload]; Object.assign(bt, { g: { ...tr.g }, bpm: tr.bpm, kit: tr.kit, n: tr.n, slot: +d.bload }); if (bt.play) { beatStop(); beatStart(); } }
-  if (d.bdel !== undefined) {
-    const i = +d.bdel; if (MUS.albums.some(a => a.tracks.includes(i))) return;
-    MUS.tracks.splice(i, 1); for (const a of MUS.albums) a.tracks = a.tracks.map(x => x > i ? x - 1 : x);
-    if (bt.slot === i) bt.slot = -1; else if (bt.slot > i) bt.slot--;
-    saveGame();
-  }
   if (d.pick !== undefined) { const i = +d.pick, k = draft.pick.indexOf(i); if (k >= 0) draft.pick.splice(k, 1); else if (draft.pick.length < 3) draft.pick.push(i); }
   if (d.col) draft.color = d.col;
   if (d.pat !== undefined) draft.pat = +d.pat;
