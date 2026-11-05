@@ -17,6 +17,14 @@ cd ~/Developer/mans-war-app && GAME_DIR="/Volumes/Crucial X6/학교과제/game/b
 ```
 그다음 Xcode에서 `ios/App/App.xcodeproj`를 열고 ▶ (시뮬레이터 또는 연결한 아이폰).
 
+## 내 아이폰에 설치 (USB 연결, 무료 개인 팀 · 7일마다 다시)
+```bash
+cd ~/Developer/mans-war-app/ios/App && xcodebuild -project App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath build-device DEVELOPMENT_TEAM=MV7LU95GFV CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates build
+```
+```bash
+xcrun devicectl device install app --device 00008110-000538811E0A801E ~/Developer/mans-war-app/ios/App/build-device/Build/Products/Debug-iphoneos/App.app
+```
+
 ## 손댄 것 (Capacitor 기본 템플릿과 다른 점)
 - iOS 27은 scene 방식이 아닌 앱을 바로 종료시킨다 → `AppDelegate.swift`에 `SceneDelegate`, `Info.plist`에 `UIApplicationSceneManifest` 추가
 - 최소 iOS 15 (Xcode 27은 14를 지원하지 않음)
@@ -25,5 +33,5 @@ cd ~/Developer/mans-war-app && GAME_DIR="/Volumes/Crucial X6/학교과제/game/b
 
 ## 아직 안 한 것
 - 앱 아이콘·시작 화면 (지금은 Capacitor 기본 아이콘)
-- 실제 아이폰 설치: Xcode에서 내 Apple ID로 서명하면 내 폰에 7일짜리로 무료 설치 가능. 앱스토어는 Apple 개발자 계정(연 $99) 필요
+- 앱스토어: Apple 개발자 계정(연 $99) 필요 (지금은 무료 개인 팀이라 7일마다 다시 설치)
 - 안드로이드: 이 Mac에 Android Studio가 없음
