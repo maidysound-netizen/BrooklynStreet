@@ -26,12 +26,12 @@ xcrun devicectl device install app --device 00008110-000538811E0A801E ~/Develope
 ```
 
 ## 손댄 것 (Capacitor 기본 템플릿과 다른 점)
+- 앱 아이콘·시작 화면: `make_icon.py`로 그림 (밤하늘 + 킹스 스트리트 스카이라인 + 노란 왕관 + 타이틀처럼 흰 글씨에 빨간 그림자 "MW")
 - iOS 27은 scene 방식이 아닌 앱을 바로 종료시킨다 → `AppDelegate.swift`에 `SceneDelegate`, `Info.plist`에 `UIApplicationSceneManifest` 추가
 - 최소 iOS 15 (Xcode 27은 14를 지원하지 않음)
 - 상태 표시줄 숨김, 세로·가로 모두
 - Capacitor CLI가 SPM인데도 CocoaPods를 찾는 버그: 처음 `cap add ios` 때만 가짜 `pod` 명령으로 통과시킴 (이미 만들어 둔 `ios/`를 쓰면 필요 없음)
 
 ## 아직 안 한 것
-- 앱 아이콘·시작 화면 (지금은 Capacitor 기본 아이콘)
 - 앱스토어: Apple 개발자 계정(연 $99) 필요 (지금은 무료 개인 팀이라 7일마다 다시 설치)
 - 안드로이드: 이 Mac에 Android Studio가 없음
