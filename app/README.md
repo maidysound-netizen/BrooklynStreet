@@ -26,7 +26,7 @@ xcrun devicectl device install app --device 00008110-000538811E0A801E ~/Develope
 ```
 
 ## 두 번째 앱: MW Casual
-같은 게임인데 비트메이커만 예전처럼 간단한 1마디·5줄 버전이다. 아이콘은 노을 하늘에 청록 그림자라 MAN'S WAR(밤하늘·빨간 그림자)와 구별된다. 번들 ID가 달라서(`com.maidysound.manswar.casual`) 두 앱이 나란히 깔리고 저장도 따로다.
+같은 게임인데 비트메이커가 간단한 1마디·5줄 버전(BEAT LITE) 하나뿐이다. MAN'S WAR 본편에도 BEAT LITE가 STUDIO B 옆에 있지만, 이 앱은 STUDIO B 없이 바로 BEAT LITE로 열린다. 아이콘은 노을 하늘에 청록 그림자라 MAN'S WAR(밤하늘·빨간 그림자)와 구별된다. 번들 ID가 달라서(`com.maidysound.manswar.casual`) 두 앱이 나란히 깔리고 저장도 따로다.
 ```bash
 ./build-casual.sh
 ```

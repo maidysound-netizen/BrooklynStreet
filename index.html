@@ -1113,6 +1113,9 @@ const STR = {
   mOwned: ['보유', 'Owned', '所持'],
   backRoom: ['🎛️ 뒷방', '🎛️ The back room', '🎛️ 奥の部屋'],
   beatTitle: ['비트메이커', 'Beatmaker', 'ビートメーカー'],
+  liteTitle: ['BEAT LITE 간단 비트메이커', 'BEAT LITE (simple)', 'BEAT LITE かんたん'],
+  liteTag: ['BEAT LITE 곡', 'BEAT LITE track', 'BEAT LITE の曲'],
+  studioOnly: ['STUDIO B 곡 (STUDIO B에서 열기)', 'STUDIO B song (open it there)', 'STUDIO B の曲 (STUDIO B で開く)'],
   pressTitle: ['앨범 찍기', 'Press an album', 'アルバムを作る'],
   needTracks: ['앨범을 찍으려면 곡이 3개 필요해요 (지금 {n}개)', 'You need 3 tracks to press an album (you have {n})', 'アルバムには曲が3つ必要（今 {n}曲）'],
   myAlbums: ['💿 진열대의 내 앨범', '💿 Your albums on the shelf', '💿 棚の自分のアルバム'],
@@ -4464,7 +4467,7 @@ function loadGame(d) {
   defectors.push(...(d.defectors || []));
   Object.assign(intel, d.intel || {}); Object.assign(npcState, d.npcState || {});
   Object.assign(MUS, JSON.parse(JSON.stringify(d.music || {})));
-  if (!CASUAL) MUS.tracks = MUS.tracks.map(toV2);   // v1 saves have neither: start the campaign fresh
+  // one list holds both kinds: BEAT LITE tracks stay one-bar grids (tr.g), STUDIO B songs are v2; toV2 runs when a lite one opens in STUDIO B
   ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
   personalSetup(false);
   checkBossTrigger();
@@ -5379,8 +5382,13 @@ function studioIdea() {
   });
   s.arr = [0, 0, 1, 1]; return s;
 }
-// ---- casual beatmaker (the "MW Casual" app, or ?studio=casual): one bar, five rows, tap and go ----
-const CASUAL = new URLSearchParams(location.search).get('studio') === 'casual' || document.querySelector('meta[name="mw-studio"]')?.content === 'casual';
+// ---- BEAT LITE, the casual beatmaker: one bar, five rows, tap and go ----
+// the main game offers it next to STUDIO B; the "MW Casual" app (or ?studio=casual) opens straight into it and has nothing else
+const CASUAL_APP = new URLSearchParams(location.search).get('studio') === 'casual' || document.querySelector('meta[name="mw-studio"]')?.content === 'casual';
+let CASUAL = CASUAL_APP;   // which beatmaker the back room shows: picked in KINGS WAX or with the ⇄ button
+// both editors share MUS.tracks: a deleted track shifts what each one has open
+const dropSlot = i => { for (const o of [bt, stu]) { if (o.slot === i) o.slot = -1; else if (o.slot > i) o.slot--; } };
+const modeSwitch = () => CASUAL_APP ? '' : `<div class="mb sm" data-go="beat" data-mode="${CASUAL ? 'studio' : 'casual'}">⇄ ${CASUAL ? 'STUDIO B' : L('liteTitle')}</div>`;
 const bt = { g: null, bpm: 96, kit: 'chip', n: '', slot: -1, play: false };
 const emptyGrid = () => ({ k: '.'.repeat(16), s: '.'.repeat(16), h: '.'.repeat(16), b: '.'.repeat(16), l: '.'.repeat(16) });
 function trackQuality(g) {
@@ -5416,12 +5424,12 @@ function casualHtml() {
     h += `<div class="lab">${L('row_' + r)}</div>`;
     for (let c = 0; c < 16; c++) { const v = bt.g[r][c]; h += `<div class="cell r${r}${v !== '.' ? ' on' : ''}${c % 4 === 0 ? ' beat' : ''}" data-cell="${r}${c}">${'bl'.includes(r) && v !== '.' ? v : ''}</div>`; }
   });
-  h += `</div><div class="hint">${L('beatHint')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(bt.n)}"><div class="mb" data-bsave="1">💾 ${L(bt.slot >= 0 ? 'saveOver' : 'saveNew')}</div></div>`;
+  h += `</div><div class="hint">${L('beatHint')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(bt.n)}"><div class="mb" data-bsave="1">💾 ${L(MUS.tracks[bt.slot]?.g ? 'saveOver' : 'saveNew')}</div></div>`;
   if (MUS.tracks.length) {
     h += `<div class="sec">${L('myTracks', { n: MUS.tracks.length })}</div>`;
-    MUS.tracks.forEach((tr, i) => { h += `<div class="rec small${i === bt.slot ? ' cur' : ''}"><div class="tx"><b>${esc(tr.n)}</b><small>${tr.bpm} BPM</small></div>${tr.g ? `<div class="mb sm" data-bload="${i}">${L('mLoad')}</div>` : ''}${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-bdel="${i}">✕</div>`}</div>`; });
+    MUS.tracks.forEach((tr, i) => { h += `<div class="rec small${i === bt.slot ? ' cur' : ''}"><div class="tx"><b>${esc(tr.n)}</b><small>${tr.bpm} BPM${tr.g ? '' : ' · ' + L('studioOnly')}</small></div>${tr.g ? `<div class="mb sm" data-bload="${i}">${L('mLoad')}</div>` : ''}${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-bdel="${i}">✕</div>`}</div>`; });
   }
-  return h + `<div class="mb back" data-go="store">← KINGS WAX</div>`;
+  return h + modeSwitch() + `<div class="mb back" data-go="store">← KINGS WAX</div>`;
 }
 function casualClick(e) {
   const el = e.target.closest('[data-cell],[data-bplay],[data-bidea],[data-bclear],[data-bsave],[data-bload],[data-bdel]'); if (!el) return false;
@@ -5439,7 +5447,7 @@ function casualClick(e) {
   if (d.bclear) Object.assign(bt, { g: emptyGrid(), slot: -1, n: '' });   // a fresh track, not a wipe of the saved one
   if (d.bsave) {
     const tr = { n: (bt.n || '').trim() || L('untitled', { n: MUS.tracks.length + 1 }), bpm: bt.bpm, kit: bt.kit, g: { ...bt.g } };
-    if (bt.slot >= 0 && MUS.tracks[bt.slot]) MUS.tracks[bt.slot] = tr;
+    if (bt.slot >= 0 && MUS.tracks[bt.slot]?.g) MUS.tracks[bt.slot] = tr;
     else if (MUS.tracks.length >= 8) { feed(L('tracksFull'), '#ff6b6b'); return true; }
     else { MUS.tracks.push(tr); bt.slot = MUS.tracks.length - 1; }
     bt.n = tr.n; feed(L('trackSaved', { t: tr.n }), '#3ddc84'); beep(660, 0.08, 0.07, 'triangle');
@@ -5450,7 +5458,7 @@ function casualClick(e) {
   if (d.bdel !== undefined) {
     const i = +d.bdel; if (MUS.albums.some(a => a.tracks.includes(i))) return true;
     MUS.tracks.splice(i, 1); for (const a of MUS.albums) a.tracks = a.tracks.map(x => x > i ? x - 1 : x);
-    if (bt.slot === i) bt.slot = -1; else if (bt.slot > i) bt.slot--;
+    dropSlot(i);
     saveGame();
   }
   renderMusic(); return true;
@@ -5516,9 +5524,9 @@ function studioHtml() {
   h += `<div class="hint">${L('beatHint2')}</div><div class="ctl"><input id="bmName" maxlength="20" placeholder="${L('trackNamePh')}" value="${esc(s.n)}"><div class="mb" data-s="save">💾 ${L(stu.slot >= 0 ? 'saveOver' : 'saveNew')}</div></div>`;
   if (MUS.tracks.length) {
     h += `<div class="sec">${L('myTracks', { n: MUS.tracks.length })}</div>`;
-    MUS.tracks.forEach((t2, i) => { h += `<div class="rec small${i === stu.slot ? ' cur' : ''}"><div class="tx"><b>${esc(t2.n)}</b><small>${t2.bpm} BPM · ${t2.arr.map(x => AB[x]).join('')}</small></div><div class="mb sm" data-s="load" data-i="${i}">${L('mLoad')}</div>${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-s="del" data-i="${i}">✕</div>`}</div>`; });
+    MUS.tracks.forEach((t2, i) => { h += `<div class="rec small${i === stu.slot ? ' cur' : ''}"><div class="tx"><b>${esc(t2.n)}</b><small>${t2.bpm} BPM · ${t2.arr ? t2.arr.map(x => AB[x]).join('') : L('liteTag')}</small></div><div class="mb sm" data-s="load" data-i="${i}">${L('mLoad')}</div>${MUS.albums.some(a => a.tracks.includes(i)) ? '' : `<div class="mb sm warn" data-s="del" data-i="${i}">✕</div>`}</div>`; });
   }
-  return h + `<div class="mb back" data-go="store">← KINGS WAX</div>`;
+  return h + modeSwitch() + `<div class="mb back" data-go="store">← KINGS WAX</div>`;
 }
 const restartIfPlaying = () => { if (stu.play) { seqStop(); studioStart(); } };
 function studioClick(e) {
@@ -5568,7 +5576,7 @@ function studioClick(e) {
   if (a === 'del') {
     if (MUS.albums.some(al => al.tracks.includes(i))) return true;
     MUS.tracks.splice(i, 1); for (const al of MUS.albums) al.tracks = al.tracks.map(x => x > i ? x - 1 : x);
-    if (stu.slot === i) stu.slot = -1; else if (stu.slot > i) stu.slot--;
+    dropSlot(i);
     saveGame();
   }
   if (stu.cur >= stu.song.pats.length) stu.cur = 0;
@@ -5629,8 +5637,9 @@ function renderMusic() {
         `<div class="mb sm" data-prev="${k}">${L(radio.item === r && radio.st === 'tape' ? 'mStop' : 'mListen')}</div>` +
         `<div class="mb sm${have || rep < r.price ? ' off' : ''}" data-buyrec="${k}">${have ? L('mOwned') : L('repCost', { c: r.price })}</div></div>`;
     }
-    h += `<div class="sec">${L('backRoom')}</div><div class="row2"><div class="mb" data-go="beat">🎛️ ${L('beatTitle')}</div>` +
-      `<div class="mb${MUS.tracks.length < 3 || MUS.albums.length >= 3 ? ' off' : ''}" data-go="album">💿 ${L('pressTitle')}</div></div>`;
+    h += `<div class="sec">${L('backRoom')}</div><div class="row2">` + (CASUAL_APP ? `<div class="mb" data-go="beat">🎛️ ${L('beatTitle')}</div>` :
+      `<div class="mb" data-go="beat" data-mode="studio">🎛️ STUDIO B</div><div class="mb" data-go="beat" data-mode="casual">🥁 ${L('liteTitle')}</div>`) +
+      `<div class="mb${MUS.tracks.length < 3 || MUS.albums.length >= 3 ? ' off' : ''}"${CASUAL_APP ? '' : ' style="grid-column:1/-1"'} data-go="album">💿 ${L('pressTitle')}</div></div>`;
     if (MUS.tracks.length < 3) h += `<div class="hint">${L('needTracks', { n: MUS.tracks.length })}</div>`;
     if (MUS.albums.length) {
       h += `<div class="sec">${L('myAlbums')}</div>`;
@@ -5638,7 +5647,7 @@ function renderMusic() {
       if (!MUS.tx) h += `<div class="mb${rep < 300 ? ' off' : ''}" data-tx="1">📡 ${L('buyTx')}</div><div class="hint">${L('txHint')}</div>`;
     }
   }
-  if (mView === 'beat') { $('musicTitle').textContent = 'STUDIO B'; h += CASUAL ? casualHtml() : studioHtml(); }
+  if (mView === 'beat') { $('musicTitle').textContent = CASUAL && !CASUAL_APP ? 'BEAT LITE' : 'STUDIO B'; h += CASUAL ? casualHtml() : studioHtml(); }
   if (mView === 'album') {
     $('musicTitle').textContent = L('pressTitle');
     h += `<div class="sec">${L('pickTracks')}</div>`;
@@ -5677,7 +5686,7 @@ $('musicBody').addEventListener('click', e => {
   const d = e.target.closest('[data-go],[data-prev],[data-buyrec],[data-tx],[data-pick],[data-col],[data-pat],[data-press],[data-tune],[data-tape],[data-mytape]')?.dataset;
   if (!d || e.target.closest('.off')) return;
   audio();
-  if (d.go) { if (beatPlaying()) beatStop(); mView = d.go; if (d.go === 'beat') beatInit(); if (d.go === 'album') draft.pick = MUS.tracks.map((_, i) => i).filter(i => !MUS.albums.some(a => a.tracks.includes(i))).slice(0, 3); }
+  if (d.go) { if (beatPlaying()) beatStop(); if (d.mode && !CASUAL_APP) CASUAL = d.mode === 'casual'; mView = d.go; if (d.go === 'beat') beatInit(); if (d.go === 'album') draft.pick = MUS.tracks.map((_, i) => i).filter(i => !MUS.albums.some(a => a.tracks.includes(i))).slice(0, 3); }
   if (d.prev) { const r = RECORDS[d.prev]; if (radio.item === r && radio.st === 'tape') radioOff(); else tune('tape', r); }
   if (d.buyrec) { const r = RECORDS[d.buyrec]; if (MUS.owned.includes(d.buyrec) || rep < r.price) return; rep -= r.price; MUS.owned.push(d.buyrec); feed(L('boughtRec', { t: r.title }), '#ffd23f'); beep(784, 0.1, 0.08, 'triangle'); saveGame(); }
   if (d.tx) { if (rep < 300) return; rep -= 300; MUS.tx = 1; talk(L('nm_ruth'), L('ruth_tx')); feed(L('txOn'), '#ffd23f'); saveGame(); }
