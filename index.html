@@ -1092,6 +1092,38 @@ const STR = {
   invTab_food: ['먹을 것', 'Food', '食べ物'],
   invTab_keep: ['기념품', 'Keepsakes', '記念品'],
   invWearEmpty: ['아직 산 옷이 없어요. Kings Commons의 옷가게 SECOND HAND KINGS (미니맵 보라색 T)에 가 보세요.', 'No clothes bought yet. Try SECOND HAND KINGS in Kings Commons (purple T on the minimap).', 'まだ買った服がない。Kings Commons の服屋 SECOND HAND KINGS（ミニマップの紫の T）へ。'],
+  mybLabel: ['🏪 내 보데가 (금고·물건·가격)', '🏪 My bodega (register, stock, prices)', '🏪 自分のボデガ（金庫・品物・値段）'],
+  mybRentLabel: ['🏪 FOR RENT · 빈 가게', '🏪 FOR RENT · empty store', '🏪 FOR RENT・空き店舗'],
+  nm_mybLand: ['건물 관리인', 'Building super', 'ビルの管理人'],
+  mybRent: ['문 닫은 가게다. 유리에 "FOR RENT". 동네가 인정하는 크루라면 관리인이 열쇠를 내줄 것이다.', 'A closed store. "FOR RENT" on the glass. If the block respects your crew, the super will hand over the keys.', '閉まった店。ガラスに「FOR RENT」。街に認められたクルーなら、管理人が鍵を渡してくれる。'],
+  mybRentCho: ['문 닫은 가게다. 유리에 "FOR RENT". …카운터 높이가 옛날 그 가게와 똑같다.', 'A closed store. "FOR RENT" on the glass. …The counter is the same height as the old one.', '閉まった店。ガラスに「FOR RENT」。…カウンターの高さが、昔の店と同じだ。'],
+  mybKey: ['가게 열쇠', 'Store keys', '店の鍵'],
+  mybRentBtn: ['가게 얻기', 'Take the store', '店を借りる'],
+  mybKeys: ['자, 열쇠. 불 끄고 다니고, 고양이는 알아서 들어와도 쫓지 마.', 'Here. Keys. Lights off when you leave, and if a cat wanders in, let it stay.', 'ほら、鍵だ。出るとき電気を消して。猫が入ってきても追い出すなよ。'],
+  mybKeysCho: ['…여기서 다시 장사하실 줄은 몰랐네요. 열쇠요, 조 사장님.', '…Didn\'t think you\'d run a store again. Keys, Mr. Cho.', '…また店をやるとは思いませんでしたよ。鍵です、チョさん。'],
+  mybBusy: ['손님 분당 약 {n}명', 'About {n} customers a minute', '客は1分に約 {n} 人'],
+  mybQuiet: ['손님이 없어요', 'No customers', '客がいない'],
+  mybClosedHeat: ['수배 중이라 문을 닫았어요', 'Closed while you\'re wanted', '手配中なので閉店中'],
+  mybSold: ['지금까지 {n}개 팔림', '{n} sold so far', 'これまで {n} 個売れた'],
+  mybReg: ['금고 ${m} / ${x}', 'Register ${m} / ${x}', '金庫 ${m} / ${x}'],
+  mybRegHint: ['가득 차면 장사가 멈춰요. 방어전에서 지면 금고가 털려요.', 'Sales stop when it\'s full. Lose a defense and it gets emptied.', '満杯になると売れない。防衛戦に負けると空にされる。'],
+  mybCollect: ['걷기', 'Collect', '回収'],
+  mybCollected: ['💵 금고에서 ${m} 걷음', '💵 Collected ${m} from the register', '💵 金庫から ${m} 回収'],
+  mybShelf: ['진열대 (종류마다 {n}개까지)', 'Shelves (up to {n} of each)', '棚（種類ごとに {n} 個まで）'],
+  mybEach: ['하나 ${p}', '${p} each', '1個 ${p}'],
+  mybNight: ['밤에 잘 팔림', 'sells at night', '夜によく売れる'],
+  mybCrate: ['+{n}개 ${c}', '+{n} for ${c}', '+{n} 個 ${c}'],
+  mybUps: ['가게 꾸미기', 'Upgrades', '店のアップグレード'],
+  tier_cheap: ['싸게', 'Cheap', '安く'], tier_normal: ['보통', 'Normal', '普通'], tier_pricey: ['비싸게', 'Pricey', '高く'],
+  g_bread: ['빵', 'Bread', 'パン'], g_snack: ['과자', 'Snacks', 'お菓子'], g_drink: ['음료', 'Drinks', '飲み物'], g_sandwich: ['샌드위치', 'Sandwiches', 'サンドイッチ'], g_coffee: ['커피', 'Coffee', 'コーヒー'],
+  up_shelf: ['큰 진열대', 'Bigger shelves', '大きな棚'], up_shelf_d: ['종류마다 20개까지', 'Up to 20 of each', '種類ごとに20個まで'],
+  up_coffee: ['커피 머신', 'Coffee machine', 'コーヒーマシン'], up_coffee_d: ['커피를 팔 수 있어요', 'Sell coffee', 'コーヒーが売れる'],
+  up_neon: ['OPEN 네온', 'OPEN neon', 'OPEN ネオン'], up_neon_d: ['손님 +25%', 'Customers +25%', '客 +25%'],
+  up_cat: ['보데가 고양이', 'Bodega cat', 'ボデガ猫'], up_cat_d: ['상자 위에 앉아 있어요. 손님 +10%', 'Sits on the crate. Customers +10%', '木箱の上に座っている。客 +10%'],
+  upDone: ['{i} 들였어요', '{i} added', '{i} を入れた'],
+  soldOut: ['🏪 {i} 다 팔렸어요', '🏪 {i} sold out', '🏪 {i} が売り切れ'],
+  regFull: ['🏪 보데가 금고가 가득 찼어요. 걷으러 가요.', '🏪 Your bodega register is full. Go collect it.', '🏪 ボデガの金庫が満杯。回収しに行こう。'],
+  regRaided: ['🏪 구역을 잃은 사이에 보데가 금고가 털렸어요', '🏪 Your bodega register was emptied while you lost the block', '🏪 縄張りを失った間に、ボデガの金庫が空にされた'],
   shelterName: ['쉘터', 'Shelter', 'シェルター'],
   shelterDown: ['🏠 내 쉘터로 내려가기', '🏠 Go down to your shelter', '🏠 自分のシェルターへ降りる'],
   shelterUp: ['⬆️ 거리로 올라가기', '⬆️ Back up to the street', '⬆️ 通りへ上がる'],
@@ -3195,6 +3227,106 @@ function enterShelter() {
   });
 }
 function leaveShelter() { if (!busy) fadeThen(() => { zone = 'street'; placePlayer(SH_DOOR.x + 0.6, 0.25, SH_DOOR.z, -Math.PI / 2); }); }
+// ---------- my bodega (PRD 9-3 step 4): rent a closed store, stock it, set prices, collect the register ----------
+const MYB = { x: -6, z: -31.2 }, MYB_RENT = 300, REG_MAX = 300;
+// crate: $ for a box of n items; base: normal price of one; night: sells more after dark; needs: an upgrade first
+const GOODS = {
+  bread: { icon: '🍞', crate: 12, n: 10, base: 2 }, snack: { icon: '🍫', crate: 9, n: 10, base: 1.5 },
+  drink: { icon: '🥤', crate: 10, n: 10, base: 1.6 }, sandwich: { icon: '🥪', crate: 24, n: 8, base: 5 },
+  coffee: { icon: '☕', crate: 8, n: 10, base: 2, night: true, needs: 'coffee' },
+};
+const TIERS = [{ k: 'cheap', mul: 0.8, pull: 1.5 }, { k: 'normal', mul: 1, pull: 1 }, { k: 'pricey', mul: 1.4, pull: 0.55 }];
+const UPGRADES = { shelf: { icon: '🗄️', cost: 100 }, coffee: { icon: '☕', cost: 80 }, neon: { icon: '🌟', cost: 60 }, cat: { icon: '🐈', cost: 50 } };
+const myBodega = { open: 0, stock: {}, price: {}, reg: 0, up: {}, sold: 0 };
+const stockCap = () => myBodega.up.shelf ? 20 : 10;
+// the change points for the store, like addCash: stock, the register, upgrades
+const addStock = (k, n, why) => { myBodega.stock[k] = Math.max(0, Math.min(stockCap(), (myBodega.stock[k] || 0) + n)); return why; };
+const addRegister = (n, why) => { myBodega.reg = Math.max(0, Math.min(REG_MAX, Math.round((myBodega.reg + n) * 10) / 10)); return why; };
+const buyUpgrade = (k, why) => { myBodega.up[k] = 1; bodegaLook(); return why; };
+const tierOf = k => TIERS[myBodega.price[k] ?? 1];
+function customersPerMin() {   // how busy the store is right now
+  if (!myBodega.open || starsOf(heat) > 0) return 0;
+  const turf = DISTRICTS.filter(d => d.owner === 'me').length;
+  return 2.2 * (1 + 0.15 * (turf - 1)) * (night > 0.6 ? 0.6 : 1) * (myBodega.up.neon ? 1.25 : 1) * (myBodega.up.cat ? 1.1 : 1);
+}
+let custT = 0, regFullSaid = false;
+function updateBodega(dt) {
+  const rate = customersPerMin(); if (!rate) return;
+  if (myBodega.reg >= REG_MAX) { if (!regFullSaid) { regFullSaid = true; feed(L('regFull'), '#ffd23f'); } return; }
+  if ((custT += dt * rate / 60) < 1) return;
+  custT -= 1;
+  // a customer picks from what's on the shelf; cheap things pull harder, coffee pulls at night
+  const opts = Object.keys(GOODS).filter(k => myBodega.stock[k] > 0 && (!GOODS[k].needs || myBodega.up[GOODS[k].needs]));
+  const w = opts.map(k => tierOf(k).pull * (GOODS[k].night && night > 0.6 ? 2.5 : 1));
+  let r = Math.random() * w.reduce((a, b) => a + b, 0), k = null;
+  opts.forEach((o, i) => { if (k === null && (r -= w[i]) <= 0) k = o; });
+  if (!k || Math.random() > Math.min(1, tierOf(k).pull)) return;   // pricey: some walk out
+  addStock(k, -1, 'sold'); addRegister(GOODS[k].base * tierOf(k).mul, 'sale:' + k); myBodega.sold++;
+  if (!myBodega.stock[k]) feed(L('soldOut', { i: GOODS[k].icon + ' ' + L('g_' + k) }), '#ff9f7a');
+}
+let mybSign = null, mybCat = null, mybNeon = null;
+function bodegaLook() {   // the storefront follows the store: FOR RENT, then the crew's name, the cat and the OPEN sign
+  if (!mybSign) return;
+  const c = mybSign.material.map.image, g = c.getContext('2d');
+  g.fillStyle = myBodega.open ? '#1e3a2a' : '#3a3a3a'; g.fillRect(0, 0, 512, 128);
+  const text = myBodega.open ? `${myCrew.name.toUpperCase()} BODEGA` : 'FOR RENT';
+  g.font = 'bold 64px Arial'; const fs = Math.min(64, Math.floor(64 * 470 / g.measureText(text).width));
+  g.fillStyle = myBodega.open ? '#ffd23f' : '#e8e8e8'; g.font = `bold ${fs}px Arial`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 256, 68);
+  mybSign.material.map.needsUpdate = true; mybSign.material.emissiveMap.needsUpdate = true;
+  mybCat.visible = !!myBodega.up.cat; mybNeon.visible = !!myBodega.up.neon && myBodega.open;
+}
+{
+  const c = mkCanvas(512, 128), tex = texOf(c, false);
+  mybSign = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 1.3), new THREE.MeshStandardMaterial({ map: tex, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: 0.5, side: THREE.DoubleSide }));
+  mybSign.position.set(MYB.x + 1.4, 2.9, MYB.z - 1.14); scene.add(mybSign);   // over both painted shop names on this ground floor
+  prop(box1, 0x8a5a2b, MYB.x + 1.3, 0.6, MYB.z - 0.1, 1, 0.7, 0.7);   // a crate by the door; the cat sits on it
+  mybCat = new THREE.Group();
+  const fur = std(0xe0913a), cb = (w, h, d, x, y, z, m = fur) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); mybCat.add(o); };
+  cb(0.36, 0.2, 0.2, 0, 0.1, 0); cb(0.16, 0.16, 0.16, 0.2, 0.24, 0); cb(0.04, 0.06, 0.04, 0.24, 0.35, -0.05); cb(0.04, 0.06, 0.04, 0.24, 0.35, 0.05); cb(0.24, 0.04, 0.04, -0.26, 0.2, 0, std(0xc0702a));
+  mybCat.position.set(MYB.x + 1.3, 0.95, MYB.z - 0.1); mybCat.rotation.y = -0.6; scene.add(mybCat);
+  const nc = mkCanvas(128, 48), ng = nc.getContext('2d'); ng.fillStyle = '#0d0d12'; ng.fillRect(0, 0, 128, 48); ng.strokeStyle = '#ff3b6b'; ng.lineWidth = 4; ng.font = 'bold 32px Arial'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.strokeText('OPEN', 64, 25);
+  mybNeon = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.34), new THREE.MeshStandardMaterial({ map: texOf(nc, false), emissiveMap: texOf(nc, false), emissive: 0xffffff, emissiveIntensity: 1.8 }));
+  mybNeon.position.set(MYB.x - 1.6, 1.9, MYB.z - 1.12); scene.add(mybNeon);
+  bodegaLook();
+}
+npcs.push({ pos: MYB, label: () => L(myBodega.open ? 'mybLabel' : 'mybRentLabel'), use: () => openInv('bodega') });
+function bodegaHtml() {
+  const B = myBodega;
+  if (!B.open) return `<div class="say" style="margin-bottom:10px;font-size:14px">${L(clsKey === 'sniper' ? 'mybRentCho' : 'mybRent')}</div>` +
+    `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div><div class="it"><div class="ic">🔑</div><div class="tx"><b>${L('mybKey')}</b><small>${L('repCost', { c: MYB_RENT })}</small></div><div class="btn${rep < MYB_RENT ? ' off' : ''}" data-brent="1">${L(rep < MYB_RENT ? 'noRep' : 'mybRentBtn')}</div></div>`;
+  const rate = customersPerMin();
+  let h = `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div><div class="day">${rate ? L('mybBusy', { n: rate.toFixed(1) }) : L(starsOf(heat) > 0 ? 'mybClosedHeat' : 'mybQuiet')} · ${L('mybSold', { n: B.sold })}</div>`;
+  h += `<div class="it"><div class="ic">💰</div><div class="tx"><b>${L('mybReg', { m: Math.floor(B.reg), x: REG_MAX })}</b><small>${L('mybRegHint')}</small></div><div class="btn${B.reg < 1 ? ' off' : ''}" data-bcollect="1">${L('mybCollect')}</div></div>`;
+  h += `<div class="sec">${L('mybShelf', { n: stockCap() })}</div>`;
+  for (const [k, G] of Object.entries(GOODS)) {
+    if (G.needs && !B.up[G.needs]) continue;
+    const st = B.stock[k] || 0, ti = B.price[k] ?? 1, full = st >= stockCap();   // a crate tops the shelf up; what doesn't fit is wasted
+    h += `<div class="it" style="flex-wrap:wrap"><div class="ic">${G.icon}</div><div class="tx"><b>${L('g_' + k)} · ${st}/${stockCap()}</b><small>${L('mybEach', { p: (G.base * TIERS[ti].mul).toFixed(1) })}${G.night ? ' · ' + L('mybNight') : ''}</small></div>` +
+      `<div class="btn${cash < G.crate || full ? ' off' : ''}" data-bcrate="${k}">${L('mybCrate', { n: G.n, c: G.crate })}</div>` +
+      `<div style="display:flex;gap:4px;width:100%;margin-top:6px">${TIERS.map((t, i) => `<div class="btn${i === ti ? ' on' : ''}" style="flex:1;text-align:center;padding:6px 2px;${i === ti ? '' : 'background:#333;color:#ddd'}" data-bprice="${k}" data-t="${i}">${L('tier_' + t.k)}</div>`).join('')}</div></div>`;
+  }
+  h += `<div class="sec">${L('mybUps')}</div>`;
+  for (const [k, U] of Object.entries(UPGRADES)) {
+    const have = B.up[k];
+    h += `<div class="it"><div class="ic">${U.icon}</div><div class="tx"><b>${L('up_' + k)}</b><small>${L('up_' + k + '_d')}</small></div><div class="btn${have || cash < U.cost ? ' off' : ''}" data-bup="${k}">${have ? L('owned') : cash < U.cost ? L('noCash') : L('cashCost', { c: U.cost })}</div></div>`;
+  }
+  return h;
+}
+function bodegaClick(d) {
+  const B = myBodega;
+  if (d.brent) {
+    if (B.open || rep < MYB_RENT) return;
+    rep -= MYB_RENT; B.open = 1; bodegaLook();
+    talk(L('nm_mybLand'), L(clsKey === 'sniper' ? 'mybKeysCho' : 'mybKeys')); beep(660, 0.15, 0.1, 'triangle'); saveGame();
+  }
+  if (d.bcollect && B.reg >= 1) {
+    const m = Math.floor(B.reg); addRegister(-m, 'collect'); addCash(m, 'bodega'); regFullSaid = false;
+    feed(L('mybCollected', { m }), '#3ddc84'); beep(988, 0.08, 0.08, 'square'); setTimeout(() => beep(1319, 0.12, 0.08, 'square'), 90); saveGame();
+  }
+  if (d.bcrate) { const G = GOODS[d.bcrate]; if (cash < G.crate || (B.stock[d.bcrate] || 0) >= stockCap()) return; addCash(-G.crate, 'crate:' + d.bcrate); addStock(d.bcrate, G.n, 'crate'); beep(440, 0.06, 0.06, 'triangle'); saveGame(); }
+  if (d.bprice) { B.price[d.bprice] = +d.t; saveGame(); }
+  if (d.bup) { const U = UPGRADES[d.bup]; if (B.up[d.bup] || cash < U.cost) return; addCash(-U.cost, 'up:' + d.bup); buyUpgrade(d.bup, 'shop'); feed(L('upDone', { i: U.icon + ' ' + L('up_' + d.bup) }), '#3ddc84'); saveGame(); }
+}
 function useDeco(k) {
   const u = DECO[k].use;
   if (u === 'bed') { player.hp = player.maxHp; feed(L('bedRest'), '#3ddc84'); beep(392, 0.25, 0.06, 'sine'); saveGame(); }
@@ -3632,6 +3764,7 @@ function endWar(won) {
   } else if (kind === 'defend') {
     d.owner = crew; captured = Math.max(0, captured - 1); wave = 1 + captured; moodAll(12);
     msg(L('lost', { d: d.name }), 2.5); feed(L('lostTo', { c: CREWS[crew].name }), CREWS[crew].css);
+    if (myBodega.reg >= 1) { addRegister(-myBodega.reg, 'raid'); setTimeout(() => feed(L('regRaided'), '#ff6b6b'), 1600); }   // a lost fight empties the till
     clearEnemies();
   }
   war = null; counterT = rand(70, 100); setTimeout(saveGame, 0);
@@ -3947,6 +4080,7 @@ function drawMap() {
   }
   { const x = mx(SHK.x), z = mz(SHK.z); mctx.fillStyle = '#5b2a86'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#ffe9a8'; mctx.fillText('T', x, z + 0.5); }
   { const x = mx(SH_DOOR.x), z = mz(SH_DOOR.z); mctx.fillStyle = '#e8772e'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#111'; mctx.fillText('⌂', x, z + 0.5); }
+  { const x = mx(MYB.x), z = mz(MYB.z); mctx.fillStyle = myBodega.open ? '#ffd23f' : '#777'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#111'; mctx.fillText('$', x, z + 0.5); }
   mctx.globalAlpha = 1; mctx.fillStyle = '#5fd4ff';
   for (const b of bikes) if (b !== riding && Math.hypot(b.g.position.x - player.pos.x, b.g.position.z - player.pos.z) < 120) { mctx.beginPath(); mctx.arc(mx(b.g.position.x), mz(b.g.position.z), 2.2, 0, 7); mctx.fill(); }
   drawQuestMarks(mx, mz);
@@ -4830,6 +4964,7 @@ function renderInv() {
     $('doll').parentElement.style.display = storeTab === 'wear' ? '' : 'none';
     return;
   }
+  if (invMode === 'bodega') { bodegaLook(); $('invH').textContent = myBodega.open ? `🏪 ${myCrew.name.toUpperCase()} BODEGA` : '🏪 FOR RENT'; $('invBody').innerHTML = bodegaHtml(); return; }
   if (invMode === 'slot') {
     const [type] = SH_SLOTS[slotI], cur = shelter.slots[slotI];
     $('invH').textContent = `${L('shelterName')} · ${L('st_' + type)}`;
@@ -4878,8 +5013,9 @@ function closeInv() {
 }
 $('invClose').addEventListener('click', closeInv);
 $('invBody').addEventListener('click', e => {
-  const el = e.target.closest('[data-tab],[data-stab],[data-eat],[data-wbuy],[data-wput],[data-wtry],[data-dbuy],[data-dput],[data-ddel],[data-duse]'), d = el?.dataset; if (!d || el.classList.contains('off')) return;
+  const el = e.target.closest('[data-tab],[data-stab],[data-eat],[data-wbuy],[data-wput],[data-wtry],[data-dbuy],[data-dput],[data-ddel],[data-duse],[data-brent],[data-bcollect],[data-bcrate],[data-bprice],[data-bup]'), d = el?.dataset; if (!d || el.classList.contains('off')) return;
   audio();
+  if (invMode === 'bodega') bodegaClick(d);
   if (d.tab) invTab = d.tab;
   if (d.stab) storeTab = d.stab;
   if (d.dbuy) {
@@ -4919,7 +5055,7 @@ function saveGame() {
   if (q.bike.s === 'ride') q.bike.s = 'find';
   q.bike.guarded = false;
   const data = {
-    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, outfit: { ...outfit }, shelter: { slots: [...shelter.slots] }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
+    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, outfit: { ...outfit }, shelter: { slots: [...shelter.slots] }, bodega: JSON.parse(JSON.stringify(myBodega)), kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
     owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
     armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
     intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)), music: JSON.parse(JSON.stringify(MUS)),
@@ -4945,7 +5081,9 @@ function loadGame(d) {
   cash = d.cash ?? 30; Object.assign(daily, d.daily || {});
   if (d.inv) { Object.assign(INV.food, d.inv.food); INV.wear = d.inv.wear || []; INV.deco = d.inv.deco || []; }
   if (d.shelter) shelter.slots = SH_SLOTS.map((_, i) => INV.deco.includes(d.shelter.slots[i]) ? d.shelter.slots[i] : null);
-  else addDeco('mattress', 'old save');   // saves from before the shelter get the starting mattress (already in its spot)
+  else addDeco('mattress', 'old save');
+  if (d.bodega) Object.assign(myBodega, JSON.parse(JSON.stringify(d.bodega)));
+  bodegaLook();   // saves from before the shelter get the starting mattress (already in its spot)
   for (const sl of WEAR_SLOTS) outfit[sl] = WEAR[d.outfit?.[sl]] && INV.wear.includes(d.outfit[sl]) ? d.outfit[sl] : null;
   applyOutfit();
   // one list holds both kinds: BEAT LITE tracks stay one-bar grids (tr.g), STUDIO B songs are v2; toV2 runs when a lite one opens in STUDIO B
@@ -6194,7 +6332,7 @@ musicSetup();
 // a tap on the dark area around a panel closes it (on a sideways phone the close button can be far down)
 for (const [id, close] of [['shop', closeShop], ['board', closeBoard], ['intel', closeIntel], ['music', closeMusic], ['metro', () => closeMetro()], ['crew', closeCrew], ['volPanel', closeVol]])
   $(id).addEventListener('click', e => { if (e.target.id === id) close(); });
-function updateMusic(dt) { updateRadio(dt); if (state === 'play') updateSales(dt); }
+function updateMusic(dt) { updateRadio(dt); if (state === 'play') { updateSales(dt); updateBodega(dt); } }
 
 // ---- Street Intel notebook (J / 📓) ----
 function renderIntel() {
@@ -6550,7 +6688,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { shelter, DECO, SH_DOOR, enterShelter, leaveShelter, get zone2() { return zone; }, outfit, WEAR, SHK, get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { myBodega, MYB, updateBodega, get custRate() { return customersPerMin(); }, shelter, DECO, SH_DOOR, enterShelter, leaveShelter, get zone2() { return zone; }, outfit, WEAR, SHK, get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
