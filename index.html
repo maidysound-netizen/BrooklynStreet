@@ -317,6 +317,14 @@
   #inv .it .ic { font-size:24px; } #inv .it .tx { flex:1; min-width:0; } #inv .it small { display:block; opacity:.65; font-size:12px; }
   #inv .it .btn { padding:8px 12px; border-radius:6px; background:#3ddc84; color:#111; font-weight:900; cursor:pointer; }
   #inv .empty { opacity:.75; font-size:14px; line-height:1.5; }
+  #inv .doll { display:flex; gap:12px; align-items:center; margin-bottom:10px; }
+  #inv .doll canvas { width:96px; height:128px; border-radius:8px; background:#2a241d; flex:none; }
+  #inv .doll small { opacity:.75; font-size:13px; line-height:1.5; }
+  #inv .sec { font-weight:900; color:#9ae6ff; margin:10px 0 6px; font-size:13px; }
+  #inv .it .sw { width:26px; height:26px; border-radius:6px; flex:none; border:2px solid rgba(255,255,255,.25); }
+  #inv .it.cur { outline:2px solid #ffd23f; }
+  #inv .it .btn.off { background:#444; color:#aaa; cursor:default; }
+  #inv .it .btn.on { background:#ffd23f; }
   #inv .close { margin-top:10px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #bInv { left:50%; top:10px; margin-left:-334px; width:44px; height:44px; border-radius:10px; font-size:18px; }
   #intel .close { margin-top:10px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
@@ -458,7 +466,7 @@
   </div>
 </div>
 <div id="dlg" class="hidden"><div class="cbox"><div class="who" id="dlgWho"></div><div class="line" id="dlgLine"></div><div id="dlgOpts"></div></div></div>
-<div id="inv" class="hidden"><div class="cbox"><h3 data-i18n="invTitle"></h3><div id="invBody"></div><div class="close" id="invClose" data-i18n="close">닫기</div></div></div>
+<div id="inv" class="hidden"><div class="cbox"><h3 id="invH" data-i18n="invTitle"></h3><div id="invBody"></div><div class="close" id="invClose" data-i18n="close">닫기</div></div></div>
 <div id="intel" class="hidden"><div class="cbox"><h3 data-i18n="intelTitle"></h3><div id="intelBody"></div><div class="close" id="intelClose" data-i18n="close">닫기</div></div></div>
 <div id="board" class="hidden"><div class="cbox"><h3 data-i18n="boardTitle"></h3><div id="boardBody"></div><div class="close" id="boardClose" data-i18n="close">닫기</div></div></div>
 <div id="music" class="hidden"><div class="cbox"><h3 id="musicTitle"></h3><div id="musicBody"></div><div class="mb back" id="musicClose" data-i18n="close">닫기</div></div></div>
@@ -1083,7 +1091,48 @@ const STR = {
   invTab_deco: ['가구', 'Furniture', '家具'],
   invTab_food: ['먹을 것', 'Food', '食べ物'],
   invTab_keep: ['기념품', 'Keepsakes', '記念品'],
-  invWearEmpty: ['아직 옷이 없어요. 동네 옷가게가 곧 문을 열어요.', 'No clothes yet. The neighborhood clothing store opens soon.', 'まだ服がない。街の服屋がもうすぐ開く。'],
+  invWearEmpty: ['아직 산 옷이 없어요. Kings Commons의 옷가게 SECOND HAND KINGS (미니맵 보라색 T)에 가 보세요.', 'No clothes bought yet. Try SECOND HAND KINGS in Kings Commons (purple T on the minimap).', 'まだ買った服がない。Kings Commons の服屋 SECOND HAND KINGS（ミニマップの紫の T）へ。'],
+  wearShopTitle: ['👕 SECOND HAND KINGS', '👕 SECOND HAND KINGS', '👕 SECOND HAND KINGS'],
+  wearShopLabel: ['👕 SECOND HAND KINGS 옷 구경', '👕 Browse SECOND HAND KINGS', '👕 SECOND HAND KINGS で服を見る'],
+  nm_mags: ['맥스 이모', 'Aunt Mags', 'マグスおばさん'],
+  mags_hi: ['맥스 이모: 다 한 번씩은 남이 입던 거야. 그래서 좋은 거고.', 'Aunt Mags: Everything here was somebody\'s once. That\'s what makes it good.', 'マグスおばさん：ここのは全部、誰かが着てたもの。だからいいのさ。'],
+  mags_hi_sniper: ['맥스 이모: …조 사장님? 앞치마 하나 남겨 뒀어요. 언젠가 오실 줄 알고.', 'Aunt Mags: …Mr. Cho? I kept an apron for you. Knew you\'d come by someday.', 'マグスおばさん：…チョさん？エプロンを一枚取っておいたよ。いつか来ると思ってね。'],
+  wearDoll: ['지금 입은 옷 · 고른 옷은 바로 입어 봐요', 'What you have on · tap a piece to try it on', '今着ている服・選ぶとすぐ試着'],
+  wearNone: ['기본', 'Default', '基本'],
+  wearOn: ['입는 중', 'Wearing', '着用中'],
+  wearPut: ['입기', 'Wear', '着る'],
+  wearOff: ['벗기', 'Take off', '脱ぐ'],
+  wearBought: ['👕 {i} 구매 · -${c}', '👕 {i} bought · -${c}', '👕 {i} 購入・-${c}'],
+  wearOnly: ['{c} 전용', '{c} only', '{c} 専用'],
+  slot_hat: ['모자', 'Hat', '帽子'],
+  slot_top: ['상의', 'Top', 'トップス'],
+  slot_pants: ['바지', 'Pants', 'パンツ'],
+  slot_shoes: ['신발', 'Shoes', '靴'],
+  slot_hands: ['장갑 (총 잡는 손에 보여요)', 'Gloves (seen on your gun hand)', '手袋（銃を持つ手に見える）'],
+  slot_acc: ['액세서리', 'Accessory', 'アクセサリー'],
+  w_cap_red: ['빨간 야구모자', 'Red ball cap', '赤いキャップ'],
+  w_cap_navy: ['남색 야구모자', 'Navy ball cap', '紺のキャップ'],
+  w_beanie: ['노란 비니', 'Yellow beanie', '黄色いニット帽'],
+  w_bucket: ['베이지 버킷햇', 'Tan bucket hat', 'ベージュのバケットハット'],
+  w_hood_grey: ['회색 후드', 'Grey hoodie', 'グレーのパーカー'],
+  w_hood_orange: ['주황 후드', 'Orange hoodie', 'オレンジのパーカー'],
+  w_varsity: ['초록 스타디움 점퍼', 'Green varsity jacket', '緑のスタジャン'],
+  w_leather: ['검은 가죽 재킷', 'Black leather jacket', '黒の革ジャン'],
+  w_jeans_black: ['검은 청바지', 'Black jeans', '黒のジーンズ'],
+  w_cargo: ['올리브 카고 바지', 'Olive cargo pants', 'オリーブのカーゴパンツ'],
+  w_track: ['빨간 트랙 바지', 'Red track pants', '赤のトラックパンツ'],
+  w_kicks_white: ['흰 운동화', 'White sneakers', '白いスニーカー'],
+  w_boots: ['갈색 워커', 'Tan work boots', '茶色のワークブーツ'],
+  w_hightop: ['빨간 하이탑', 'Red high-tops', '赤のハイカット'],
+  w_glove_black: ['검은 가죽 장갑', 'Black leather gloves', '黒の革手袋'],
+  w_glove_tan: ['베이지 작업 장갑', 'Tan work gloves', 'ベージュの作業手袋'],
+  w_glove_red: ['빨간 장갑', 'Red gloves', '赤い手袋'],
+  w_chain: ['금 목걸이', 'Gold chain', '金のネックレス'],
+  w_shades: ['선글라스', 'Sunglasses', 'サングラス'],
+  w_cho_apron: ['옛 가게 앞치마', 'The old store apron', '昔の店のエプロン'],
+  w_bm_phones: ['낡은 스튜디오 헤드폰', 'Worn studio headphones', '古いスタジオヘッドホン'],
+  w_run_watch: ['기록 시계', 'Stopwatch', 'ストップウォッチ'],
+  wearNotice: ['{a}: 오, 새 {s}네?', '{a}: Oh, new {s}?', '{a}：お、新しい{s}じゃん？'],
   invDecoEmpty: ['아직 가구가 없어요. 쉘터가 생기면 꾸밀 수 있어요.', 'No furniture yet. You can decorate once you have a shelter.', 'まだ家具がない。シェルターができたら飾れる。'],
   invFoodEmpty: ['먹을 게 없어요. 보데가에서 샌드위치를 사거나, 내일 또 받아요.', 'Nothing to eat. Buy a sandwich at a bodega, or get another tomorrow.', '食べ物がない。ボデガでサンドイッチを買うか、明日また受け取ろう。'],
   invKeepEmpty: ['아직 모은 게 없어요.', 'Nothing collected yet.', 'まだ何も集めていない。'],
@@ -2246,8 +2295,9 @@ const gunCam = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.01, 1
 gunScene.add(new THREE.HemisphereLight(0xfff0e0, 0x504030, 1.7));
 { const l = new THREE.DirectionalLight(0xffd8b0, 2.2); l.position.set(-1, 2, 1); gunScene.add(l); }
 const gun = new THREE.Group(); gunScene.add(gun);
+const gloveMat = std(0x2a2420);   // every weapon's hands; the bag's 'hands' slot recolors it
 {
-  const dark = std(0x1d1f22, { metalness: 0.6, roughness: 0.45 }), mid = std(0x3b3f45, { metalness: 0.4, roughness: 0.6 }), glove = std(0x2a2420);
+  const dark = std(0x1d1f22, { metalness: 0.6, roughness: 0.45 }), mid = std(0x3b3f45, { metalness: 0.4, roughness: 0.6 }), glove = gloveMat;
   const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; gun.add(o); return o; };
   p(new THREE.BoxGeometry(0.07, 0.09, 0.42), dark, 0, 0, 0);
   p(new THREE.BoxGeometry(0.05, 0.03, 0.38), dark, 0, 0.06, -0.02);
@@ -2265,7 +2315,7 @@ const gun = new THREE.Group(); gunScene.add(gun);
 const rifleParts = [...gun.children];
 const shotgunModel = new THREE.Group(); shotgunModel.visible = false; gun.add(shotgunModel);
 {
-  const dark = std(0x1b1c1e, { metalness: 0.7, roughness: 0.4 }), wood = std(0x7a4a26, { roughness: 0.7 }), glove = std(0x2a2420);
+  const dark = std(0x1b1c1e, { metalness: 0.7, roughness: 0.4 }), wood = std(0x7a4a26, { roughness: 0.7 }), glove = gloveMat;
   const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; shotgunModel.add(o); };
   p(new THREE.BoxGeometry(0.075, 0.1, 0.3), dark, 0, 0, 0.02);
   p(new THREE.CylinderGeometry(0.022, 0.022, 0.62, 12).rotateX(Math.PI / 2), dark, 0, 0.028, -0.43);
@@ -2279,7 +2329,7 @@ const shotgunModel = new THREE.Group(); shotgunModel.visible = false; gun.add(sh
 // six-shooter: a quest reward
 const revolverModel = new THREE.Group(); revolverModel.visible = false; gun.add(revolverModel);
 {
-  const steel = std(0x2a2c30, { metalness: 0.8, roughness: 0.35 }), wood = std(0x5a3418, { roughness: 0.7 }), glove = std(0x2a2420);
+  const steel = std(0x2a2c30, { metalness: 0.8, roughness: 0.35 }), wood = std(0x5a3418, { roughness: 0.7 }), glove = gloveMat;
   const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; revolverModel.add(o); };
   p(new THREE.CylinderGeometry(0.016, 0.016, 0.26, 10).rotateX(Math.PI / 2), steel, 0, 0.022, -0.2);
   p(new THREE.CylinderGeometry(0.04, 0.04, 0.075, 12).rotateX(Math.PI / 2), steel, 0, 0.004, -0.05);
@@ -2290,7 +2340,7 @@ const revolverModel = new THREE.Group(); revolverModel.visible = false; gun.add(
 // knife: silent, bought at a bodega
 const knifeModel = new THREE.Group(); knifeModel.visible = false; gun.add(knifeModel);
 {
-  const blade = std(0xd8dde2, { metalness: 0.9, roughness: 0.2 }), black = std(0x151515), glove = std(0x2a2420);
+  const blade = std(0xd8dde2, { metalness: 0.9, roughness: 0.2 }), black = std(0x151515), glove = gloveMat;
   const p = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; knifeModel.add(o); };
   p(new THREE.BoxGeometry(0.012, 0.05, 0.24), blade, 0, 0.03, -0.16, -0.12);
   p(new THREE.BoxGeometry(0.06, 0.016, 0.02), black, 0, 0.01, -0.04);
@@ -2982,6 +3032,15 @@ for (const d of DISTRICTS) {
   addNPC(x, z, { hood: 0xffffff, cap: 0xffffff, jeans: 0x2b2b2b, apron: 0xb3221b },
     () => ['offer', 'declined', 'return'].includes(Q.pizza.s) ? L('qTalk') : L(delivery ? 'pizzaBusy' : 'pizzaTake'),
     () => pizzaTalk());
+}
+// the secondhand clothing store (PRD 9-3 step 2): south sidewalk of the block east of the firehouse road, Kings Commons
+const SHK = { x: 58, z: -31.2 };
+{
+  const x = SHK.x, z = SHK.z;
+  signBoard('SECOND HAND KINGS', '#5b2a86', '#ffe9a8', x, 2.9, z - 1.14, 0, 5.2);   // over the storefront's painted name
+  prop(box1, 0x9a9a9a, x - 2.2, 1.55, z - 0.4, 1.8, 0.05, 0.05);
+  for (let k = 0; k < 5; k++) prop(box1, [0xc0392b, 0x1d3557, 0xe8772e, 0x1e6b45, 0xf2c94c][k], x - 2.9 + k * 0.35, 1.15, z - 0.4, 0.28, 0.75, 0.05);
+  addNPC(x, z, { hood: 0x5b2a86, cap: 0xe8a0bf, jeans: 0x2c3b57, apron: 0xffe9a8 }, () => L('wearShopLabel'), () => openInv('store'));
 }
 
 // ---------- pizza delivery ----------
@@ -3720,6 +3779,7 @@ function drawMap() {
     mctx.fillStyle = '#1e8449'; mctx.fillRect(x - 4, z - 4, 8, 8);
     mctx.fillStyle = '#fff'; mctx.fillText('$', x, z + 0.5);
   }
+  { const x = mx(SHK.x), z = mz(SHK.z); mctx.fillStyle = '#5b2a86'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#ffe9a8'; mctx.fillText('T', x, z + 0.5); }
   mctx.globalAlpha = 1; mctx.fillStyle = '#5fd4ff';
   for (const b of bikes) if (b !== riding && Math.hypot(b.g.position.x - player.pos.x, b.g.position.z - player.pos.z) < 120) { mctx.beginPath(); mctx.arc(mx(b.g.position.x), mz(b.g.position.z), 2.2, 0, 7); mctx.fill(); }
   drawQuestMarks(mx, mz);
@@ -4514,11 +4574,85 @@ function eat(k) {
   feed(L('ate', { h: f.hp }), '#3ddc84'); beep(520, 0.06, 0.06, 'square');
   return true;
 }
+// ---- clothes (PRD 9-3 step 2): bought with $, worn from the bag; null in a slot = the founder's own look ----
+const WEAR_SLOTS = ['hat', 'top', 'pants', 'shoes', 'hands', 'acc'];
+const WEAR = {
+  cap_red: { slot: 'hat', color: 0xc0392b, cost: 20 }, cap_navy: { slot: 'hat', color: 0x1d3557, cost: 20 },
+  beanie: { slot: 'hat', color: 0xf2c94c, cost: 25 }, bucket: { slot: 'hat', color: 0xc8b48a, cost: 35 },
+  hood_grey: { slot: 'top', color: 0x8d8f94, cost: 40 }, hood_orange: { slot: 'top', color: 0xe8772e, cost: 45 },
+  varsity: { slot: 'top', color: 0x1e6b45, trim: 0xf2f2f2, cost: 90 }, leather: { slot: 'top', color: 0x1c1c1c, cost: 150 },
+  jeans_black: { slot: 'pants', color: 0x222428, cost: 35 }, cargo: { slot: 'pants', color: 0x5b6239, cost: 40 }, track: { slot: 'pants', color: 0xa82020, trim: 0xffffff, cost: 45 },
+  kicks_white: { slot: 'shoes', color: 0xf4f4f4, cost: 50 }, boots: { slot: 'shoes', color: 0x8a5a2b, cost: 70 }, hightop: { slot: 'shoes', color: 0xc0392b, cost: 80 },
+  glove_black: { slot: 'hands', color: 0x111111, cost: 30 }, glove_tan: { slot: 'hands', color: 0xb08d57, cost: 30 }, glove_red: { slot: 'hands', color: 0x9e1b1b, cost: 35 },
+  chain: { slot: 'acc', color: 0xd4af37, cost: 120 }, shades: { slot: 'acc', color: 0x111111, cost: 60 },
+  // each founder has one piece only they can buy
+  cho_apron: { slot: 'acc', color: 0x3a3a32, cost: 35, only: 'sniper' }, bm_phones: { slot: 'acc', color: 0x5a5a5a, cost: 35, only: 'tank' },
+  run_watch: { slot: 'acc', color: 0x2b9be0, cost: 35, only: 'runner' },
+};
+const BASE_LOOK = {   // what each founder wears before buying anything (drawn in the bag, close to their poster)
+  runner: { skin: 0x8d5a3b, hair: 0x1a1a1a, top: 0x2d6cdf, pants: 0x2c3b57, shoes: 0xe9e9e9, hands: 0x2a2420 },
+  tank: { skin: 0x6b4430, hair: 0x111111, top: 0x6b2f2f, pants: 0x2a2a2a, shoes: 0x3a2a1a, hands: 0x2a2420 },
+  sniper: { skin: 0xd9a77c, hair: 0x9a9a9a, top: 0x4a5a3a, pants: 0x3a3a32, shoes: 0x2a2018, hands: 0x2a2420 },
+};
+const outfit = { hat: null, top: null, pants: null, shoes: null, hands: null, acc: null };
+const hexCss = n => '#' + n.toString(16).padStart(6, '0');
+const wearOk = k => !WEAR[k].only || WEAR[k].only === clsKey;
+// the bag's other two change points (see addCash): owning a piece, and putting one on
+const addWear = (k, why) => { if (!INV.wear.includes(k)) INV.wear.push(k); return why; };
+function setOutfit(slot, k, why) { outfit[slot] = k; applyOutfit(); return why; }
+function applyOutfit() { gloveMat.color.setHex(outfit.hands ? WEAR[outfit.hands].color : BASE_LOOK[clsKey].hands); }
+function drawDoll(cv, o) {
+  const g = cv.getContext('2d'), b = BASE_LOOK[clsKey] || BASE_LOOK.runner, col = sl => hexCss(o[sl] ? WEAR[o[sl]].color : b[sl] ?? b.top);
+  g.clearRect(0, 0, 96, 128);
+  g.fillStyle = col('shoes'); g.fillRect(28, 112, 17, 8); g.fillRect(51, 112, 17, 8);
+  g.fillStyle = col('pants'); g.fillRect(31, 76, 14, 37); g.fillRect(51, 76, 14, 37);
+  if (o.pants && WEAR[o.pants].trim) { g.fillStyle = hexCss(WEAR[o.pants].trim); g.fillRect(31, 76, 3, 37); g.fillRect(62, 76, 3, 37); }
+  g.fillStyle = col('top'); g.fillRect(28, 40, 40, 40); g.fillRect(18, 42, 11, 30); g.fillRect(67, 42, 11, 30);
+  if (o.top && WEAR[o.top].trim) { g.fillStyle = hexCss(WEAR[o.top].trim); g.fillRect(18, 68, 11, 4); g.fillRect(67, 68, 11, 4); g.fillRect(28, 76, 40, 4); }
+  g.fillStyle = col('hands'); g.fillRect(18, 72, 11, 9); g.fillRect(67, 72, 11, 9);
+  g.fillStyle = hexCss(b.skin); g.fillRect(36, 12, 24, 26);
+  g.fillStyle = hexCss(b.hair); g.fillRect(36, 10, 24, 6);
+  const hat = o.hat && WEAR[o.hat];
+  if (hat) { g.fillStyle = hexCss(hat.color); if (o.hat === 'bucket') { g.fillRect(31, 10, 34, 5); g.fillRect(37, 3, 22, 8); } else { g.fillRect(35, 4, 26, 10); if (o.hat.startsWith('cap')) g.fillRect(58, 11, 12, 3); } }
+  const acc = o.acc;
+  if (acc === 'chain') { g.strokeStyle = '#d4af37'; g.lineWidth = 2; g.beginPath(); g.arc(48, 40, 9, 0.2, Math.PI - 0.2); g.stroke(); }
+  if (acc === 'shades') { g.fillStyle = '#111'; g.fillRect(38, 20, 9, 5); g.fillRect(49, 20, 9, 5); }
+  if (acc === 'cho_apron') { g.fillStyle = '#3a3a32'; g.fillRect(34, 50, 28, 34); g.fillStyle = '#a39c80'; g.fillRect(40, 58, 16, 3); }
+  if (acc === 'bm_phones') { g.strokeStyle = '#5a5a5a'; g.lineWidth = 3; g.beginPath(); g.arc(48, 18, 13, Math.PI, 0); g.stroke(); g.fillStyle = '#333'; g.fillRect(32, 18, 5, 9); g.fillRect(59, 18, 5, 9); }
+  if (acc === 'run_watch') { g.fillStyle = '#2b9be0'; g.fillRect(67, 66, 11, 4); }
+  g.fillStyle = '#111'; g.fillRect(42, 22, 3, 3); g.fillRect(51, 22, 3, 3);
+}
+let invMode = 'bag', tryOn = null;   // 'bag' or 'store'; tryOn = a piece being tried on in the store
+function wearRows(list, store) {
+  let h = '';
+  for (const sl of WEAR_SLOTS) {
+    const ks = list.filter(k => WEAR[k].slot === sl); if (!ks.length) continue;
+    h += `<div class="sec">${L('slot_' + sl)}</div>`;
+    for (const k of ks) {
+      const w = WEAR[k], have = INV.wear.includes(k), on = outfit[sl] === k;
+      const btn = !have ? `<div class="btn${cash < w.cost ? ' off' : ''}" data-wbuy="${k}">${L(cash < w.cost ? 'noCash' : 'buy')}</div>`
+        : `<div class="btn${on ? ' on' : ''}" data-wput="${k}">${L(on ? 'wearOff' : 'wearPut')}</div>`;
+      h += `<div class="it${tryOn === k ? ' cur' : ''}" data-wtry="${k}"><div class="sw" style="background:${hexCss(w.color)}"></div><div class="tx"><b>${L('w_' + k)}</b><small>${have ? (on ? L('wearOn') : L('owned')) : L('cashCost', { c: w.cost })}${w.only ? ' · ' + L('wearOnly', { c: CLASSES[w.only].name }) : ''}</small></div>${btn}</div>`;
+    }
+  }
+  return h;
+}
 let invTab = 'food';
 function renderInv() {
+  $('invH').textContent = L(invMode === 'store' ? 'wearShopTitle' : 'invTitle');
+  if (invMode === 'store') {
+    const shown = tryOn ? { ...outfit, [WEAR[tryOn].slot]: tryOn } : outfit;
+    $('invBody').innerHTML = `<div class="say" style="margin-bottom:8px;font-size:14px">${L(clsKey === 'sniper' ? 'mags_hi_sniper' : 'mags_hi')}</div>` +
+      `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div><div class="doll"><canvas id="doll" width="96" height="128"></canvas><small>${L('wearDoll')}</small></div>` +
+      wearRows(Object.keys(WEAR).filter(wearOk), true);
+    drawDoll($('doll'), shown); return;
+  }
   let h = `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div>` + (daily.streak ? `<div class="day">${L('invDay', { n: daily.streak })}</div>` : '') +
     `<div class="tabs">${['wear', 'deco', 'food', 'keep'].map(k => `<div class="${k === invTab ? 'on' : ''}" data-tab="${k}">${L('invTab_' + k)}</div>`).join('')}</div>`;
-  if (invTab === 'wear') h += `<p class="empty">${L('invWearEmpty')}</p>`;
+  if (invTab === 'wear') {
+    h += `<div class="doll"><canvas id="doll" width="96" height="128"></canvas><small>${WEAR_SLOTS.map(sl => `${L('slot_' + sl).split(' ')[0]}: ${outfit[sl] ? L('w_' + outfit[sl]) : L('wearNone')}`).join('<br>')}</small></div>`;
+    h += INV.wear.length ? wearRows(INV.wear, false) : `<p class="empty">${L('invWearEmpty')}</p>`;
+  }
   if (invTab === 'deco') h += `<p class="empty">${L('invDecoEmpty')}</p>`;
   if (invTab === 'food') {
     const have = Object.keys(FOOD).filter(k => INV.food[k] > 0);
@@ -4532,9 +4666,11 @@ function renderInv() {
     for (const r of recs) h += `<div class="it"><div class="ic" style="width:28px;height:28px;border-radius:4px;background:${r.cover}"></div><div class="tx"><b>${r.title}</b><small>${L('keep_rec')} · ${r.by}</small></div></div>`;
   }
   $('invBody').innerHTML = h;
+  if ($('doll')) drawDoll($('doll'), outfit);
 }
-function openInv() {
+function openInv(mode = 'bag') {
   if (state !== 'play') return;
+  invMode = mode; tryOn = null;
   state = 'inv'; firing = aiming = false;
   for (const k in keys) keys[k] = false;
   joy.x = joy.y = 0; joy.id = look.id = fireId = null;
@@ -4548,13 +4684,26 @@ function closeInv() {
 }
 $('invClose').addEventListener('click', closeInv);
 $('invBody').addEventListener('click', e => {
-  const d = e.target.closest('[data-tab],[data-eat]')?.dataset; if (!d) return;
+  const el = e.target.closest('[data-tab],[data-eat],[data-wbuy],[data-wput],[data-wtry]'), d = el?.dataset; if (!d || el.classList.contains('off')) return;
   audio();
   if (d.tab) invTab = d.tab;
   if (d.eat && eat(d.eat)) saveGame();
+  if (d.wtry) tryOn = invMode === 'store' && tryOn !== d.wtry ? d.wtry : null;
+  if (d.wbuy) {
+    const k = d.wbuy, w = WEAR[k]; if (cash < w.cost || INV.wear.includes(k) || !wearOk(k)) return;
+    addCash(-w.cost, 'wear:' + k); addWear(k, 'shop'); tryOn = null;
+    feed(L('wearBought', { i: L('w_' + k), c: w.cost }), '#3ddc84'); beep(880, 0.08, 0.1, 'triangle');
+    putOn(k); saveGame();
+  }
+  if (d.wput) { const k = d.wput, sl = WEAR[k].slot; if (outfit[sl] === k) setOutfit(sl, null, 'off'); else putOn(k); saveGame(); }
   renderInv();
 });
 $('inv').addEventListener('click', e => { if (e.target.id === 'inv') closeInv(); });
+function putOn(k) {
+  const sl = WEAR[k].slot; setOutfit(sl, k, 'wear');
+  const a = allies.find(x => x.up);   // the crew notices
+  if (a && Math.random() < 0.6) setTimeout(() => feed(L('wearNotice', { a: ALLY_TYPES[a.key].name, s: L('slot_' + sl).split(' ')[0] }), myCrew.color), 1500);
+}
 function hasSave() { try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return d && d.v >= 1 ? d : null; } catch { return null; } }
 let saveT = 0;
 function saveGame() {
@@ -4568,7 +4717,7 @@ function saveGame() {
   if (q.bike.s === 'ride') q.bike.s = 'find';
   q.bike.guarded = false;
   const data = {
-    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
+    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, outfit: { ...outfit }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
     owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
     armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
     intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)), music: JSON.parse(JSON.stringify(MUS)),
@@ -4593,6 +4742,8 @@ function loadGame(d) {
   // v3 adds the wallet and the bag: older saves start with $30 and an empty bag
   cash = d.cash ?? 30; Object.assign(daily, d.daily || {});
   if (d.inv) { Object.assign(INV.food, d.inv.food); INV.wear = d.inv.wear || []; INV.deco = d.inv.deco || []; }
+  for (const sl of WEAR_SLOTS) outfit[sl] = WEAR[d.outfit?.[sl]] && INV.wear.includes(d.outfit[sl]) ? d.outfit[sl] : null;
+  applyOutfit();
   // one list holds both kinds: BEAT LITE tracks stay one-bar grids (tr.g), STUDIO B songs are v2; toV2 runs when a lite one opens in STUDIO B
   ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
   personalSetup(false);
@@ -6195,7 +6346,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { outfit, WEAR, SHK, get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
