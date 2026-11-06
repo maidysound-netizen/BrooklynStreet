@@ -305,6 +305,20 @@
   #volPanel input { width:55%; accent-color:#f2b705; }
   #volPanel .close { margin-top:8px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #bVol { left:50%; top:10px; margin-left:-284px; width:44px; height:44px; border-radius:10px; font-size:18px; }
+  #inv { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:20; }
+  #inv .cbox { width:min(480px,92vw); max-height:84vh; overflow:auto; background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:16px; font-family:system-ui,sans-serif; }
+  #inv h3 { margin:0 0 6px; font:900 22px "Arial Black",Impact,sans-serif; color:#ffd23f; }
+  #inv .wal { font-weight:900; margin-bottom:4px; } #inv .wal b { color:#3ddc84; }
+  #inv .day { font-size:12px; opacity:.7; margin-bottom:10px; }
+  #inv .tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:10px; }
+  #inv .tabs div { text-align:center; padding:8px 2px; border-radius:6px; background:#2a241d; font-weight:800; font-size:13px; cursor:pointer; }
+  #inv .tabs div.on { background:#ffd23f; color:#111; }
+  #inv .it { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; background:rgba(255,255,255,.06); margin-bottom:6px; }
+  #inv .it .ic { font-size:24px; } #inv .it .tx { flex:1; min-width:0; } #inv .it small { display:block; opacity:.65; font-size:12px; }
+  #inv .it .btn { padding:8px 12px; border-radius:6px; background:#3ddc84; color:#111; font-weight:900; cursor:pointer; }
+  #inv .empty { opacity:.75; font-size:14px; line-height:1.5; }
+  #inv .close { margin-top:10px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
+  #bInv { left:50%; top:10px; margin-left:-334px; width:44px; height:44px; border-radius:10px; font-size:18px; }
   #intel .close { margin-top:10px; text-align:center; padding:10px; border-radius:6px; background:#333; font-weight:900; cursor:pointer; }
   #shop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
   #shop .cbox { max-height:92vh; overflow:auto; width:min(460px,92vw); background:#16120f; border:2px solid rgba(255,255,255,.15); border-radius:12px; padding:18px; font-family:system-ui,sans-serif; }
@@ -370,6 +384,7 @@
     /* six buttons don't fit in one row next to the health bar: a second row under the first */
     body.touch #bIntel, body.touch #bRadio, body.touch #bVol { left:auto; margin-left:0; top:164px; height:40px; width:40px; }
     body.touch #bIntel { right:10px; } body.touch #bRadio { right:56px; } body.touch #bVol { right:102px; }
+    body.touch #bInv { left:auto; margin-left:0; top:164px; height:40px; width:40px; right:148px; }
     body.touch #hp { left:12px; top:214px; bottom:auto; transform:none; }   /* below the quest text, which can wrap */
     body.touch #hp .bar { width:90px; }
     body.touch #ammo { left:12px; top:240px; }
@@ -422,6 +437,7 @@
     <div class="tb hidden" id="bIntel" data-b="intel">📓</div>
     <div class="tb hidden" id="bRadio" data-b="radio">📻</div>
     <div class="tb" id="bVol" data-b="vol">🔊</div>
+    <div class="tb" id="bInv" data-b="inv">🎒</div>
   </div>
 </div>
 <div id="portal" class="hidden">
@@ -442,6 +458,7 @@
   </div>
 </div>
 <div id="dlg" class="hidden"><div class="cbox"><div class="who" id="dlgWho"></div><div class="line" id="dlgLine"></div><div id="dlgOpts"></div></div></div>
+<div id="inv" class="hidden"><div class="cbox"><h3 data-i18n="invTitle"></h3><div id="invBody"></div><div class="close" id="invClose" data-i18n="close">닫기</div></div></div>
 <div id="intel" class="hidden"><div class="cbox"><h3 data-i18n="intelTitle"></h3><div id="intelBody"></div><div class="close" id="intelClose" data-i18n="close">닫기</div></div></div>
 <div id="board" class="hidden"><div class="cbox"><h3 data-i18n="boardTitle"></h3><div id="boardBody"></div><div class="close" id="boardClose" data-i18n="close">닫기</div></div></div>
 <div id="music" class="hidden"><div class="cbox"><h3 id="musicTitle"></h3><div id="musicBody"></div><div class="mb back" id="musicClose" data-i18n="close">닫기</div></div></div>
@@ -1053,6 +1070,36 @@ const STR = {
   item_armor: ['방탄조끼 (피해 60% 흡수, {m})', 'Body armor (absorbs 60% of damage, {m})', '防弾ベスト（ダメージ60%吸収・{m}）'],
   q1Deliver: ['🍕 배달 일 받기', '🍕 Take a delivery', '🍕 配達を受ける'],
   repCost: ['평판 {c}', 'Rep {c}', '評判 {c}'],
+  cashCost: ['${c}', '${c}', '${c}'],
+  noCash: ['돈 부족', 'Not enough $', 'お金が足りない'],
+  myCash: ['내 돈', 'My cash', '所持金'],
+  boughtCash: ['{i} 구매 · -${c}', '{i} bought · -${c}', '{i} 購入・-${c}'],
+  intoBag: ['🥪 가방에 넣었어요 · 먹기: H 또는 🎒', '🥪 Into the bag · eat: H or 🎒', '🥪 バッグに入れた・食べる：H か 🎒'],
+  bagFull: ['🎒 샌드위치는 {n}개까지 들 수 있어요', '🎒 You can carry {n} sandwiches', '🎒 サンドイッチは {n} 個まで'],
+  invTitle: ['🎒 가방', '🎒 BAG', '🎒 バッグ'],
+  invWallet: ['💵 <b>${m}</b> · 평판 {r}', '💵 <b>${m}</b> · Rep {r}', '💵 <b>${m}</b>・評判 {r}'],
+  invDay: ['출석 {n}일째 · 매일 샌드위치 1개, 7일 연속이면 $50', 'Day {n} in a row · a sandwich every day, $50 every 7 days', '連続 {n} 日目・毎日サンドイッチ1個、7日連続で $50'],
+  invTab_wear: ['옷', 'Clothes', '服'],
+  invTab_deco: ['가구', 'Furniture', '家具'],
+  invTab_food: ['먹을 것', 'Food', '食べ物'],
+  invTab_keep: ['기념품', 'Keepsakes', '記念品'],
+  invWearEmpty: ['아직 옷이 없어요. 동네 옷가게가 곧 문을 열어요.', 'No clothes yet. The neighborhood clothing store opens soon.', 'まだ服がない。街の服屋がもうすぐ開く。'],
+  invDecoEmpty: ['아직 가구가 없어요. 쉘터가 생기면 꾸밀 수 있어요.', 'No furniture yet. You can decorate once you have a shelter.', 'まだ家具がない。シェルターができたら飾れる。'],
+  invFoodEmpty: ['먹을 게 없어요. 보데가에서 샌드위치를 사거나, 내일 또 받아요.', 'Nothing to eat. Buy a sandwich at a bodega, or get another tomorrow.', '食べ物がない。ボデガでサンドイッチを買うか、明日また受け取ろう。'],
+  invKeepEmpty: ['아직 모은 게 없어요.', 'Nothing collected yet.', 'まだ何も集めていない。'],
+  food_sandwich: ['샌드위치', 'Sandwich', 'サンドイッチ'],
+  foodHp: ['체력 +{h} · {n}/{m}개', 'HP +{h} · {n}/{m}', '体力 +{h}・{n}/{m} 個'],
+  eat: ['먹기', 'Eat', '食べる'],
+  ate: ['🥪 냠. 체력 +{h}', '🥪 Nom. HP +{h}', '🥪 もぐもぐ。体力 +{h}'],
+  noFood: ['🥪 샌드위치가 없어요', '🥪 No sandwich', '🥪 サンドイッチがない'],
+  hpFull: ['체력이 가득해요', 'HP is full', '体力は満タン'],
+  keep_boombox: ['📻 루스의 붐박스', '📻 Ruth\'s boombox', '📻 ルースのラジカセ'],
+  keep_rec: ['레코드', 'Record', 'レコード'],
+  dailyGot: ['🥪 오늘의 샌드위치가 가방에 들어왔어요 · 출석 {n}일째', "🥪 Today's sandwich is in your bag · day {n} in a row", '🥪 今日のサンドイッチがバッグに・連続 {n} 日目'],
+  dailyCash: ['🥪 가방이 가득해서 오늘은 $5로 받았어요 · 출석 {n}일째', '🥪 Bag full, so today you got $5 instead · day {n} in a row', '🥪 バッグがいっぱいなので今日は $5・連続 {n} 日目'],
+  dailyBonus: ['💵 7일 연속 출석! +$50', '💵 7 days in a row! +$50', '💵 7日連続！+$50'],
+  cashTip: ['💵 배달 팁 +${m}', '💵 Delivery tip +${m}', '💵 配達チップ +${m}'],
+  invTip: ['🎒 I 키(폰은 🎒 버튼)로 가방을 열어요', '🎒 Open your bag with I (🎒 on phones)', '🎒 I キー（スマホは🎒ボタン）でバッグを開く'],
   full: ['가득 참', 'Full', '満タン'],
   noRep: ['평판 부족', 'Not enough rep', '評判不足'],
   buy: ['구매', 'Buy', '購入'],
@@ -1085,7 +1132,7 @@ const STR = {
   recruited: ['{n} 영입!', '{n} recruited!', '{n}を勧誘！'],
   pickAmmo: ['+45 탄약', '+45 ammo', '+45 弾薬'],
   pickHp: ['+35 체력', '+35 HP', '+35 体力'],
-  scoreHud: ['평판 {r} · 점수 {s}', 'Rep {r} · Score {s}', '評判 {r}・スコア {s}'],
+  scoreHud: ['평판 {r} · ${m} · 점수 {s}', 'Rep {r} · ${m} · Score {s}', '評判 {r}・${m}・スコア {s}'],
   warHud: ['⚔ 영역 전쟁 · 남은 적 {n}', '⚔ Turf war · {n} left', '⚔ ナワバリ戦争・残り {n}'],
   defendHud: ['🛡 {d} 방어 {s}초 · 남은 적 {n}', '🛡 Defend {d} {s}s · {n} left', '🛡 {d} 防衛 {s}秒・残り {n}'],
   turfHud: ['{c} 구역 · ', '{c} turf · ', '{c}のナワバリ・'],
@@ -2333,6 +2380,7 @@ addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') { if (e.code === 'Enter') closeCrew(); return; }
   if (state === 'board') { if (['KeyE', 'Escape'].includes(e.code)) closeBoard(); return; }
   if (state === 'intel') { if (['KeyJ', 'Escape'].includes(e.code)) closeIntel(); return; }
+  if (state === 'inv') { if (['KeyI', 'Escape'].includes(e.code)) closeInv(); return; }
   if (state === 'music') { if (['KeyT', 'Escape'].includes(e.code)) closeMusic(); return; }
   if (state === 'vol') { if (['KeyV', 'Escape'].includes(e.code)) closeVol(); return; }
   if (state === 'dialog') { const n = +e.key; if (n >= 1 && n <= dlgOpts.length) pickOpt(n - 1); else if (e.code === 'Escape') closeDlg(); return; }
@@ -2342,6 +2390,8 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyF') { toggleFlashlight(); return; }
   if (e.code === 'KeyQ') { nextWeapon(); return; }
   if (e.code === 'KeyJ') { openIntel(); return; }
+  if (e.code === 'KeyI') { openInv(); return; }
+  if (e.code === 'KeyH') { if (state === 'play') eat('sandwich'); return; }
   if (e.code === 'KeyT') { openMusic('radio'); return; }
   if (e.code === 'KeyV') { openVol(); return; }
   if (e.code === 'Digit1') { switchWeapon('rifle'); return; }
@@ -2385,7 +2435,7 @@ $('menu').addEventListener('click', () => {
     feed(L(TOUCH ? 'startTipTouch' : 'startTipKey'), myCrew.color);
   }, 5600);   // after the prologue
   state = 'play';
-  if (fromMenu) { if (save) loadGame(save); else personalSetup(true); updateSaveUi(); }
+  if (fromMenu) { if (save) loadGame(save); else personalSetup(true); updateSaveUi(); setTimeout(checkDaily, save ? 2500 : 9000); setTimeout(() => feed(L('invTip'), '#ffd23f'), save ? 5000 : 14000); }
   $('menu').classList.add('hidden'); $('hud').classList.remove('hidden');
   if (TOUCH) {
     const fs = document.documentElement.requestFullscreen?.();
@@ -2500,6 +2550,7 @@ if (TOUCH) {
       } else if (b === 'aim') { aiming = !aiming; $('bAim').classList.toggle('on', aiming); }
       else if (b === 'reload') startReload();
       else if (b === 'intel') openIntel();
+      else if (b === 'inv') openInv();
       else if (b === 'radio') openMusic('radio');
       else if (b === 'vol') openVol();
       else if (b === 'jump') { if (player.onGround && !riding) { player.vy = 6.5; player.onGround = false; } }
@@ -2975,7 +3026,8 @@ function endDelivery(ok) {
   if (ok) {
     const tip = Math.floor(delivery.timer), r = 40 + tip;
     rep += r; score += 200; deliveries++;
-    msg(L('deliverDone'), 2); feed(L('deliverReward', { r, tip }), '#ffa630');
+    const m = 3 + Math.floor(tip / 6); addCash(m, 'tip');   // the customer's tip is real money, the rep is the neighborhood's
+    msg(L('deliverDone'), 2); feed(L('deliverReward', { r, tip }), '#ffa630'); feed(L('cashTip', { m }), '#3ddc84');
     beep(660, 0.1, 0.1, 'triangle'); setTimeout(() => beep(990, 0.2, 0.1, 'triangle'), 120);
   } else {
     msg(L('pizzaCold'), 2); feed(L('deliverFail'), '#ff9f7a');
@@ -3287,15 +3339,15 @@ const SHOP = [
   { k: 'knife', icon: '🔪', get name() { return L('item_knife'); }, cost: 60, done: 'owned', ok: () => !owned.knife,
     buy: () => { owned.knife = true; switchWeapon('knife'); feed(L(TOUCH ? 'swapTipTouch' : 'swapTip'), '#ffd23f'); } },
   { k: 'snack', icon: '🍕', get name() { return L('item_snack'); }, cost: 40, ok: () => allies.some(a => a.mood > 0), buy: () => { for (const a of allies) a.mood = Math.max(0, a.mood - 30); feed(L('snackFed'), myCrew.color); } },
-  { k: 'hp', icon: '🥪', get name() { return L('item_hp'); }, cost: 40, ok: () => player.hp < player.maxHp, buy: () => { player.hp = Math.min(player.maxHp, player.hp + 50); } },
+  { k: 'hp', icon: '🥪', get name() { return L('item_hp'); }, cost: 5, cash: true, ok: () => INV.food.sandwich < FOOD.sandwich.max, buy: () => { addFood('sandwich', 1, 'shop'); feed(L('intoBag'), '#ffd23f'); } },
   { k: 'ammo', icon: '📦', get name() { return L('item_ammo'); }, cost: 30, ok: () => true, buy: () => { reserve += 60; } },
   { k: 'armor', icon: '🦺', get name() { return L('item_armor', { m: armorMax }); }, cost: 80, ok: () => player.armor < armorMax, buy: () => { player.armor = armorMax; } },
 ];
 function renderShop() {
   document.getElementById('items').innerHTML = SHOP.map(it => {
-    const can = rep >= it.cost && it.ok();
-    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>${L('repCost', { c: it.cost })}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${L(!it.ok() ? (it.done || 'full') : rep < it.cost ? 'noRep' : 'buy')}</div></div>`;
-  }).join('') + `<div style="text-align:right;font-weight:800;margin:4px 2px 8px">${L('myRep')} <span style="color:var(--yellow)">${rep}</span></div>`;
+    const short = it.cash ? cash < it.cost : rep < it.cost, can = !short && it.ok();
+    return `<div class="item"><div class="ic">${it.icon}</div><div class="tx"><b>${it.name}</b>${L(it.cash ? 'cashCost' : 'repCost', { c: it.cost })}</div><div class="btn${can ? '' : ' off'}" data-buy="${it.k}">${L(!it.ok() ? (it.done || 'full') : short ? (it.cash ? 'noCash' : 'noRep') : 'buy')}</div></div>`;
+  }).join('') + `<div style="text-align:right;font-weight:800;margin:4px 2px 8px">${L('myRep')} <span style="color:var(--yellow)">${rep}</span> · ${L('myCash')} <span style="color:#3ddc84">$${cash}</span></div>`;
 }
 function openShop(d) {
   if (state !== 'play') return;
@@ -3314,9 +3366,10 @@ function closeShop() {
 document.getElementById('shopClose').addEventListener('click', closeShop);
 document.getElementById('items').addEventListener('click', e => {
   const it = SHOP.find(s => s.k === e.target.dataset?.buy);
-  if (!it || rep < it.cost || !it.ok()) return;
-  rep -= it.cost; it.buy();
-  beep(880, 0.08, 0.1, 'triangle'); feed(L('bought', { i: it.icon, c: it.cost }), '#3ddc84');
+  if (!it || (it.cash ? cash : rep) < it.cost || !it.ok()) return;
+  if (it.cash) addCash(-it.cost, 'shop:' + it.k); else rep -= it.cost;
+  it.buy();
+  beep(880, 0.08, 0.1, 'triangle'); feed(L(it.cash ? 'boughtCash' : 'bought', { i: it.icon, c: it.cost }), '#3ddc84');
   renderShop(); saveGame();
 });
 document.getElementById('prompt').addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useNPC(); }, { passive: false });
@@ -4432,10 +4485,80 @@ function questObjective() {
 
 // ---------- save / continue (this browser; moves to the Supabase account later) ----------
 const SAVE_KEY = 'mw-save';
+
+// ---------- money and the bag (PRD Phase 9-3): rep is what the street thinks of you, $ is what's in your pocket ----------
+let cash = 30;
+const FOOD = { sandwich: { icon: '🥪', hp: 50, max: 5 } };
+const INV = { food: { sandwich: 0 }, wear: [], deco: [] };   // food counts; clothes and furniture come in later phases
+const daily = { last: '', streak: 0 };   // one sandwich a day, by this device's date
+// every change to the wallet and the bag goes through these two, so a server (Supabase, PRD 5-1) can take them over later.
+// `why` says where it came from; XP for the level system (PRD 5-2) gets its own addXp here, apart from rep and $.
+const addCash = (n, why) => { cash = Math.max(0, cash + n); return why; };
+const addFood = (k, n, why) => { INV.food[k] = Math.max(0, Math.min(FOOD[k].max, (INV.food[k] || 0) + n)); return why; };
+const dayKey = (o = 0) => { const d = new Date(); d.setDate(d.getDate() + o); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+function checkDaily() {
+  if (daily.last === dayKey()) return;
+  if (state !== 'play') { setTimeout(checkDaily, 3000); return; }   // wait until no panel or talk is open
+  daily.streak = daily.last === dayKey(-1) ? daily.streak + 1 : 1; daily.last = dayKey();
+  if (INV.food.sandwich < FOOD.sandwich.max) { addFood('sandwich', 1, 'daily'); feed(L('dailyGot', { n: daily.streak }), '#ffd23f'); }
+  else { addCash(5, 'daily'); feed(L('dailyCash', { n: daily.streak }), '#ffd23f'); }
+  if (daily.streak % 7 === 0) { addCash(50, 'daily7'); setTimeout(() => feed(L('dailyBonus'), '#3ddc84'), 1200); }
+  beep(784, 0.1, 0.08, 'triangle'); setTimeout(() => beep(1046, 0.18, 0.08, 'triangle'), 120);
+  saveGame();
+}
+function eat(k) {
+  const f = FOOD[k];
+  if (!INV.food[k]) { feed(L('noFood'), '#cfd2d6'); return false; }
+  if (player.hp >= player.maxHp) { feed(L('hpFull'), '#cfd2d6'); return false; }
+  addFood(k, -1, 'eat'); player.hp = Math.min(player.maxHp, player.hp + f.hp);
+  feed(L('ate', { h: f.hp }), '#3ddc84'); beep(520, 0.06, 0.06, 'square');
+  return true;
+}
+let invTab = 'food';
+function renderInv() {
+  let h = `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div>` + (daily.streak ? `<div class="day">${L('invDay', { n: daily.streak })}</div>` : '') +
+    `<div class="tabs">${['wear', 'deco', 'food', 'keep'].map(k => `<div class="${k === invTab ? 'on' : ''}" data-tab="${k}">${L('invTab_' + k)}</div>`).join('')}</div>`;
+  if (invTab === 'wear') h += `<p class="empty">${L('invWearEmpty')}</p>`;
+  if (invTab === 'deco') h += `<p class="empty">${L('invDecoEmpty')}</p>`;
+  if (invTab === 'food') {
+    const have = Object.keys(FOOD).filter(k => INV.food[k] > 0);
+    if (!have.length) h += `<p class="empty">${L('invFoodEmpty')}</p>`;
+    for (const k of have) h += `<div class="it"><div class="ic">${FOOD[k].icon}</div><div class="tx"><b>${L('food_' + k)}</b><small>${L('foodHp', { h: FOOD[k].hp, n: INV.food[k], m: FOOD[k].max })}</small></div><div class="btn" data-eat="${k}">${L('eat')}</div></div>`;
+  }
+  if (invTab === 'keep') {
+    const recs = [...(MUS.lp ? ['weiss'] : []), ...MUS.owned].map(k => RECORDS[k]).filter(Boolean);
+    if (!recs.length && !MUS.boombox) h += `<p class="empty">${L('invKeepEmpty')}</p>`;
+    if (MUS.boombox) h += `<div class="it"><div class="tx"><b>${L('keep_boombox')}</b></div></div>`;
+    for (const r of recs) h += `<div class="it"><div class="ic" style="width:28px;height:28px;border-radius:4px;background:${r.cover}"></div><div class="tx"><b>${r.title}</b><small>${L('keep_rec')} · ${r.by}</small></div></div>`;
+  }
+  $('invBody').innerHTML = h;
+}
+function openInv() {
+  if (state !== 'play') return;
+  state = 'inv'; firing = aiming = false;
+  for (const k in keys) keys[k] = false;
+  joy.x = joy.y = 0; joy.id = look.id = fireId = null;
+  document.exitPointerLock?.();
+  renderInv(); $('inv').classList.remove('hidden');
+}
+function closeInv() {
+  if (state !== 'inv') return;
+  $('inv').classList.add('hidden'); state = 'play';
+  if (!TOUCH) { const r = renderer.domElement.requestPointerLock?.(); if (r && r.catch) r.catch(() => {}); }
+}
+$('invClose').addEventListener('click', closeInv);
+$('invBody').addEventListener('click', e => {
+  const d = e.target.closest('[data-tab],[data-eat]')?.dataset; if (!d) return;
+  audio();
+  if (d.tab) invTab = d.tab;
+  if (d.eat && eat(d.eat)) saveGame();
+  renderInv();
+});
+$('inv').addEventListener('click', e => { if (e.target.id === 'inv') closeInv(); });
 function hasSave() { try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return d && d.v >= 1 ? d : null; } catch { return null; } }
 let saveT = 0;
 function saveGame() {
-  if (!['play', 'shop', 'dialog', 'crew', 'metro', 'music', 'vol'].includes(state)) return;
+  if (!['play', 'shop', 'dialog', 'crew', 'metro', 'music', 'vol', 'inv'].includes(state)) return;
   const q = {};
   for (const k in Q) { const o = {}; for (const [f, v] of Object.entries(Q[k])) if (v === null || typeof v !== 'object' || Array.isArray(v)) o[f] = v; q[k] = o; }
   if (['run', 'shoot', 'fight'].includes(q.coach.s)) q.coach.s = q.coach.step >= 3 ? 'done' : 'ready';
@@ -4445,7 +4568,7 @@ function saveGame() {
   if (q.bike.s === 'ride') q.bike.s = 'find';
   q.bike.guarded = false;
   const data = {
-    v: 2, cls: clsKey, rep, score, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
+    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
     owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
     armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
     intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)), music: JSON.parse(JSON.stringify(MUS)),
@@ -4467,6 +4590,9 @@ function loadGame(d) {
   defectors.push(...(d.defectors || []));
   Object.assign(intel, d.intel || {}); Object.assign(npcState, d.npcState || {});
   Object.assign(MUS, JSON.parse(JSON.stringify(d.music || {})));
+  // v3 adds the wallet and the bag: older saves start with $30 and an empty bag
+  cash = d.cash ?? 30; Object.assign(daily, d.daily || {});
+  if (d.inv) { Object.assign(INV.food, d.inv.food); INV.wear = d.inv.wear || []; INV.deco = d.inv.deco || []; }
   // one list holds both kinds: BEAT LITE tracks stay one-bar grids (tr.g), STUDIO B songs are v2; toV2 runs when a lite one opens in STUDIO B
   ammo = mags.rifle; if (d.weapon !== 'rifle' && owned[d.weapon]) switchWeapon(d.weapon);
   personalSetup(false);
@@ -4496,7 +4622,7 @@ $('newGame').addEventListener('click', e => {
   applyLang(); updateSaveUi(); stage.fit();
 });
 addEventListener('pagehide', () => saveGame());
-document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); else checkDaily(); });   // a new day while the tab slept
 
 // ---------- campaign (CAMPAIGN_DESIGN.md): show, don't tell ----------
 // Chapter 1 depends on who you play: the rival you track down is one of the other two founders.
@@ -5896,7 +6022,7 @@ function update(dt) {
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
   $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
-  $('score').textContent = L('scoreHud', { r: rep, s: score });
+  $('score').textContent = L('scoreHud', { r: rep, m: cash, s: score });
   $('left').textContent = war
     ? (war.kind === 'attack' ? L('warHud', { n: alive + toSpawn }) : L('defendHud', { d: war.d.name, s: Math.ceil(war.timer), n: alive + toSpawn }))
     : `${here ? L('turfHud', { c: ownerName(here.owner) }) : ''}${L('ownedHud', { o: ownedCount() })}`;
@@ -6069,7 +6195,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
