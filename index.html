@@ -1092,6 +1092,42 @@ const STR = {
   invTab_food: ['먹을 것', 'Food', '食べ物'],
   invTab_keep: ['기념품', 'Keepsakes', '記念品'],
   invWearEmpty: ['아직 산 옷이 없어요. Kings Commons의 옷가게 SECOND HAND KINGS (미니맵 보라색 T)에 가 보세요.', 'No clothes bought yet. Try SECOND HAND KINGS in Kings Commons (purple T on the minimap).', 'まだ買った服がない。Kings Commons の服屋 SECOND HAND KINGS（ミニマップの紫の T）へ。'],
+  shelterName: ['쉘터', 'Shelter', 'シェルター'],
+  shelterDown: ['🏠 내 쉘터로 내려가기', '🏠 Go down to your shelter', '🏠 自分のシェルターへ降りる'],
+  shelterUp: ['⬆️ 거리로 올라가기', '⬆️ Back up to the street', '⬆️ 通りへ上がる'],
+  slotEmpty: ['빈 자리 ({t}) · 가구 놓기', 'Empty spot ({t}) · place something', '空きスペース（{t}）・家具を置く'],
+  slotUseLab: ['쓰기 · 바꾸기', 'Use · change', '使う・替える'],
+  slotEditLab: ['바꾸기', 'Change', '替える'],
+  st_wall: ['벽', 'Wall', '壁'], st_floor: ['바닥', 'Floor', '床'], st_table: ['테이블', 'Table', 'テーブル'], st_window: ['창가', 'Window sill', '窓辺'],
+  d_mattress: ['낡은 매트리스', 'Old mattress', '古いマットレス'],
+  d_bed: ['나무 침대', 'Wooden bed', '木のベッド'],
+  d_sofa: ['빨간 소파', 'Red sofa', '赤いソファ'],
+  d_rug: ['동네 러그', 'Block rug', '街のラグ'],
+  d_lamp: ['스탠드', 'Floor lamp', 'スタンドライト'],
+  d_plant: ['화분', 'Potted plant', '鉢植え'],
+  d_turntable: ['턴테이블', 'Turntable', 'ターンテーブル'],
+  d_candle: ['양초', 'Candle', 'ろうそく'],
+  d_poster: ['공연 포스터', 'Show poster', 'ライブのポスター'],
+  d_neon: ['크루 네온사인', 'Crew neon sign', 'クルーのネオンサイン'],
+  d_mirror: ['거울', 'Mirror', '鏡'],
+  d_trophy: ['트로피 선반', 'Trophy shelf', 'トロフィー棚'],
+  du_bed: ['누우면 체력 가득', 'Lie down: full HP', '横になると体力満タン'],
+  du_music: ['레코드·내 곡 틀기', 'Play records and your tracks', 'レコードや自分の曲を流す'],
+  du_mirror: ['옷 갈아입기', 'Change clothes', '着替える'],
+  du_trophy: ['앨범·보스 기록', 'Albums and bosses', 'アルバムとボスの記録'],
+  decoUse: ['쓰기', 'Use', '使う'],
+  decoOff: ['치우기', 'Remove', '片付ける'],
+  decoFit: ['여기 놓을 수 있는 것', 'What fits here', 'ここに置けるもの'],
+  decoNone: ['여기 맞는 가구가 가방에 없어요. SECOND HAND KINGS의 가구 탭에서 사요.', 'Nothing in your bag fits here. Buy furniture at SECOND HAND KINGS.', 'ここに合う家具がない。SECOND HAND KINGS の家具タブで買おう。'],
+  decoAt: ['지금 {t}에 놓여 있음', 'Now on the {t}', '今は{t}に置いてある'],
+  decoInBag: ['가방 안', 'In the bag', 'バッグの中'],
+  decoPlaced: ['쉘터에 놓임', 'In the shelter', 'シェルターに設置'],
+  decoMove: ['옮기기', 'Move here', 'ここへ移す'],
+  decoPut: ['놓기', 'Place', '置く'],
+  decoBought: ['🛋️ {i} 구매 · -${c} · 쉘터에서 자리를 골라 놓아요', '🛋️ {i} bought · -${c} · place it in your shelter', '🛋️ {i} 購入・-${c}・シェルターで置き場所を選ぼう'],
+  invDecoHint: ['쉘터(공원 서쪽 길의 SHELTER ↓ 문)에서 노란 동그라미 자리를 눌러 놓아요.', 'Place them on the yellow rings in your shelter (the SHELTER ↓ door west of the park).', 'シェルター（公園の西の SHELTER ↓ の扉）で黄色い輪の場所に置こう。'],
+  bedRest: ['🛏️ 잠깐 누웠다 일어났다. 체력 가득.', '🛏️ You lie down for a bit. Full HP.', '🛏️ 少し横になった。体力満タン。'],
+  trophyLine: ['🏆 찍은 앨범 {a}장 · 쓰러뜨린 다리 보스 {b}명', '🏆 Albums pressed: {a} · bridge bosses beaten: {b}', '🏆 プレスしたアルバム {a} 枚・倒した橋のボス {b} 人'],
   wearShopTitle: ['👕 SECOND HAND KINGS', '👕 SECOND HAND KINGS', '👕 SECOND HAND KINGS'],
   wearShopLabel: ['👕 SECOND HAND KINGS 옷 구경', '👕 Browse SECOND HAND KINGS', '👕 SECOND HAND KINGS で服を見る'],
   nm_mags: ['맥스 이모', 'Aunt Mags', 'マグスおばさん'],
@@ -1958,6 +1994,7 @@ for (const nx of NODES) for (const nz of NODES) {
 const SY = -40, ZC = 50;                          // platform floor height, station centre line
 const SUB = { x0: -28.5, x1: 29.2, z0: ZC - 3.4, z1: ZC + 3.2 };
 const subwayCols = [];
+const ROOMS = { subway: { cols: subwayCols, box: SUB } };   // closed rooms under the street: their own walls and floor
 const DOOR_X = 30.2;
 let doorPivot, doorGlow, doorLight;
 const gears = [], doorSparks = [];
@@ -2168,7 +2205,7 @@ function applyTime(underground = false) {
 }
 function updateTime(dt) {
   tod = (tod + dt / HOUR_SECS) % 24;
-  applyTime(zone === 'subway');
+  applyTime(zone !== 'street');
   stars.position.copy(camera.position);
   if (flashAuto) { flashOn = night > 0.6; document.getElementById('bLight')?.classList.toggle('on', flashOn); }
   flashlight.intensity = flashOn && zone === 'street' ? 140 : 0;
@@ -2186,8 +2223,8 @@ function updateTime(dt) {
 applyTime();
 
 // ---------- collision / line of sight ----------
-function collide(p, r, sub = false) {
-  for (const b of (sub ? subwayCols : colliders)) {
+function collide(p, r, room = null) {
+  for (const b of (room ? room.cols : colliders)) {
     const cx = clamp(p.x, b.minX, b.maxX), cz = clamp(p.z, b.minZ, b.maxZ);
     const dx = p.x - cx, dz = p.z - cz, d2 = dx * dx + dz * dz;
     if (d2 >= r * r) continue;
@@ -2197,7 +2234,7 @@ function collide(p, r, sub = false) {
       if (m === l) p.x = b.minX - r; else if (m === rt) p.x = b.maxX + r; else if (m === t) p.z = b.minZ - r; else p.z = b.maxZ + r;
     }
   }
-  if (sub) { p.x = clamp(p.x, SUB.x0, SUB.x1); p.z = clamp(p.z, SUB.z0, SUB.z1); }
+  if (room) { p.x = clamp(p.x, room.box.x0, room.box.x1); p.z = clamp(p.z, room.box.z0, room.box.z1); }
   else { p.x = clamp(p.x, -EDGE, EDGE); p.z = clamp(p.z, SHORE - 15.1, EDGE); }
 }
 function segRect(ax, az, bx, bz, r) {
@@ -3043,6 +3080,129 @@ const SHK = { x: 58, z: -31.2 };
   addNPC(x, z, { hood: 0x5b2a86, cap: 0xe8a0bf, jeans: 0x2c3b57, apron: 0xffe9a8 }, () => L('wearShopLabel'), () => openInv('store'));
 }
 
+// ---------- the shelter (PRD 9-3 step 3): a basement room you decorate ----------
+// The room sits far below the street like the subway; a cellar door in Kings Commons leads down.
+const SHY = -80, SZ = 50, SH_DOOR = { x: -31.2, z: 40 };
+const SHB = { x0: -4.6, x1: 4.6, z0: SZ - 3.6, z1: SZ + 3.6 };
+const shelterCols = [];
+ROOMS.shelter = { cols: shelterCols, box: SHB };
+// eight spots: [type, x, y, z, ry]; wall things hang, floor things stand, the table and the window sill hold small things
+const SH_SLOTS = [
+  ['wall', -2.4, SHY + 1.6, SZ - 3.95, 0], ['wall', 2.4, SHY + 1.6, SZ - 3.95, 0],
+  ['floor', -3.5, SHY, SZ - 2.9, 0], ['floor', 3.5, SHY, SZ - 2.9, 0],
+  ['floor', -4.0, SHY, SZ + 1.4, Math.PI / 2], ['floor', 0, SHY, SZ + 0.2, 0],
+  ['table', 4.15, SHY + 0.78, SZ + 1.4, -Math.PI / 2], ['window', -4.72, SHY + 1.62, SZ - 0.9, Math.PI / 2],
+];
+// what you can put in a spot; fp = floor footprint you can't walk through
+const DECO = {
+  mattress: { icon: '🛏️', types: ['floor'], cost: 0, use: 'bed', fp: [1.9, 1.0] },
+  bed: { icon: '🛏️', types: ['floor'], cost: 120, use: 'bed', fp: [2.0, 1.1] },
+  sofa: { icon: '🛋️', types: ['floor'], cost: 80, fp: [1.8, 0.8] },
+  rug: { icon: '🟥', types: ['floor'], cost: 30 },
+  lamp: { icon: '💡', types: ['floor'], cost: 25, fp: [0.4, 0.4] },
+  plant: { icon: '🪴', types: ['floor', 'window'], cost: 15, fp: [0.5, 0.5] },
+  turntable: { icon: '💿', types: ['table'], cost: 100, use: 'music' },
+  candle: { icon: '🕯️', types: ['table', 'window'], cost: 10 },
+  poster: { icon: '🖼️', types: ['wall'], cost: 20 },
+  neon: { icon: '🌟', types: ['wall'], cost: 60 },
+  mirror: { icon: '🪞', types: ['wall'], cost: 40, use: 'mirror' },
+  trophy: { icon: '🏆', types: ['wall'], cost: 150, use: 'trophy' },
+};
+const shelter = { slots: [null, null, null, null, 'mattress', null, null, null] };   // every crew starts with an old mattress
+{
+  const wallC = mkCanvas(256, 256), wg = wallC.getContext('2d');   // painted brick
+  wg.fillStyle = '#5a3a2e'; wg.fillRect(0, 0, 256, 256);
+  // Math.random, not rr(): rr draws from the seeded city generator
+  for (let r = 0; r < 16; r++) for (let q = -1; q < 5; q++) { wg.fillStyle = shade('#8a5a46', Math.random() * 24 - 14); wg.fillRect(q * 64 + (r % 2) * 32 + 2, r * 16 + 2, 60, 12); }
+  // no lamps down here (an extra light would cost every material in the city), so the room glows a little by itself
+  const warm = (o, c, i) => Object.assign(o, { emissive: new THREE.Color(c), emissiveIntensity: i });
+  const brick = warm(new THREE.MeshStandardMaterial({ map: texOf(wallC), roughness: 0.95 }), 0x6a4030, 0.55), floorM = warm(std(0x8a6a4c, { roughness: 0.8 }), 0x4a3424, 0.6), ceilM = warm(std(0x5a5048), 0x3a3028, 0.7);
+  brick.emissiveMap = brick.map;
+  const add = (geo, m, x, y, z, ry = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.y = ry; o.receiveShadow = true; scene.add(o); return o; };
+  add(new THREE.BoxGeometry(10, 0.2, 8.4), floorM, 0, SHY - 0.1, SZ);
+  add(new THREE.BoxGeometry(10, 0.2, 8.4), ceilM, 0, SHY + 3.1, SZ);
+  add(new THREE.BoxGeometry(10, 3.2, 0.2), brick, 0, SHY + 1.5, SZ - 4.1);
+  add(new THREE.BoxGeometry(10, 3.2, 0.2), brick, 0, SHY + 1.5, SZ + 4.1);
+  add(new THREE.BoxGeometry(0.2, 3.2, 8.4), brick, -4.9, SHY + 1.5, SZ);
+  add(new THREE.BoxGeometry(0.2, 3.2, 8.4), brick, 4.9, SHY + 1.5, SZ);
+  // the stairs door you came down, a bare bulb, a basement window with street light, and a small table
+  add(new THREE.BoxGeometry(1.2, 2.2, 0.1), std(0x3b2a1d), 0, SHY + 1.1, SZ + 3.98);
+  add(new THREE.SphereGeometry(0.07, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffd080, emissiveIntensity: 2 }), 0, SHY + 2.75, SZ);
+  add(new THREE.PlaneGeometry(1.6, 0.6), new THREE.MeshStandardMaterial({ color: 0x9fc4d8, emissive: 0x6f9fc0, emissiveIntensity: 0.8 }), -4.79, SHY + 2.25, SZ - 0.9, Math.PI / 2);
+  add(new THREE.BoxGeometry(0.3, 0.06, 1.7), std(0x5e3f26), -4.65, SHY + 1.58, SZ - 0.9);
+  add(new THREE.BoxGeometry(0.7, 0.76, 1.0), std(0x6b4a2a), 4.15, SHY + 0.38, SZ + 1.4);
+  // outside: a cellar door on the sidewalk side of the building, with a small sign
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.1, 1.3), std(0x7a3b1d)); door.position.set(SH_DOOR.x - 1.25, 1.2, SH_DOOR.z); scene.add(door);
+  signBoard('SHELTER ↓', '#2b1d14', '#e8772e', SH_DOOR.x - 1.2, 2.55, SH_DOOR.z, Math.PI / 2, 1.4);
+}
+const decoMeshes = [], slotMarks = [];
+function decoMesh(k) {
+  const g = new THREE.Group(), b = (w, h, d, c, x, y, z, o = {}) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), o.mat || std(c)); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+  const glow = (c, i = 1.4) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: i });
+  if (k === 'mattress') { b(1.9, 0.22, 1.0, 0xd8d0c0, 0, 0.11, 0); b(0.5, 0.12, 0.7, 0xf2efe6, -0.65, 0.28, 0); }
+  if (k === 'bed') { b(2.0, 0.3, 1.1, 0x6b4a2a, 0, 0.15, 0); b(1.9, 0.2, 1.0, 0xf2f2f2, 0, 0.4, 0); b(1.1, 0.06, 1.02, 0x2d6cdf, 0.35, 0.52, 0); b(0.08, 0.9, 1.1, 0x5a3a20, -1.0, 0.45, 0); }
+  if (k === 'sofa') { b(1.8, 0.42, 0.8, 0x8a3b2b, 0, 0.21, 0); b(1.8, 0.5, 0.2, 0x7a3020, 0, 0.6, -0.3); for (const s of [-1, 1]) b(0.2, 0.6, 0.8, 0x7a3020, s * 0.9, 0.3, 0); }
+  if (k === 'rug') { b(2.2, 0.02, 1.5, 0x8e2c1f, 0, 0.01, 0); b(1.8, 0.025, 1.1, 0xd9a441, 0, 0.012, 0); }
+  if (k === 'lamp') { b(0.3, 0.05, 0.3, 0x222222, 0, 0.03, 0); b(0.05, 1.45, 0.05, 0x222222, 0, 0.75, 0); b(0.38, 0.3, 0.38, 0, 0, 1.5, 0, { mat: glow(0xffd9a0) }); }
+  if (k === 'plant') { b(0.32, 0.3, 0.32, 0x8a5a2b, 0, 0.15, 0); for (let i = 0; i < 4; i++) b(0.16, 0.5, 0.16, 0x2f7d32, (i % 2 - 0.5) * 0.14, 0.5 + i * 0.04, (i < 2 ? -0.5 : 0.5) * 0.12); }
+  if (k === 'turntable') { b(0.55, 0.12, 0.42, 0x1b1b1b, 0, 0.06, 0); const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.02, 20), std(0x050505)); pl.position.set(-0.05, 0.13, 0); g.add(pl); b(0.04, 0.03, 0.04, 0, 0.2, 0.13, 0.15, { mat: glow(0xff3b30, 2) }); }
+  if (k === 'candle') { b(0.1, 0.2, 0.1, 0xf2ead3, 0, 0.1, 0); b(0.04, 0.06, 0.04, 0, 0, 0.23, 0, { mat: glow(0xffb347, 2.5) }); }
+  if (k === 'poster') { b(0.8, 1.1, 0.02, 0xe76f51, 0, 0, 0); b(0.6, 0.6, 0.025, 0xf4d35e, 0, 0.15, 0); b(0.6, 0.12, 0.025, 0x1d3557, 0, -0.35, 0); }
+  if (k === 'neon') { const c = mkCanvas(256, 96), q = c.getContext('2d'); q.fillStyle = '#0d0d12'; q.fillRect(0, 0, 256, 96); q.strokeStyle = '#ff4fd8'; q.lineWidth = 6; q.font = 'bold 54px Arial'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.strokeText(myCrew.name.slice(0, 10).toUpperCase(), 128, 50);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.48), new THREE.MeshStandardMaterial({ map: texOf(c, false), emissiveMap: texOf(c, false), emissive: 0xffffff, emissiveIntensity: 1.6 })); m.position.z = 0.02; g.add(m); }
+  if (k === 'mirror') { b(0.72, 1.4, 0.04, 0x3a2a1a, 0, 0, 0); b(0.6, 1.28, 0.05, 0, 0, 0, 0, { mat: std(0xcfe8ef, { metalness: 1, roughness: 0.08 }) }); }
+  if (k === 'trophy') {   // a shelf: one gold piece for each album pressed and each bridge boss beaten
+    b(1.3, 0.05, 0.25, 0x5e3f26, 0, -0.3, 0.1);
+    const n = Math.min(6, MUS.albums.length + Object.values(bossDone).filter(Boolean).length);
+    for (let i = 0; i < n; i++) b(0.12, 0.26, 0.12, 0, -0.5 + i * 0.2, -0.14, 0.1, { mat: std(0xd4af37, { metalness: 0.8, roughness: 0.3 }) });
+  }
+  return g;
+}
+function buildShelter() {   // put what's in each spot into the room (called when you go down and when you change a spot)
+  for (const m of decoMeshes) scene.remove(m); decoMeshes.length = 0; shelterCols.length = 0;
+  shelterCols.push({ minX: 3.8, maxX: 4.5, minZ: SZ + 0.9, maxZ: SZ + 1.9 });   // the table
+  SH_SLOTS.forEach(([type, x, y, z, ry], i) => {
+    const k = shelter.slots[i];
+    slotMarks[i].visible = !k;
+    if (!k) return;
+    const m = decoMesh(k); m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); decoMeshes.push(m);
+    const fp = DECO[k].fp;
+    if (fp && type === 'floor') { const [w, d] = Math.abs(Math.sin(ry)) > 0.5 ? [fp[1], fp[0]] : fp; shelterCols.push({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 }); }
+  });
+}
+{
+  const ring = new THREE.RingGeometry(0.32, 0.4, 24), mm = new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false });
+  SH_SLOTS.forEach(([type, x, y, z, ry]) => {
+    const m = new THREE.Mesh(ring, mm);
+    if (type === 'floor') { m.rotation.x = -Math.PI / 2; m.position.set(x, y + 0.03, z); }
+    else { m.rotation.y = ry; m.position.set(x + Math.sin(ry) * 0.05, y + (type === 'wall' ? 0 : 0.25), z + Math.cos(ry) * 0.05); }
+    scene.add(m); slotMarks.push(m);
+  });
+}
+const slotStand = ([type, x, , z, ry]) => type === 'floor' ? { x, z } : { x: x + Math.sin(ry) * 1.1, z: z + Math.cos(ry) * 1.1 };   // where you stand to use a spot
+SH_SLOTS.forEach((sl, i) => npcs.push({ zone: 'shelter', pos: slotStand(sl),
+  label: () => { const k = shelter.slots[i]; return k ? `${DECO[k].icon} ${L('d_' + k)} · ${L(DECO[k].use ? 'slotUseLab' : 'slotEditLab')}` : L('slotEmpty', { t: L('st_' + sl[0]) }); },
+  use: () => openInv('slot', i) }));
+npcs.push({ zone: 'shelter', pos: { x: 0, z: SZ + 3.2 }, label: () => L('shelterUp'), use: () => leaveShelter() });
+npcs.push({ pos: SH_DOOR, label: () => L('shelterDown'), use: () => enterShelter() });
+function enterShelter() {
+  if (busy) return;
+  if (riding) dismount();
+  fadeThen(() => {
+    zone = 'shelter'; buildShelter(); placePlayer(0, SHY, SZ + 2.6, 0);
+    heat = 0; lastStars = 0; clearPolice();   // nobody follows you down here
+    msg(L('shelterName').toUpperCase(), 2); saveGame();
+  });
+}
+function leaveShelter() { if (!busy) fadeThen(() => { zone = 'street'; placePlayer(SH_DOOR.x + 0.6, 0.25, SH_DOOR.z, -Math.PI / 2); }); }
+function useDeco(k) {
+  const u = DECO[k].use;
+  if (u === 'bed') { player.hp = player.maxHp; feed(L('bedRest'), '#3ddc84'); beep(392, 0.25, 0.06, 'sine'); saveGame(); }
+  if (u === 'music') openMusic('radio', true);
+  if (u === 'mirror') { invTab = 'wear'; openInv('bag'); }
+  if (u === 'trophy') feed(L('trophyLine', { a: MUS.albums.length, b: Object.values(bossDone).filter(Boolean).length }), '#ffd23f');
+}
+
 // ---------- pizza delivery ----------
 const PIZZA_SHOP = { x: -1 * P - 6, z: H + 1.3 };   // same spot as the pizza owner above
 let delivery = null, deliveries = 0, nextJobT = 0;
@@ -3748,6 +3908,12 @@ const mctx = $('map').getContext('2d');
 const MS = 180 / (2 * EDGE + 38), mx = x => (x + EDGE + 19) * MS, mz = z => (z + EDGE + 19) * MS;
 function drawMap() {
   mctx.clearRect(0, 0, 180, 180);
+  if (zone === 'shelter') {
+    mctx.fillStyle = '#1a1612'; mctx.fillRect(0, 0, 180, 180);
+    mctx.fillStyle = '#e8772e'; mctx.font = 'bold 40px Arial'; mctx.textAlign = 'center'; mctx.textBaseline = 'middle'; mctx.fillText('⌂', 90, 72);
+    mctx.fillStyle = '#fff'; mctx.font = 'bold 18px Arial'; mctx.fillText(L('shelterName').toUpperCase(), 90, 128);
+    return;
+  }
   if (zone === 'subway') {
     mctx.fillStyle = '#1a1a1a'; mctx.fillRect(0, 0, 180, 180);
     mctx.fillStyle = '#a7a9ac'; mctx.beginPath(); mctx.arc(90, 70, 30, 0, 7); mctx.fill();
@@ -3780,6 +3946,7 @@ function drawMap() {
     mctx.fillStyle = '#fff'; mctx.fillText('$', x, z + 0.5);
   }
   { const x = mx(SHK.x), z = mz(SHK.z); mctx.fillStyle = '#5b2a86'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#ffe9a8'; mctx.fillText('T', x, z + 0.5); }
+  { const x = mx(SH_DOOR.x), z = mz(SH_DOOR.z); mctx.fillStyle = '#e8772e'; mctx.fillRect(x - 4, z - 4, 8, 8); mctx.fillStyle = '#111'; mctx.fillText('⌂', x, z + 0.5); }
   mctx.globalAlpha = 1; mctx.fillStyle = '#5fd4ff';
   for (const b of bikes) if (b !== riding && Math.hypot(b.g.position.x - player.pos.x, b.g.position.z - player.pos.z) < 120) { mctx.beginPath(); mctx.arc(mx(b.g.position.x), mz(b.g.position.z), 2.2, 0, 7); mctx.fill(); }
   drawQuestMarks(mx, mz);
@@ -4549,7 +4716,7 @@ const SAVE_KEY = 'mw-save';
 // ---------- money and the bag (PRD Phase 9-3): rep is what the street thinks of you, $ is what's in your pocket ----------
 let cash = 30;
 const FOOD = { sandwich: { icon: '🥪', hp: 50, max: 5 } };
-const INV = { food: { sandwich: 0 }, wear: [], deco: [] };   // food counts; clothes and furniture come in later phases
+const INV = { food: { sandwich: 0 }, wear: [], deco: ['mattress'] };   // food counts, owned clothes, owned furniture
 const daily = { last: '', streak: 0 };   // one sandwich a day, by this device's date
 // every change to the wallet and the bag goes through these two, so a server (Supabase, PRD 5-1) can take them over later.
 // `why` says where it came from; XP for the level system (PRD 5-2) gets its own addXp here, apart from rep and $.
@@ -4600,6 +4767,11 @@ const wearOk = k => !WEAR[k].only || WEAR[k].only === clsKey;
 // the bag's other two change points (see addCash): owning a piece, and putting one on
 const addWear = (k, why) => { if (!INV.wear.includes(k)) INV.wear.push(k); return why; };
 function setOutfit(slot, k, why) { outfit[slot] = k; applyOutfit(); return why; }
+const addDeco = (k, why) => { if (!INV.deco.includes(k)) INV.deco.push(k); return why; };
+function placeDeco(i, k, why) {   // a piece lives in one spot at a time: moving it empties the old one
+  if (k) shelter.slots = shelter.slots.map(x => x === k ? null : x);
+  shelter.slots[i] = k; if (zone === 'shelter') buildShelter(); return why;
+}
 function applyOutfit() { gloveMat.color.setHex(outfit.hands ? WEAR[outfit.hands].color : BASE_LOOK[clsKey].hands); }
 function drawDoll(cv, o) {
   const g = cv.getContext('2d'), b = BASE_LOOK[clsKey] || BASE_LOOK.runner, col = sl => hexCss(o[sl] ? WEAR[o[sl]].color : b[sl] ?? b.top);
@@ -4622,7 +4794,7 @@ function drawDoll(cv, o) {
   if (acc === 'run_watch') { g.fillStyle = '#2b9be0'; g.fillRect(67, 66, 11, 4); }
   g.fillStyle = '#111'; g.fillRect(42, 22, 3, 3); g.fillRect(51, 22, 3, 3);
 }
-let invMode = 'bag', tryOn = null;   // 'bag' or 'store'; tryOn = a piece being tried on in the store
+let invMode = 'bag', tryOn = null, storeTab = 'wear', slotI = 0;   // mode: 'bag', 'store' or 'slot' (a shelter spot); tryOn = a piece tried on in the store
 function wearRows(list, store) {
   let h = '';
   for (const sl of WEAR_SLOTS) {
@@ -4637,6 +4809,14 @@ function wearRows(list, store) {
   }
   return h;
 }
+function decoRows(list, store) {
+  return list.map(k => {
+    const d = DECO[k], have = INV.deco.includes(k), at = shelter.slots.indexOf(k);
+    const btn = store ? (have ? `<div class="btn off">${L('owned')}</div>` : `<div class="btn${cash < d.cost ? ' off' : ''}" data-dbuy="${k}">${L(cash < d.cost ? 'noCash' : 'buy')}</div>`) : '';
+    const where = d.types.map(t => L('st_' + t)).join('/');
+    return `<div class="it"><div class="ic">${d.icon}</div><div class="tx"><b>${L('d_' + k)}</b><small>${store && !have ? L('cashCost', { c: d.cost }) + ' · ' : ''}${where}${d.use ? ' · ' + L('du_' + d.use) : ''}${!store ? ' · ' + (at >= 0 ? L('decoPlaced') : L('decoInBag')) : ''}</small></div>${btn}</div>`;
+  }).join('');
+}
 let invTab = 'food';
 function renderInv() {
   $('invH').textContent = L(invMode === 'store' ? 'wearShopTitle' : 'invTitle');
@@ -4644,8 +4824,22 @@ function renderInv() {
     const shown = tryOn ? { ...outfit, [WEAR[tryOn].slot]: tryOn } : outfit;
     $('invBody').innerHTML = `<div class="say" style="margin-bottom:8px;font-size:14px">${L(clsKey === 'sniper' ? 'mags_hi_sniper' : 'mags_hi')}</div>` +
       `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div><div class="doll"><canvas id="doll" width="96" height="128"></canvas><small>${L('wearDoll')}</small></div>` +
-      wearRows(Object.keys(WEAR).filter(wearOk), true);
-    drawDoll($('doll'), shown); return;
+      `<div class="tabs" style="grid-template-columns:1fr 1fr">${['wear', 'deco'].map(k => `<div class="${k === storeTab ? 'on' : ''}" data-stab="${k}">${L('invTab_' + k)}</div>`).join('')}</div>` +
+      (storeTab === 'wear' ? wearRows(Object.keys(WEAR).filter(wearOk), true) : decoRows(Object.keys(DECO).filter(k => DECO[k].cost), true));
+    if ($('doll')) drawDoll($('doll'), shown);
+    $('doll').parentElement.style.display = storeTab === 'wear' ? '' : 'none';
+    return;
+  }
+  if (invMode === 'slot') {
+    const [type] = SH_SLOTS[slotI], cur = shelter.slots[slotI];
+    $('invH').textContent = `${L('shelterName')} · ${L('st_' + type)}`;
+    let h = '';
+    if (cur) h += `<div class="it cur"><div class="ic">${DECO[cur].icon}</div><div class="tx"><b>${L('d_' + cur)}</b><small>${DECO[cur].use ? L('du_' + DECO[cur].use) : ''}</small></div>${DECO[cur].use ? `<div class="btn" data-duse="1">${L('decoUse')}</div>` : ''}<div class="btn" style="background:#444;color:#fff" data-ddel="1">${L('decoOff')}</div></div>`;
+    const fit = INV.deco.filter(k => k !== cur && DECO[k].types.includes(type));
+    h += `<div class="sec">${L('decoFit')}</div>`;
+    if (!fit.length) h += `<p class="empty">${L('decoNone')}</p>`;
+    for (const k of fit) { const at = shelter.slots.indexOf(k); h += `<div class="it"><div class="ic">${DECO[k].icon}</div><div class="tx"><b>${L('d_' + k)}</b><small>${at >= 0 ? L('decoAt', { t: L('st_' + SH_SLOTS[at][0]) }) : L('decoInBag')}</small></div><div class="btn" data-dput="${k}">${L(at >= 0 ? 'decoMove' : 'decoPut')}</div></div>`; }
+    $('invBody').innerHTML = h; return;
   }
   let h = `<div class="wal">${L('invWallet', { m: cash, r: rep })}</div>` + (daily.streak ? `<div class="day">${L('invDay', { n: daily.streak })}</div>` : '') +
     `<div class="tabs">${['wear', 'deco', 'food', 'keep'].map(k => `<div class="${k === invTab ? 'on' : ''}" data-tab="${k}">${L('invTab_' + k)}</div>`).join('')}</div>`;
@@ -4653,7 +4847,7 @@ function renderInv() {
     h += `<div class="doll"><canvas id="doll" width="96" height="128"></canvas><small>${WEAR_SLOTS.map(sl => `${L('slot_' + sl).split(' ')[0]}: ${outfit[sl] ? L('w_' + outfit[sl]) : L('wearNone')}`).join('<br>')}</small></div>`;
     h += INV.wear.length ? wearRows(INV.wear, false) : `<p class="empty">${L('invWearEmpty')}</p>`;
   }
-  if (invTab === 'deco') h += `<p class="empty">${L('invDecoEmpty')}</p>`;
+  if (invTab === 'deco') h += `<p class="empty" style="margin-bottom:8px">${L('invDecoHint')}</p>` + decoRows(INV.deco, false);
   if (invTab === 'food') {
     const have = Object.keys(FOOD).filter(k => INV.food[k] > 0);
     if (!have.length) h += `<p class="empty">${L('invFoodEmpty')}</p>`;
@@ -4668,9 +4862,9 @@ function renderInv() {
   $('invBody').innerHTML = h;
   if ($('doll')) drawDoll($('doll'), outfit);
 }
-function openInv(mode = 'bag') {
+function openInv(mode = 'bag', i = 0) {
   if (state !== 'play') return;
-  invMode = mode; tryOn = null;
+  invMode = mode; tryOn = null; slotI = i;
   state = 'inv'; firing = aiming = false;
   for (const k in keys) keys[k] = false;
   joy.x = joy.y = 0; joy.id = look.id = fireId = null;
@@ -4684,9 +4878,17 @@ function closeInv() {
 }
 $('invClose').addEventListener('click', closeInv);
 $('invBody').addEventListener('click', e => {
-  const el = e.target.closest('[data-tab],[data-eat],[data-wbuy],[data-wput],[data-wtry]'), d = el?.dataset; if (!d || el.classList.contains('off')) return;
+  const el = e.target.closest('[data-tab],[data-stab],[data-eat],[data-wbuy],[data-wput],[data-wtry],[data-dbuy],[data-dput],[data-ddel],[data-duse]'), d = el?.dataset; if (!d || el.classList.contains('off')) return;
   audio();
   if (d.tab) invTab = d.tab;
+  if (d.stab) storeTab = d.stab;
+  if (d.dbuy) {
+    const k = d.dbuy, c = DECO[k].cost; if (cash < c || INV.deco.includes(k)) return;
+    addCash(-c, 'deco:' + k); addDeco(k, 'shop'); feed(L('decoBought', { i: L('d_' + k), c }), '#3ddc84'); beep(880, 0.08, 0.1, 'triangle'); saveGame();
+  }
+  if (d.dput) { placeDeco(slotI, d.dput, 'place'); beep(520, 0.06, 0.06, 'triangle'); saveGame(); }
+  if (d.ddel) { placeDeco(slotI, null, 'remove'); saveGame(); }
+  if (d.duse) { const k = shelter.slots[slotI]; closeInv(); useDeco(k); return; }
   if (d.eat && eat(d.eat)) saveGame();
   if (d.wtry) tryOn = invMode === 'store' && tryOn !== d.wtry ? d.wtry : null;
   if (d.wbuy) {
@@ -4717,7 +4919,7 @@ function saveGame() {
   if (q.bike.s === 'ride') q.bike.s = 'find';
   q.bike.guarded = false;
   const data = {
-    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, outfit: { ...outfit }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
+    v: 3, cls: clsKey, rep, score, cash, inv: JSON.parse(JSON.stringify(INV)), daily: { ...daily }, outfit: { ...outfit }, shelter: { slots: [...shelter.slots] }, kills, captured, tod, owners: DISTRICTS.map(d => d.owner), bossDone: { ...bossDone },
     owned: { ...owned }, mags: { ...mags, [weapon]: ammo }, reserve, weapon, maxHp: player.maxHp, hp: Math.max(1, Math.ceil(player.hp)),
     armor: player.armor, armorMax, bikeMul: BIKE_SPEED_MUL, allies: allies.map(a => ({ key: a.key, mood: a.mood })), defectors, q,
     intel: { ...intel }, npcState: JSON.parse(JSON.stringify(npcState)), music: JSON.parse(JSON.stringify(MUS)),
@@ -4742,6 +4944,8 @@ function loadGame(d) {
   // v3 adds the wallet and the bag: older saves start with $30 and an empty bag
   cash = d.cash ?? 30; Object.assign(daily, d.daily || {});
   if (d.inv) { Object.assign(INV.food, d.inv.food); INV.wear = d.inv.wear || []; INV.deco = d.inv.deco || []; }
+  if (d.shelter) shelter.slots = SH_SLOTS.map((_, i) => INV.deco.includes(d.shelter.slots[i]) ? d.shelter.slots[i] : null);
+  else addDeco('mattress', 'old save');   // saves from before the shelter get the starting mattress (already in its spot)
   for (const sl of WEAR_SLOTS) outfit[sl] = WEAR[d.outfit?.[sl]] && INV.wear.includes(d.outfit[sl]) ? d.outfit[sl] : null;
   applyOutfit();
   // one list holds both kinds: BEAT LITE tracks stay one-bar grids (tr.g), STUDIO B songs are v2; toV2 runs when a lite one opens in STUDIO B
@@ -5885,9 +6089,9 @@ function studioChange(e) {
 }
 const draft = { pick: [], title: '', color: COVER_COLORS[0], pat: 0 };
 let mView = 'store';
-function openMusic(view) {
+function openMusic(view, deck = false) {   // deck: the shelter turntable plays tapes without the boombox
   if (state !== 'play') return;
-  if (view === 'radio' && !MUS.boombox) { feed(L('noBoombox'), '#cfd2d6'); return; }
+  if (view === 'radio' && !MUS.boombox && !deck) { feed(L('noBoombox'), '#cfd2d6'); return; }
   state = 'music'; firing = aiming = false;
   for (const k in keys) keys[k] = false;
   joy.x = joy.y = 0; joy.id = look.id = fireId = null;
@@ -6073,9 +6277,9 @@ function update(dt) {
   player.vel.x += (wish.x - player.vel.x) * Math.min(1, acc * dt);
   player.vel.z += (wish.z - player.vel.z) * Math.min(1, acc * dt);
   player.pos.x += player.vel.x * dt; player.pos.z += player.vel.z * dt;
-  collide(player.pos, riding ? 0.6 : 0.5, zone === 'subway');
+  collide(player.pos, riding ? 0.6 : 0.5, ROOMS[zone]);
   player.vy -= 20 * dt; player.y += player.vy * dt;
-  const gy = zone === 'subway' ? SY : groundAt(player.pos.x, player.pos.z);
+  const gy = zone === 'subway' ? SY : zone === 'shelter' ? SHY : groundAt(player.pos.x, player.pos.z);
   if (player.y <= gy) { player.y = gy; player.vy = 0; player.onGround = true; }
   const speed = Math.hypot(player.vel.x, player.vel.z);
   const bob = riding ? 0 : player.onGround ? Math.sin(t * (sprint ? 14 : 10)) * Math.min(speed, 9) * 0.006 : 0;
@@ -6171,7 +6375,7 @@ function update(dt) {
   $('bRadio').classList.toggle('hidden', !MUS.boombox);
   updateMoodHud();
   const here = zone === 'street' ? districtAt(player.pos.x, player.pos.z) : null;
-  $('wave').textContent = here ? here.name.toUpperCase() : curStation.station.toUpperCase();
+  $('wave').textContent = here ? here.name.toUpperCase() : zone === 'shelter' ? L('shelterName').toUpperCase() : curStation.station.toUpperCase();
   $('wave').style.color = here ? ownerCss(here.owner) : '#a7a9ac';
   $('score').textContent = L('scoreHud', { r: rep, m: cash, s: score });
   $('left').textContent = war
@@ -6346,7 +6550,7 @@ function fitView() {
 addEventListener('resize', fitView);
 fitView();
 
-window.__game = { outfit, WEAR, SHK, get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
+window.__game = { shelter, DECO, SH_DOOR, enterShelter, leaveShelter, get zone2() { return zone; }, outfit, WEAR, SHK, get cash() { return cash; }, set cash(v) { cash = v; }, INV, daily, checkDaily, eat, openInv, closeInv, openShop, get state() { return state; }, step(n = 1) { for (let i = 0; i < n; i++) update(1 / 60); }, MUS, openMusic, closeMusic, tune, radioOff, get radio() { return radio; }, get seqSong() { return seq.song; }, set repv(v) { rep = v; }, start() { $('menu').click(); }, look(y, p) { yaw = y; pitch = p; }, enemies, player, get assist() { return assistTgt; }, get view() { return { yaw, pitch }; }, get zone() { return zone; }, allies, DISTRICTS, get war() { return war; }, get rep() { return rep; }, set rep(v) { rep = v; }, set captured(v) { captured = v; }, set counterT(v) { counterT = v; }, get heat() { return heat; }, set heat(v) { heat = v; }, policeCars, get delivery() { return delivery; }, bgm, get weapon() { return weapon; }, owned, get ammo() { return ammo; }, fire: () => fire(), get boss() { return boss; }, bossDone, checkBossTrigger, get tod() { return tod; }, set tod(v) { tod = v; }, get night() { return night; }, get flashOn() { return flashOn; }, bikes, get riding() { return riding; }, Q, defectors, addMood, saveGame, intel, get choBoss() { return rivalBoss; }, SQ, openBoard, closeBoard, get kidFoes() { return kidFoes; }, openIntel, closeIntel, hasSave, get cls() { return clsKey; }, get maxHp() { return player.maxHp; }, get dlgOpen() { return state === 'dialog'; }, pickOpt, questState: () => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(Q).map(([k, v]) => [k, { s: v.s, step: v.step }])))), useNPC, get nearNPC() { return nearNPC; }, keys, hurt: d => hurtPlayer(d, player.pos), renderer, EDGE,
   // test hook: advance the simulation without waiting for animation frames
   step(n = 1, dt = 1 / 30) { for (let i = 0; i < n; i++) if (state === 'play') { update(dt); updateFx(dt); } renderer.render(scene, camera); } };
 </script>
